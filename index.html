@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>МК Трекер — Обществознание</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Unbounded:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --c1: #64AFDC;
+  --c2: #AFDCFA;
+  --c3: #CAEAFF;
+  --c4: #DBF1FF;
+  --c5: #EEF8FF;
+  --bg: #F4FAFF;
+  --card: #FFFFFF;
+  --text: #1A2940;
+  --text2: #4A6585;
+  --text3: #8AAEC8;
+  --border: #D0E8F7;
+  --shadow: rgba(100,175,220,0.15);
+  --shadow2: rgba(100,175,220,0.3);
+  --success: #34C77B;
+  --gold: #F5A623;
+  --silver: #9DB8CC;
+  --xp-color: #64AFDC;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── HEADER ─── */
+.header {
+  background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 100%);
+  padding: 20px 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 20px var(--shadow2);
+}
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.header-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.5px;
+}
+.streak-pill {
+  background: rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid rgba(255,255,255,0.4);
+}
+.streak-pill:active { transform: scale(0.95); }
+.streak-pill span { font-size: 20px; }
+.streak-count {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+.streak-label { font-size: 11px; color: rgba(255,255,255,0.85); font-weight: 600; }
+
+/* ─── NAV TABS ─── */
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  padding-bottom: 0;
+}
+.nav-tab {
+  flex: 1;
+  padding: 10px 4px;
+  border: none;
+  background: transparent;
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  text-align: center;
+}
+.nav-tab.active {
+  color: white;
+  border-bottom-color: white;
+}
+.nav-tab:active { opacity: 0.7; }
+
+/* ─── MAIN ─── */
+.main { padding: 16px; max-width: 500px; margin: 0 auto; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ─── HERO / CHARACTER ─── */
+.hero-card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 20px var(--shadow);
+  border: 1.5px solid var(--border);
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.character-wrap {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  flex-shrink: 0;
+}
+#character-svg {
+  width: 90px;
+  height: 90px;
+  transition: all 0.5s ease;
+}
+.character-wrap .aura {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.5s;
+  pointer-events: none;
+}
+.hero-info { flex: 1; min-width: 0; }
+.hero-rank {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--c1);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+.hero-name {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.xp-bar-wrap { margin-bottom: 6px; }
+.xp-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text2);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.xp-bar {
+  height: 8px;
+  background: var(--c4);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--c1), var(--c2));
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.xp-total {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c1);
+}
+
+/* ─── STATS ROW ─── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.stat-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 12px 10px;
+  text-align: center;
+  box-shadow: 0 2px 12px var(--shadow);
+  border: 1.5px solid var(--border);
+}
+.stat-icon { font-size: 20px; margin-bottom: 4px; }
+.stat-val {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.stat-lbl { font-size: 10px; color: var(--text3); font-weight: 700; }
+
+/* ─── SECTION TITLE ─── */
+.section-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ─── WEEK SELECTOR ─── */
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  background: var(--card);
+  border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 12px var(--shadow);
+  border: 1.5px solid var(--border);
+}
+.week-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--c4);
+  color: var(--c1);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.week-btn:active { transform: scale(0.9); background: var(--c3); }
+.week-info { flex: 1; text-align: center; }
+.week-num {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+.week-dates { font-size: 11px; color: var(--text3); font-weight: 600; }
+.week-progress-mini { font-size: 11px; color: var(--c1); font-weight: 700; }
+
+/* ─── TASKS ─── */
+.category-block { margin-bottom: 16px; }
+.cat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.cat-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text2);
+}
+.cat-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.cat-xp { font-size: 11px; color: var(--text3); font-weight: 700; }
+
+.task-item {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 10px var(--shadow);
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.task-item:active { transform: scale(0.98); }
+.task-item.done {
+  background: var(--c5);
+  border-color: var(--c3);
+}
+.task-check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2.5px solid var(--c2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: white;
+}
+.task-item.done .task-check {
+  background: var(--c1);
+  border-color: var(--c1);
+}
+.task-check-icon { font-size: 12px; opacity: 0; transition: opacity 0.2s; }
+.task-item.done .task-check-icon { opacity: 1; }
+.task-body { flex: 1; min-width: 0; }
+.task-name { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.task-item.done .task-name { text-decoration: line-through; color: var(--text3); }
+.task-meta { display: flex; gap: 8px; margin-top: 3px; align-items: center; }
+.task-xp-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--c1);
+  background: var(--c4);
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+.task-diff {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+}
+
+/* ─── CATEGORY PROGRESS ─── */
+.cat-progress-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 12px var(--shadow);
+  border: 1.5px solid var(--border);
+}
+.cat-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.cat-progress-name {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 800; color: var(--text);
+}
+.cat-progress-pct { font-size: 12px; font-weight: 800; color: var(--c1); }
+.cat-bar {
+  height: 8px;
+  background: var(--c4);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.cat-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.cat-stats { font-size: 11px; color: var(--text3); font-weight: 600; }
+
+/* ─── ACHIEVEMENTS ─── */
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.badge-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px 12px;
+  text-align: center;
+  box-shadow: 0 2px 12px var(--shadow);
+  border: 1.5px solid var(--border);
+  transition: all 0.3s;
+}
+.badge-card.unlocked {
+  border-color: var(--c2);
+  background: linear-gradient(135deg, var(--c5), white);
+}
+.badge-card.secret:not(.unlocked) { opacity: 0.6; }
+.badge-icon { font-size: 32px; margin-bottom: 8px; filter: grayscale(1); transition: filter 0.3s; }
+.badge-card.unlocked .badge-icon { filter: grayscale(0); }
+.badge-name { font-size: 12px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.badge-desc { font-size: 10px; color: var(--text3); font-weight: 600; line-height: 1.3; margin-bottom: 8px; }
+.badge-prog { font-size: 10px; color: var(--c1); font-weight: 700; }
+.badge-bar { height: 4px; background: var(--c4); border-radius: 4px; margin-top: 6px; overflow: hidden; }
+.badge-bar-fill { height: 100%; background: linear-gradient(90deg, var(--c1), var(--c2)); border-radius: 4px; transition: width 0.6s ease; }
+
+/* ─── REWARDS ─── */
+.reward-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 12px var(--shadow);
+  border: 1.5px solid var(--border);
+  transition: all 0.3s;
+}
+.reward-card.unlocked {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, #FFFDF0, white);
+  box-shadow: 0 4px 20px rgba(245,166,35,0.2);
+}
+.reward-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+}
+.reward-icon { font-size: 28px; }
+.reward-info { flex: 1; }
+.reward-name { font-size: 14px; font-weight: 800; color: var(--text); }
+.reward-cond { font-size: 11px; color: var(--text3); font-weight: 600; margin-top: 2px; }
+.reward-status {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--c4);
+  color: var(--c1);
+}
+.reward-card.unlocked .reward-status {
+  background: #FFF3CD;
+  color: var(--gold);
+}
+.reward-bar { height: 6px; background: var(--c4); border-radius: 6px; overflow: hidden; margin-bottom: 4px; }
+.reward-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--c1), var(--c2));
+  transition: width 0.6s ease;
+}
+.reward-card.unlocked .reward-bar-fill { background: linear-gradient(90deg, var(--gold), #F7C96E); }
+.reward-prog { font-size: 10px; color: var(--text3); font-weight: 700; text-align: right; }
+
+/* ─── LEVEL UP OVERLAY ─── */
+.levelup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(100,175,220,0.85);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.levelup-overlay.show { opacity: 1; pointer-events: all; }
+.levelup-box {
+  text-align: center;
+  animation: levelupBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes levelupBounce {
+  from { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+  to { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.levelup-emoji { font-size: 80px; margin-bottom: 16px; }
+.levelup-text {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  margin-bottom: 8px;
+}
+.levelup-sub { font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 24px; }
+.levelup-close {
+  background: white;
+  color: var(--c1);
+  border: none;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* ─── XP POPUP ─── */
+.xp-popup {
+  position: fixed;
+  pointer-events: none;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--c1);
+  text-shadow: 0 2px 8px rgba(100,175,220,0.5);
+  z-index: 999;
+  animation: xpFloat 1.2s ease forwards;
+}
+@keyframes xpFloat {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+  80% { transform: translateY(-40px) scale(1); opacity: 1; }
+  100% { transform: translateY(-60px) scale(0.9); opacity: 0; }
+}
+
+/* ─── STARS ANIMATION ─── */
+.star-particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 998;
+  animation: starFly 0.8s ease forwards;
+}
+@keyframes starFly {
+  0% { transform: translate(0,0) scale(0); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(1); opacity: 0; }
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--c3); border-radius: 4px; }
+
+/* ─── CHARACTER STAGES ─── */
+.char-aura-1 { box-shadow: 0 0 20px var(--c2); border-radius: 50%; }
+.char-aura-2 { box-shadow: 0 0 30px var(--c1); border-radius: 50%; }
+.char-aura-3 { box-shadow: 0 0 40px var(--c1), 0 0 80px var(--c2); border-radius: 50%; }
+.char-aura-4 { box-shadow: 0 0 50px #F5A623, 0 0 100px var(--c1); border-radius: 50%; animation: auraPulse 2s infinite alternate; }
+@keyframes auraPulse {
+  from { box-shadow: 0 0 50px #F5A623, 0 0 80px var(--c1); }
+  to { box-shadow: 0 0 70px #F5A623, 0 0 120px var(--c1); }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--text3);
+  font-size: 13px;
+  font-weight: 600;
+}
+.empty-state .e-icon { font-size: 40px; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<!-- LEVEL UP OVERLAY -->
+<div class="levelup-overlay" id="levelupOverlay">
+  <div class="levelup-box">
+    <div class="levelup-emoji">⭐</div>
+    <div class="levelup-text">LEVEL UP!</div>
+    <div class="levelup-sub" id="levelupRankText">Новый ранг получен!</div>
+    <button class="levelup-close" onclick="closeLevelup()">Продолжить 🚀</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="header-title">МК ТРЕКЕР</div>
+    <div class="streak-pill" onclick="clickStreak()">
+      <span>🔥</span>
+      <div>
+        <div class="streak-count" id="streakCount">0</div>
+        <div class="streak-label">дней подряд</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchTab('home')">🏠 Главная</button>
+    <button class="nav-tab" onclick="switchTab('tasks')">📚 Задачи</button>
+    <button class="nav-tab" onclick="switchTab('progress')">📊 Прогресс</button>
+    <button class="nav-tab" onclick="switchTab('rewards')">🎁 Награды</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══════════════════════════════════ HOME TAB ══════════════════════════════════ -->
+<div class="tab-content active" id="tab-home">
+
+  <!-- Hero Card -->
+  <div class="hero-card">
+    <div class="character-wrap" id="charWrap">
+      <svg id="character-svg" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="hero-info">
+      <div class="hero-rank" id="heroRank">Новичок</div>
+      <div class="hero-name">Уровень <span id="heroLevel">1</span></div>
+      <div class="xp-bar-wrap">
+        <div class="xp-bar-label">
+          <span>XP</span>
+          <span id="xpBarLabel">0 / 100</span>
+        </div>
+        <div class="xp-bar"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+      </div>
+      <div class="xp-total">⚡ <span id="totalXP">0</span> XP всего</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-val" id="statDone">0</div>
+      <div class="stat-lbl">Выполнено</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📝</div>
+      <div class="stat-val" id="statTotal">0</div>
+      <div class="stat-lbl">Всего задач</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-val" id="statPct">0%</div>
+      <div class="stat-lbl">Прогресс</div>
+    </div>
+  </div>
+
+  <!-- Achievements preview -->
+  <div class="section-title">🏆 Последние достижения</div>
+  <div id="recentBadges"></div>
+
+  <!-- Today hint -->
+  <div class="section-title">📅 Текущая неделя</div>
+  <div id="currentWeekPreview"></div>
+
+</div>
+
+<!-- ══════════════════════════════════ TASKS TAB ══════════════════════════════════ -->
+<div class="tab-content" id="tab-tasks">
+
+  <div class="week-nav">
+    <button class="week-btn" onclick="changeWeek(-1)">‹</button>
+    <div class="week-info">
+      <div class="week-num" id="weekNum">Неделя 1</div>
+      <div class="week-dates" id="weekDates"></div>
+      <div class="week-progress-mini" id="weekProg"></div>
+    </div>
+    <button class="week-btn" onclick="changeWeek(1)">›</button>
+  </div>
+
+  <div id="tasksList"></div>
+</div>
+
+<!-- ══════════════════════════════════ PROGRESS TAB ══════════════════════════════════ -->
+<div class="tab-content" id="tab-progress">
+  <div class="section-title">📊 По предметам</div>
+  <div id="categoryProgress"></div>
+  <div class="section-title">🏅 Достижения</div>
+  <div class="achievements-grid" id="achievementsGrid"></div>
+</div>
+
+<!-- ══════════════════════════════════ REWARDS TAB ══════════════════════════════════ -->
+<div class="tab-content" id="tab-rewards">
+  <div class="section-title">🎁 Мои награды</div>
+  <div id="rewardsList"></div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ═══════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════
+
+const SPRINT_START = new Date('2025-03-30');
+const SPRINT_END   = new Date('2025-11-30');
+
+const CATEGORIES = {
+  sociology:    { name: 'Социология',    color: '#64AFDC', dot: '#64AFDC', icon: '👥' },
+  politics:     { name: 'Политология',   color: '#7BC8E0', dot: '#7BC8E0', icon: '🏛️' },
+  economics:    { name: 'Экономика',     color: '#5BB8A8', dot: '#5BB8A8', icon: '💰' },
+  law:          { name: 'Право',         color: '#8BAFD0', dot: '#8BAFD0', icon: '⚖️' },
+  philosophy:   { name: 'Философия',     color: '#A0C4D8', dot: '#A0C4D8', icon: '🧠' },
+  culturology:  { name: 'Культурология', color: '#6BBFCE', dot: '#6BBFCE', icon: '🎨' },
+  crossdiscipline:{ name: 'Кросс',       color: '#90CADC', dot: '#90CADC', icon: '🔗' },
+};
+
+// All tasks distributed across 35 weeks (30 March – 30 November)
+// Week 1 = 30 March – 5 April, etc.
+const ALL_TASKS = [
+  // ── WEEK 1 ──
+  { id:'t1',  week:1, cat:'sociology',    name:'Социология. Введение. Основные понятия',       xp:20, diff:'средняя' },
+  { id:'t2',  week:1, cat:'sociology',    name:'Социальные роли и конфликты',                  xp:20, diff:'средняя' },
+  { id:'t3',  week:1, cat:'sociology',    name:'Социальный институт: семья',                   xp:20, diff:'средняя' },
+  { id:'t4',  week:1, cat:'politics',     name:'Политология. Введение',                        xp:15, diff:'лёгкая'  },
+  // ── WEEK 2 ──
+  { id:'t5',  week:2, cat:'politics',     name:'Власть. Государство. Форма государства',       xp:25, diff:'средняя' },
+  { id:'t6',  week:2, cat:'sociology',    name:'Социальный контроль и девиация. Социализация', xp:20, diff:'средняя' },
+  { id:'t7',  week:2, cat:'culturology',  name:'Введение в культурологию. Части 1 и 2',        xp:20, diff:'средняя' },
+  { id:'t8',  week:2, cat:'law',          name:'Введение в гражданское право. Сделки. Право собственности', xp:25, diff:'средняя' },
+  // ── WEEK 3 ──
+  { id:'t9',  week:3, cat:'politics',     name:'Форма территориального устройства',            xp:20, diff:'средняя' },
+  { id:'t10', week:3, cat:'politics',     name:'Группы, элиты, электорат. Политический режим', xp:25, diff:'средняя' },
+  { id:'t11', week:3, cat:'economics',    name:'Спрос и предложение. Рынок, виды благ',        xp:25, diff:'средняя' },
+  { id:'t12', week:3, cat:'economics',    name:'Факторы производства. Виды издержек',          xp:25, diff:'средняя' },
+  // ── WEEK 4 ──
+  { id:'t13', week:4, cat:'economics',    name:'Конкуренция. Монополия',                       xp:20, diff:'средняя' },
+  { id:'t14', week:4, cat:'law',          name:'Теория государства и права',                   xp:20, diff:'средняя' },
+  { id:'t15', week:4, cat:'sociology',    name:'Классики социологии. Конт, Спенсер',           xp:20, diff:'средняя' },
+  { id:'t16', week:4, cat:'sociology',    name:'Классики социологии. Дюркгейм, Теннис',        xp:20, diff:'средняя' },
+  // ── WEEK 5 ──
+  { id:'t17', week:5, cat:'sociology',    name:'Классики социологии. Вебер',                   xp:20, diff:'средняя' },
+  { id:'t18', week:5, cat:'sociology',    name:'Классики социологии. Маркс',                   xp:20, diff:'средняя' },
+  { id:'t19', week:5, cat:'politics',     name:'Демократия. Политическая культура. Партии и выборы', xp:30, diff:'сложная' },
+  { id:'t20', week:5, cat:'law',          name:'Обязательственное право',                      xp:20, diff:'средняя' },
+  // ── WEEK 6 ──
+  { id:'t21', week:6, cat:'sociology',    name:'Социальная стратификация. Образование. Наука', xp:20, diff:'средняя' },
+  { id:'t22', week:6, cat:'politics',     name:'Политическая идеология',                       xp:20, diff:'средняя' },
+  { id:'t23', week:6, cat:'crossdiscipline','name':'Литература и социальные науки. Почему одни страны богатые?', xp:25, diff:'средняя' },
+  // ── WEEK 7 ──
+  { id:'t24', week:7, cat:'sociology',    name:'Социология города. Культура',                  xp:20, diff:'средняя' },
+  { id:'t25', week:7, cat:'sociology',    name:'Теория обмена. Символический интеракционизм',  xp:25, diff:'средняя' },
+  { id:'t26', week:7, cat:'sociology',    name:'Этнометодология',                              xp:20, diff:'средняя' },
+  // ── WEEK 8 ──
+  { id:'t27', week:8, cat:'politics',     name:'Международные отношения',                      xp:25, diff:'средняя' },
+  { id:'t28', week:8, cat:'politics',     name:'Современная политика',                         xp:20, diff:'средняя' },
+  { id:'t29', week:8, cat:'politics',     name:'Основные идеологические течения. Лекция 1',    xp:25, diff:'средняя' },
+  { id:'t30', week:8, cat:'politics',     name:'Основные идеологические течения. Лекция 2',    xp:25, diff:'средняя' },
+  // ── WEEK 9 ──
+  { id:'t31', week:9, cat:'politics',     name:'Модернизация и политическое участие',          xp:25, diff:'средняя' },
+  { id:'t32', week:9, cat:'culturology',  name:'История западноевропейской скульптуры',        xp:20, diff:'средняя' },
+  { id:'t33', week:9, cat:'culturology',  name:'Основные вехи истории западноевропейской музыки до XIX века', xp:20, diff:'средняя' },
+  // ── WEEK 10 ──
+  { id:'t34', week:10, cat:'economics',   name:'Инфляция. Центральный банк',                   xp:25, diff:'средняя' },
+  { id:'t35', week:10, cat:'economics',   name:'Основные макроэкономические показатели',       xp:25, diff:'средняя' },
+  { id:'t36', week:10, cat:'economics',   name:'ВВП. Экономический рост',                      xp:25, diff:'средняя' },
+  // ── WEEK 11 ──
+  { id:'t37', week:11, cat:'economics',   name:'Издержки фирмы. Безработица',                  xp:25, diff:'средняя' },
+  { id:'t38', week:11, cat:'economics',   name:'Основные экономические теории',                xp:30, diff:'сложная' },
+  { id:'t39', week:11, cat:'law',         name:'Уголовное право. Общая часть 1 и 2',           xp:30, diff:'сложная' },
+  // ── WEEK 12 ──
+  { id:'t40', week:12, cat:'law',         name:'Уголовное право. Особенная часть',             xp:30, diff:'сложная' },
+  { id:'t41', week:12, cat:'law',         name:'Семейное право. Лекции 1 и 2',                 xp:25, diff:'средняя' },
+  { id:'t42', week:12, cat:'law',         name:'Конституционное право',                        xp:25, diff:'средняя' },
+  // ── WEEK 13 ──
+  { id:'t43', week:13, cat:'law',         name:'Трудовое право. Лекции 1 и 2',                 xp:25, diff:'средняя' },
+  { id:'t44', week:13, cat:'philosophy',  name:'Зарождение философии. Платон',                 xp:25, diff:'средняя' },
+  { id:'t45', week:13, cat:'philosophy',  name:'Аристотель. Эллинизм',                         xp:25, diff:'средняя' },
+  // ── WEEK 14 ──
+  { id:'t46', week:14, cat:'philosophy',  name:'Средние века. Возрождение',                    xp:20, diff:'средняя' },
+  { id:'t47', week:14, cat:'philosophy',  name:'Новое время',                                  xp:20, diff:'средняя' },
+  // ── WEEK 15 ──
+  { id:'t48', week:15, cat:'sociology',   name:'Повторение: Классики социологии — итоговый блок', xp:30, diff:'сложная' },
+  { id:'t49', week:15, cat:'politics',    name:'Повторение: Государство и политические режимы', xp:30, diff:'сложная' },
+  // ── WEEK 16 ──
+  { id:'t50', week:16, cat:'economics',   name:'Повторение: Микроэкономика — рынок и цены',    xp:30, diff:'сложная' },
+  { id:'t51', week:16, cat:'law',         name:'Повторение: Гражданское и уголовное право',    xp:30, diff:'сложная' },
+  // ── WEEK 17 ──
+  { id:'t52', week:17, cat:'philosophy',  name:'Повторение: Античная и средневековая философия', xp:25, diff:'средняя' },
+  { id:'t53', week:17, cat:'culturology', name:'Повторение: Культурология — обобщение',        xp:25, diff:'средняя' },
+  // ── WEEK 18 ──
+  { id:'t54', week:18, cat:'sociology',   name:'Практика: пробный тест по социологии',        xp:35, diff:'сложная' },
+  { id:'t55', week:18, cat:'politics',    name:'Практика: пробный тест по политологии',       xp:35, diff:'сложная' },
+  // ── WEEK 19 ──
+  { id:'t56', week:19, cat:'economics',   name:'Практика: пробный тест по экономике',         xp:35, diff:'сложная' },
+  { id:'t57', week:19, cat:'law',         name:'Практика: пробный тест по праву',             xp:35, diff:'сложная' },
+  // ── WEEK 20 ──
+  { id:'t58', week:20, cat:'philosophy',  name:'Практика: пробный тест по философии',         xp:35, diff:'сложная' },
+  { id:'t59', week:20, cat:'sociology',   name:'Работа над ошибками — социология',            xp:25, diff:'средняя' },
+  // ── WEEK 21 ──
+  { id:'t60', week:21, cat:'politics',    name:'Работа над ошибками — политология',           xp:25, diff:'средняя' },
+  { id:'t61', week:21, cat:'economics',   name:'Работа над ошибками — экономика',             xp:25, diff:'средняя' },
+  // ── WEEK 22 ──
+  { id:'t62', week:22, cat:'law',         name:'Работа над ошибками — право',                 xp:25, diff:'средняя' },
+  { id:'t63', week:22, cat:'crossdiscipline','name':'Межпредметные связи: общество и экономика', xp:30, diff:'сложная' },
+  // ── WEEK 23 ──
+  { id:'t64', week:23, cat:'sociology',   name:'Углублённое повторение: социальная стратификация', xp:30, diff:'сложная' },
+  { id:'t65', week:23, cat:'politics',    name:'Углублённое повторение: избирательные системы', xp:30, diff:'сложная' },
+  // ── WEEK 24 ──
+  { id:'t66', week:24, cat:'economics',   name:'Углублённое повторение: макроэкономика',      xp:30, diff:'сложная' },
+  { id:'t67', week:24, cat:'law',         name:'Углублённое повторение: конституционные права', xp:30, diff:'сложная' },
+  // ── WEEK 25 ──
+  { id:'t68', week:25, cat:'philosophy',  name:'Углублённое повторение: философия Нового времени', xp:30, diff:'сложная' },
+  { id:'t69', week:25, cat:'culturology', name:'Углублённое повторение: культура и цивилизация', xp:25, diff:'средняя' },
+  // ── WEEK 26 ──
+  { id:'t70', week:26, cat:'sociology',   name:'Финальный прогон: социология — все темы',     xp:40, diff:'сложная' },
+  { id:'t71', week:26, cat:'politics',    name:'Финальный прогон: политология — все темы',    xp:40, diff:'сложная' },
+  // ── WEEK 27 ──
+  { id:'t72', week:27, cat:'economics',   name:'Финальный прогон: экономика — все темы',      xp:40, diff:'сложная' },
+  { id:'t73', week:27, cat:'law',         name:'Финальный прогон: право — все темы',          xp:40, diff:'сложная' },
+  // ── WEEK 28 ──
+  { id:'t74', week:28, cat:'philosophy',  name:'Финальный прогон: философия — все темы',      xp:35, diff:'сложная' },
+  { id:'t75', week:28, cat:'culturology', name:'Финальный прогон: культурология — все темы',  xp:35, diff:'сложная' },
+  // ── WEEK 29 ──
+  { id:'t76', week:29, cat:'sociology',   name:'Симуляция перечневой олимпиады — обществ. ч.1', xp:50, diff:'сложная' },
+  { id:'t77', week:29, cat:'politics',    name:'Разбор олимпиадных задач: политология',       xp:40, diff:'сложная' },
+  // ── WEEK 30 ──
+  { id:'t78', week:30, cat:'economics',   name:'Разбор олимпиадных задач: экономика',         xp:40, diff:'сложная' },
+  { id:'t79', week:30, cat:'law',         name:'Разбор олимпиадных задач: право',             xp:40, diff:'сложная' },
+  // ── WEEK 31 ──
+  { id:'t80', week:31, cat:'sociology',   name:'Симуляция перечневой олимпиады — обществ. ч.2', xp:50, diff:'сложная' },
+  { id:'t81', week:31, cat:'philosophy',  name:'Разбор олимпиадных задач: философия',         xp:35, diff:'сложная' },
+  // ── WEEK 32 ──
+  { id:'t82', week:32, cat:'sociology',   name:'Тотальное повторение: блок 1 (соц + полит)',  xp:45, diff:'сложная' },
+  { id:'t83', week:32, cat:'economics',   name:'Тотальное повторение: блок 2 (эк + право)',   xp:45, diff:'сложная' },
+  // ── WEEK 33 ──
+  { id:'t84', week:33, cat:'philosophy',  name:'Тотальное повторение: блок 3 (фил + культ)',  xp:40, diff:'сложная' },
+  { id:'t85', week:33, cat:'sociology',   name:'Практика: финальный пробный тест (полный)',   xp:50, diff:'сложная' },
+  // ── WEEK 34 ──
+  { id:'t86', week:34, cat:'sociology',   name:'Финальная работа над ошибками',               xp:35, diff:'сложная' },
+  { id:'t87', week:34, cat:'crossdiscipline','name':'Повторение межпредметных связей',         xp:30, diff:'сложная' },
+  // ── WEEK 35 ──
+  { id:'t88', week:35, cat:'sociology',   name:'Последний прогон перед олимпиадой',           xp:50, diff:'сложная' },
+  { id:'t89', week:35, cat:'politics',    name:'Финальное закрепление: политология',          xp:40, diff:'сложная' },
+];
+
+const REWARDS = [
+  { id:'r1', icon:'🛌', name:'День полного безделья',          cond:'Закрой первую неделю (все задачи)',  target:4,  type:'week1' },
+  { id:'r2', icon:'📖', name:'Книга по социологии',            cond:'Выполни 25% задач',                 target:22, type:'done' },
+  { id:'r3', icon:'👩‍🏫', name:'Индивидуальное занятие с куратором', cond:'Выполни 50% задач',           target:45, type:'done' },
+  { id:'r4', icon:'👕', name:'Футболка МК',                    cond:'Выполни 80% всех задач',            target:71, type:'done' },
+];
+
+const LEVELS = [
+  { level:1, rank:'Новичок',  xpMin:0,    xpMax:100  },
+  { level:2, rank:'Ученик',   xpMin:100,  xpMax:250  },
+  { level:3, rank:'Боец',     xpMin:250,  xpMax:500  },
+  { level:4, rank:'Мастер',   xpMin:500,  xpMax:900  },
+  { level:5, rank:'Легенда',  xpMin:900,  xpMax:9999 },
+];
+
+const ACHIEVEMENTS = [
+  // Visible
+  { id:'a1', icon:'🌟', name:'Первый шаг',   desc:'Выполни первую задачу',           secret:false, target:1,  type:'done' },
+  { id:'a2', icon:'🔥', name:'Пятёрочник',   desc:'Выполни 5 задач',                 secret:false, target:5,  type:'done' },
+  { id:'a3', icon:'💪', name:'На полпути',   desc:'Выполни 50% задач',               secret:false, target:45, type:'done' },
+  { id:'a4', icon:'🏆', name:'Чемпион',      desc:'Выполни все задачи',              secret:false, target:89, type:'done' },
+  // Secret
+  { id:'a5', icon:'🔮', name:'Ночной учёный', desc:'Выполни задачу после 22:00',     secret:true,  target:1,  type:'night' },
+  { id:'a6', icon:'⚡', name:'Спринтер',      desc:'Выполни 3 задачи за один день',  secret:true,  target:3,  type:'day3' },
+  { id:'a7', icon:'📚', name:'Книгочей',      desc:'Закрой блок Философии полностью',secret:true,  target:7,  type:'cat_philosophy' },
+  { id:'a8', icon:'👑', name:'Легенда МК',    desc:'Достигни ранга Легенда',         secret:true,  target:1,  type:'rank5' },
+];
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let state = {
+  done: {},          // taskId -> true
+  streak: 0,
+  lastStreakDate: null,
+  totalXP: 0,
+  level: 1,
+  rank: 'Новичок',
+  charStage: 0,
+  unlockedAchievements: {},
+  todayDone: 0,
+  currentWeek: 1,
+};
+
+function saveState() {
+  localStorage.setItem('mk_tracker_v2', JSON.stringify(state));
+}
+function loadState() {
+  const s = localStorage.getItem('mk_tracker_v2');
+  if (s) { try { state = { ...state, ...JSON.parse(s) }; } catch(e){} }
+}
+
+// ═══════════════════════════════════════════════════
+//  COMPUTED
+// ═══════════════════════════════════════════════════
+function getDoneCount() { return Object.keys(state.done).filter(k => state.done[k]).length; }
+function getTotalXP() { return ALL_TASKS.filter(t => state.done[t.id]).reduce((s,t)=>s+t.xp,0); }
+function getCurrentWeekNum() {
+  const now = new Date();
+  const diff = Math.floor((now - SPRINT_START) / (7*24*3600*1000));
+  return Math.min(Math.max(1, diff + 1), 35);
+}
+function getWeekDates(w) {
+  const d = new Date(SPRINT_START);
+  d.setDate(d.getDate() + (w-1)*7);
+  const end = new Date(d); end.setDate(end.getDate()+6);
+  const fmt = d => d.toLocaleDateString('ru-RU', {day:'numeric',month:'short'});
+  return `${fmt(d)} – ${fmt(end)}`;
+}
+function getLevelInfo(xp) {
+  for (let i = LEVELS.length-1; i >= 0; i--) {
+    if (xp >= LEVELS[i].xpMin) return LEVELS[i];
+  }
+  return LEVELS[0];
+}
+function getCatDone(cat) { return ALL_TASKS.filter(t=>t.cat===cat && state.done[t.id]).length; }
+function getCatTotal(cat){ return ALL_TASKS.filter(t=>t.cat===cat).length; }
+
+// ═══════════════════════════════════════════════════
+//  CHARACTER SVG STAGES
+// ═══════════════════════════════════════════════════
+function drawCharacter(stage) {
+  const svg = document.getElementById('character-svg');
+  const wrap = document.getElementById('charWrap');
+  wrap.className = 'character-wrap';
+  if (stage >= 1) wrap.classList.add(`char-aura-${Math.min(stage,4)}`);
+
+  const stages = [
+    // Stage 0 – basic silhouette
+    `<circle cx="45" cy="28" r="14" fill="#CAEAFF" stroke="#64AFDC" stroke-width="2"/>
+     <ellipse cx="45" cy="62" rx="18" ry="22" fill="#CAEAFF" stroke="#64AFDC" stroke-width="2"/>
+     <circle cx="38" cy="26" r="3" fill="#64AFDC"/>
+     <circle cx="52" cy="26" r="3" fill="#64AFDC"/>`,
+    // Stage 1 – equipped basic
+    `<circle cx="45" cy="28" r="14" fill="#AFDCFA" stroke="#64AFDC" stroke-width="2.5"/>
+     <ellipse cx="45" cy="62" rx="18" ry="22" fill="#AFDCFA" stroke="#64AFDC" stroke-width="2"/>
+     <circle cx="38" cy="26" r="3.5" fill="#64AFDC"/>
+     <circle cx="52" cy="26" r="3.5" fill="#64AFDC"/>
+     <rect x="38" y="14" width="14" height="6" rx="3" fill="#64AFDC" opacity="0.7"/>
+     <path d="M27 55 Q18 50 20 40 L27 45Z" fill="#AFDCFA" stroke="#64AFDC" stroke-width="1.5"/>
+     <path d="M63 55 Q72 50 70 40 L63 45Z" fill="#AFDCFA" stroke="#64AFDC" stroke-width="1.5"/>`,
+    // Stage 2 – armored
+    `<circle cx="45" cy="27" r="15" fill="#64AFDC" stroke="#3A8FBD" stroke-width="2.5"/>
+     <ellipse cx="45" cy="62" rx="20" ry="23" fill="#64AFDC" stroke="#3A8FBD" stroke-width="2"/>
+     <circle cx="38" cy="25" r="4" fill="white"/>
+     <circle cx="52" cy="25" r="4" fill="white"/>
+     <circle cx="38" cy="25" r="2" fill="#1A4F6E"/>
+     <circle cx="52" cy="25" r="2" fill="#1A4F6E"/>
+     <path d="M30 13 L45 8 L60 13 L57 22 L45 26 L33 22Z" fill="#3A8FBD" stroke="white" stroke-width="1"/>
+     <path d="M25 55 Q14 48 16 36 L26 43Z" fill="#3A8FBD" stroke="white" stroke-width="1"/>
+     <path d="M65 55 Q76 48 74 36 L64 43Z" fill="#3A8FBD" stroke="white" stroke-width="1"/>
+     <rect x="37" y="55" width="16" height="18" rx="2" fill="#3A8FBD" stroke="white" stroke-width="1"/>`,
+    // Stage 3 – master
+    `<circle cx="45" cy="27" r="15" fill="#1A6FA0" stroke="#0D4F75" stroke-width="2"/>
+     <ellipse cx="45" cy="63" rx="21" ry="23" fill="#1A6FA0" stroke="#0D4F75" stroke-width="2"/>
+     <circle cx="38" cy="25" r="4.5" fill="white"/>
+     <circle cx="52" cy="25" r="4.5" fill="white"/>
+     <circle cx="38" cy="25" r="2.5" fill="#AFDCFA"/>
+     <circle cx="52" cy="25" r="2.5" fill="#AFDCFA"/>
+     <polygon points="45,2 49,14 62,14 52,22 56,34 45,27 34,34 38,22 28,14 41,14" fill="#F5A623" stroke="#C47D00" stroke-width="1"/>
+     <path d="M22 56 Q9 47 12 32 L24 42Z" fill="#1A6FA0" stroke="#AFDCFA" stroke-width="1.5"/>
+     <path d="M68 56 Q81 47 78 32 L66 42Z" fill="#1A6FA0" stroke="#AFDCFA" stroke-width="1.5"/>
+     <rect x="35" y="54" width="20" height="22" rx="3" fill="#0D4F75" stroke="#AFDCFA" stroke-width="1.5"/>
+     <rect x="40" y="58" width="10" height="6" rx="2" fill="#AFDCFA" opacity="0.6"/>`,
+    // Stage 4 – legend
+    `<defs>
+       <radialGradient id="hg" cx="50%" cy="50%" r="50%">
+         <stop offset="0%" stop-color="#64AFDC"/>
+         <stop offset="100%" stop-color="#0D4F75"/>
+       </radialGradient>
+     </defs>
+     <circle cx="45" cy="27" r="16" fill="url(#hg)" stroke="#F5A623" stroke-width="2.5"/>
+     <ellipse cx="45" cy="63" rx="22" ry="24" fill="url(#hg)" stroke="#F5A623" stroke-width="2"/>
+     <circle cx="38" cy="25" r="5" fill="white"/>
+     <circle cx="52" cy="25" r="5" fill="white"/>
+     <circle cx="38" cy="25" r="3" fill="#F5A623"/>
+     <circle cx="52" cy="25" r="3" fill="#F5A623"/>
+     <polygon points="45,-2 50,12 65,12 54,21 58,35 45,27 32,35 36,21 25,12 40,12" fill="#F5A623" stroke="#C47D00" stroke-width="1.5"/>
+     <path d="M20 58 Q5 47 8 28 L22 42Z" fill="url(#hg)" stroke="#F5A623" stroke-width="2"/>
+     <path d="M70 58 Q85 47 82 28 L68 42Z" fill="url(#hg)" stroke="#F5A623" stroke-width="2"/>
+     <rect x="34" y="54" width="22" height="24" rx="4" fill="#0D3F5F" stroke="#F5A623" stroke-width="2"/>
+     <rect x="39" y="58" width="12" height="7" rx="2" fill="#F5A623" opacity="0.8"/>
+     <line x1="45" y1="4" x2="45" y2="-8" stroke="#F5A623" stroke-width="2"/>
+     <circle cx="45" cy="-10" r="4" fill="#F5A623"/>`,
+  ];
+
+  svg.innerHTML = stages[Math.min(stage, stages.length-1)];
+}
+
+function updateCharStage() {
+  const done = getDoneCount();
+  let stage = 0;
+  if (done >= 5) stage = 1;
+  if (done >= 20) stage = 2;
+  if (done >= 40) stage = 3;
+  if (done >= 70) stage = 4;
+  state.charStage = stage;
+  drawCharacter(stage);
+}
+
+// ═══════════════════════════════════════════════════
+//  XP POPUP
+// ═══════════════════════════════════════════════════
+function showXPPopup(xp, el) {
+  const popup = document.createElement('div');
+  popup.className = 'xp-popup';
+  popup.textContent = `+${xp} XP`;
+  const rect = el.getBoundingClientRect();
+  popup.style.left = (rect.left + rect.width/2 - 30) + 'px';
+  popup.style.top = (rect.top + window.scrollY - 10) + 'px';
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 1200);
+
+  // Star particles
+  for (let i = 0; i < 5; i++) {
+    const star = document.createElement('div');
+    star.className = 'star-particle';
+    star.textContent = '⭐';
+    star.style.fontSize = '12px';
+    star.style.left = (rect.left + rect.width/2) + 'px';
+    star.style.top = (rect.top + window.scrollY) + 'px';
+    const angle = (i/5)*360;
+    const dist = 40 + Math.random()*30;
+    star.style.setProperty('--dx', Math.cos(angle*Math.PI/180)*dist + 'px');
+    star.style.setProperty('--dy', Math.sin(angle*Math.PI/180)*dist - 30 + 'px');
+    document.body.appendChild(star);
+    setTimeout(() => star.remove(), 800);
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  LEVEL UP
+// ═══════════════════════════════════════════════════
+function showLevelup(rank) {
+  document.getElementById('levelupRankText').textContent = `Ты теперь: ${rank}!`;
+  const overlay = document.getElementById('levelupOverlay');
+  overlay.classList.add('show');
+}
+function closeLevelup() {
+  document.getElementById('levelupOverlay').classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════
+//  ACHIEVEMENTS CHECK
+// ═══════════════════════════════════════════════════
+function checkAchievements() {
+  const done = getDoneCount();
+  const xp = getTotalXP();
+  const level = getLevelInfo(xp);
+  const hour = new Date().getHours();
+  const todayKey = new Date().toDateString();
+
+  // count today
+  const dayDone = Object.keys(state.done).filter(id => {
+    return state.done[id] && state.doneTimestamps && state.doneTimestamps[id] &&
+      new Date(state.doneTimestamps[id]).toDateString() === todayKey;
+  }).length;
+
+  ACHIEVEMENTS.forEach(a => {
+    if (state.unlockedAchievements[a.id]) return;
+    let unlock = false;
+    if (a.type === 'done' && done >= a.target) unlock = true;
+    if (a.type === 'night' && hour >= 22 && done >= 1) unlock = true;
+    if (a.type === 'day3' && dayDone >= 3) unlock = true;
+    if (a.type === 'cat_philosophy') {
+      const philDone = getCatDone('philosophy');
+      const philTotal = getCatTotal('philosophy');
+      if (philDone >= philTotal && philTotal > 0) unlock = true;
+    }
+    if (a.type === 'rank5' && level.level >= 5) unlock = true;
+    if (unlock) state.unlockedAchievements[a.id] = true;
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  TASK TOGGLE
+// ═══════════════════════════════════════════════════
+function toggleTask(taskId, el) {
+  const task = ALL_TASKS.find(t => t.id === taskId);
+  if (!task) return;
+
+  const wasDone = !!state.done[taskId];
+  const prevXP = getTotalXP();
+  const prevLevel = getLevelInfo(prevXP);
+
+  state.done[taskId] = !wasDone;
+  if (!state.doneTimestamps) state.doneTimestamps = {};
+  if (state.done[taskId]) {
+    state.doneTimestamps[taskId] = new Date().toISOString();
+    showXPPopup(task.xp, el);
+  } else {
+    delete state.doneTimestamps[taskId];
+  }
+
+  const newXP = getTotalXP();
+  const newLevel = getLevelInfo(newXP);
+
+  checkAchievements();
+  updateCharStage();
+
+  if (newLevel.level > prevLevel.level) {
+    setTimeout(() => showLevelup(newLevel.rank), 300);
+  }
+
+  saveState();
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════
+//  STREAK
+// ═══════════════════════════════════════════════════
+function clickStreak() {
+  const today = new Date().toDateString();
+  if (state.lastStreakDate === today) return;
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate()-1);
+  if (state.lastStreakDate === yesterday.toDateString()) {
+    state.streak++;
+  } else {
+    state.streak = 1;
+  }
+  state.lastStreakDate = today;
+  saveState();
+  document.getElementById('streakCount').textContent = state.streak;
+}
+
+// ═══════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════
+function renderHero() {
+  const xp = getTotalXP();
+  const li = getLevelInfo(xp);
+  const done = getDoneCount();
+
+  document.getElementById('heroLevel').textContent = li.level;
+  document.getElementById('heroRank').textContent = li.rank;
+  document.getElementById('totalXP').textContent = xp;
+  document.getElementById('streakCount').textContent = state.streak || 0;
+
+  const pct = li.level < 5
+    ? Math.round((xp - li.xpMin) / (li.xpMax - li.xpMin) * 100)
+    : 100;
+  document.getElementById('xpBarFill').style.width = pct + '%';
+  document.getElementById('xpBarLabel').textContent = li.level < 5
+    ? `${xp - li.xpMin} / ${li.xpMax - li.xpMin}`
+    : 'МАКС';
+
+  const total = ALL_TASKS.length;
+  const pctDone = Math.round(done/total*100);
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statPct').textContent = pctDone + '%';
+}
+
+function renderCurrentWeekPreview() {
+  const cw = getCurrentWeekNum();
+  const wTasks = ALL_TASKS.filter(t => t.week === cw);
+  const wDone = wTasks.filter(t => state.done[t.id]).length;
+  const el = document.getElementById('currentWeekPreview');
+  if (!wTasks.length) { el.innerHTML = '<div class="empty-state"><div class="e-icon">✅</div>Задач на эту неделю нет</div>'; return; }
+  el.innerHTML = `
+    <div class="week-nav" style="margin-bottom:8px">
+      <div class="week-info" style="text-align:left">
+        <div class="week-num">Неделя ${cw}</div>
+        <div class="week-dates">${getWeekDates(cw)}</div>
+      </div>
+      <div class="week-progress-mini">${wDone}/${wTasks.length} задач</div>
+    </div>
+    ${wTasks.slice(0,3).map(t => renderTaskHTML(t)).join('')}
+    ${wTasks.length > 3 ? `<div style="text-align:center;font-size:12px;color:var(--text3);font-weight:700;padding:8px;cursor:pointer" onclick="switchTab('tasks')">+ ещё ${wTasks.length-3} задач →</div>` : ''}
+  `;
+  el.querySelectorAll('.task-item').forEach(item => {
+    item.addEventListener('click', function(e) { toggleTask(this.dataset.id, this); });
+  });
+}
+
+function renderRecentBadges() {
+  const unlocked = ACHIEVEMENTS.filter(a => state.unlockedAchievements[a.id]);
+  const el = document.getElementById('recentBadges');
+  if (!unlocked.length) {
+    el.innerHTML = `<div class="empty-state"><div class="e-icon">🎯</div>Выполни первую задачу, чтобы получить достижение!</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="achievements-grid">${unlocked.slice(-4).map(a=>`
+    <div class="badge-card unlocked">
+      <div class="badge-icon">${a.icon}</div>
+      <div class="badge-name">${a.name}</div>
+    </div>`).join('')}</div>`;
+}
+
+function renderTaskHTML(t) {
+  const isDone = !!state.done[t.id];
+  const cat = CATEGORIES[t.cat];
+  return `<div class="task-item ${isDone?'done':''}" data-id="${t.id}">
+    <div class="task-check">
+      <span class="task-check-icon">✓</span>
+    </div>
+    <div class="task-body">
+      <div class="task-name">${t.name}</div>
+      <div class="task-meta">
+        <span class="task-xp-badge">+${t.xp} XP</span>
+        <span class="task-diff">${t.diff}</span>
+        ${cat ? `<span style="font-size:10px;color:${cat.color};font-weight:700">${cat.icon} ${cat.name}</span>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderTasks() {
+  const w = state.currentWeek;
+  document.getElementById('weekNum').textContent = `Неделя ${w}`;
+  document.getElementById('weekDates').textContent = getWeekDates(w);
+
+  const wTasks = ALL_TASKS.filter(t => t.week === w);
+  const wDone = wTasks.filter(t => state.done[t.id]).length;
+  document.getElementById('weekProg').textContent = `${wDone} из ${wTasks.length} выполнено`;
+
+  const cats = [...new Set(wTasks.map(t => t.cat))];
+  const el = document.getElementById('tasksList');
+
+  if (!wTasks.length) {
+    el.innerHTML = '<div class="empty-state"><div class="e-icon">📭</div>На этой неделе задач нет</div>';
+    return;
+  }
+
+  el.innerHTML = cats.map(cat => {
+    const catTasks = wTasks.filter(t => t.cat === cat);
+    const catInfo = CATEGORIES[cat];
+    const catXP = catTasks.reduce((s,t) => s + t.xp, 0);
+    return `<div class="category-block">
+      <div class="cat-header">
+        <div class="cat-name">
+          <div class="cat-dot" style="background:${catInfo?.color||'#ccc'}"></div>
+          ${catInfo?.icon||''} ${catInfo?.name||cat}
+        </div>
+        <div class="cat-xp">${catXP} XP</div>
+      </div>
+      ${catTasks.map(t => renderTaskHTML(t)).join('')}
+    </div>`;
+  }).join('');
+
+  el.querySelectorAll('.task-item').forEach(item => {
+    item.addEventListener('click', function() { toggleTask(this.dataset.id, this); });
+  });
+}
+
+function renderProgress() {
+  const cats = Object.keys(CATEGORIES);
+  document.getElementById('categoryProgress').innerHTML = cats.map(cat => {
+    const total = getCatTotal(cat);
+    const done = getCatDone(cat);
+    const pct = total ? Math.round(done/total*100) : 0;
+    const catInfo = CATEGORIES[cat];
+    return `<div class="cat-progress-card">
+      <div class="cat-progress-header">
+        <div class="cat-progress-name">
+          <div class="cat-dot" style="background:${catInfo.color}"></div>
+          ${catInfo.icon} ${catInfo.name}
+        </div>
+        <div class="cat-progress-pct">${pct}%</div>
+      </div>
+      <div class="cat-bar">
+        <div class="cat-bar-fill" style="width:${pct}%;background:${catInfo.color}"></div>
+      </div>
+      <div class="cat-stats">${done} / ${total} задач</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('achievementsGrid').innerHTML = ACHIEVEMENTS.map(a => {
+    const unlocked = !!state.unlockedAchievements[a.id];
+    const done = getDoneCount();
+    let prog = 0, progMax = a.target;
+    if (a.type === 'done') prog = Math.min(done, a.target);
+    if (a.type === 'cat_philosophy') { prog = getCatDone('philosophy'); progMax = getCatTotal('philosophy'); }
+    if (a.type === 'rank5') { prog = getLevelInfo(getTotalXP()).level >= 5 ? 1 : 0; }
+
+    if (a.secret && !unlocked) {
+      return `<div class="badge-card secret">
+        <div class="badge-icon">❓</div>
+        <div class="badge-name">???</div>
+        <div class="badge-desc">Секретное достижение</div>
+      </div>`;
+    }
+    return `<div class="badge-card ${unlocked?'unlocked':''}">
+      <div class="badge-icon">${a.icon}</div>
+      <div class="badge-name">${a.name}</div>
+      <div class="badge-desc">${a.desc}</div>
+      ${!unlocked && progMax > 1 ? `
+        <div class="badge-prog">${prog} / ${progMax}</div>
+        <div class="badge-bar"><div class="badge-bar-fill" style="width:${Math.round(prog/progMax*100)}%"></div></div>
+      ` : unlocked ? '<div class="badge-prog" style="color:var(--success)">✅ Получено!</div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderRewards() {
+  const done = getDoneCount();
+  const week1Tasks = ALL_TASKS.filter(t => t.week === 1);
+  const week1Done = week1Tasks.filter(t => state.done[t.id]).length;
+  const total = ALL_TASKS.length;
+
+  document.getElementById('rewardsList').innerHTML = REWARDS.map(r => {
+    let prog = 0, progMax = r.target, unlocked = false;
+    if (r.type === 'done') { prog = Math.min(done, r.target); unlocked = done >= r.target; }
+    if (r.type === 'week1') { prog = week1Done; progMax = week1Tasks.length; unlocked = week1Done >= week1Tasks.length; }
+    const pct = progMax ? Math.round(prog/progMax*100) : 0;
+    return `<div class="reward-card ${unlocked?'unlocked':''}">
+      <div class="reward-header">
+        <div class="reward-icon">${r.icon}</div>
+        <div class="reward-info">
+          <div class="reward-name">${r.name}</div>
+          <div class="reward-cond">${r.cond}</div>
+        </div>
+        <div class="reward-status">${unlocked ? '🎉 Разблокировано!' : `${pct}%`}</div>
+      </div>
+      <div class="reward-bar"><div class="reward-bar-fill" style="width:${pct}%"></div></div>
+      <div class="reward-prog">${prog} / ${progMax}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderAll() {
+  renderHero();
+  renderCurrentWeekPreview();
+  renderRecentBadges();
+  renderTasks();
+  renderProgress();
+  renderRewards();
+  updateCharStage();
+}
+
+// ═══════════════════════════════════════════════════
+//  NAV
+// ═══════════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  const tabs = ['home','tasks','progress','rewards'];
+  const idx = tabs.indexOf(tab);
+  document.querySelectorAll('.nav-tab')[idx]?.classList.add('active');
+  renderAll();
+}
+
+function changeWeek(d) {
+  state.currentWeek = Math.max(1, Math.min(35, state.currentWeek + d));
+  saveState();
+  renderTasks();
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+loadState();
+state.currentWeek = state.currentWeek || getCurrentWeekNum();
+renderAll();
+</script>
+</body>
+</html>
