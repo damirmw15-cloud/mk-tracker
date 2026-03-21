@@ -7,6 +7,7 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Unbounded:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -543,6 +544,138 @@ body {
 }
 .empty-state .e-icon { font-size: 40px; margin-bottom: 10px; }
 
+/* ─── AUTH SCREEN ─── */
+.auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background: linear-gradient(160deg, var(--c3) 0%, var(--bg) 60%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+.auth-logo {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--c1);
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
+}
+.auth-sub {
+  font-size: 13px;
+  color: var(--text3);
+  font-weight: 600;
+  margin-bottom: 32px;
+}
+.auth-card {
+  background: white;
+  border-radius: 24px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 340px;
+  box-shadow: 0 8px 40px var(--shadow2);
+  border: 1.5px solid var(--border);
+}
+.auth-tabs {
+  display: flex;
+  background: var(--c5);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+.auth-tab-btn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text3);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.auth-tab-btn.active {
+  background: white;
+  color: var(--c1);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.auth-field {
+  margin-bottom: 12px;
+}
+.auth-field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text2);
+  margin-bottom: 5px;
+}
+.auth-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.auth-input:focus { border-color: var(--c1); background: white; }
+.auth-btn-main {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+.auth-btn-main:active { transform: scale(0.98); opacity: 0.9; }
+.auth-btn-main:disabled { opacity: 0.6; cursor: not-allowed; }
+.auth-error {
+  color: #E53E3E;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 10px;
+  min-height: 18px;
+}
+.auth-hint {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 600;
+  text-align: center;
+  margin-top: 14px;
+  line-height: 1.5;
+}
+.auth-forgot {
+  text-align: center;
+  margin-top: 10px;
+}
+.auth-forgot button {
+  background: none;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c1);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 /* ─── ADMIN BADGE ─── */
 .admin-badge {
   background: linear-gradient(135deg, var(--gold), #F7C96E);
@@ -835,15 +968,72 @@ body {
   </div>
 </div>
 
+<!-- AUTH SCREEN -->
+<div class="auth-screen" id="authScreen">
+  <div style="font-size:56px;margin-bottom:12px">📚</div>
+  <div class="auth-logo">МК ТРЕКЕР</div>
+  <div class="auth-sub">Обществознание 2025</div>
+
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab-btn active" id="authTabLogin" onclick="switchAuthTab('login')">Войти</button>
+      <button class="auth-tab-btn" id="authTabReg" onclick="switchAuthTab('register')">Регистрация</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="authFormLogin">
+      <div class="auth-field">
+        <label>Email</label>
+        <input class="auth-input" type="email" id="loginEmail" placeholder="example@mail.ru" autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label>Пароль</label>
+        <input class="auth-input" type="password" id="loginPassword" placeholder="Твой пароль" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')authLogin()">
+      </div>
+      <button class="auth-btn-main" id="loginBtn" onclick="authLogin()">Войти →</button>
+      <div class="auth-forgot">
+        <button onclick="authResetPassword()">Забыл пароль?</button>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="authFormReg" style="display:none">
+      <div class="auth-field">
+        <label>Имя</label>
+        <input class="auth-input" type="text" id="regName" placeholder="Как тебя зовут?" autocomplete="name">
+      </div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input class="auth-input" type="email" id="regEmail" placeholder="example@mail.ru" autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label>Пароль</label>
+        <input class="auth-input" type="password" id="regPassword" placeholder="Минимум 6 символов" autocomplete="new-password"
+          onkeydown="if(event.key==='Enter')authRegister()">
+      </div>
+      <button class="auth-btn-main" id="registerBtn" onclick="authRegister()">Создать аккаунт →</button>
+    </div>
+
+    <div class="auth-error" id="authError"></div>
+    <div class="auth-hint">Прогресс сохраняется на всех устройствах<br>и в любом мессенджере 🌍</div>
+  </div>
+</div>
+
 <!-- HEADER -->
 <div class="header">
   <div class="header-top">
-    <div class="header-title">МК ТРЕКЕР</div>
-    <div class="streak-pill" onclick="clickStreak()">
-      <span>🔥</span>
-      <div>
-        <div class="streak-count" id="streakCount">0</div>
-        <div class="streak-label">дней подряд</div>
+    <div>
+      <div class="header-title">МК ТРЕКЕР</div>
+      <div id="headerUserName" style="font-size:10px;color:rgba(255,255,255,0.8);font-weight:700;margin-top:1px;cursor:pointer" onclick="authLogout()">— выйти</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="streak-pill" onclick="clickStreak()">
+        <span>🔥</span>
+        <div>
+          <div class="streak-count" id="streakCount">0</div>
+          <div class="streak-label">дней подряд</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1251,15 +1441,19 @@ const CS = TG?.CloudStorage;
 // Telegram CloudStorage работает асинхронно
 function saveState() {
   const data = JSON.stringify(state);
+  // Always save to localStorage as backup
+  localStorage.setItem('mk_tracker_v2', data);
+  // Save to Firebase if logged in
+  if (db && currentUser) {
+    saveProgressToFirebase();
+  }
+  // Also save to TG CloudStorage if available
   if (CS) {
-    // Разбиваем на части если >4096 символов (лимит одного ключа)
     const chunks = chunkString(data, 4000);
     CS.setItem('mk_count', String(chunks.length));
     chunks.forEach((chunk, i) => {
       CS.setItem(`mk_state_${i}`, chunk);
     });
-  } else {
-    localStorage.setItem('mk_tracker_v2', data);
   }
 }
 
@@ -1810,42 +2004,134 @@ const FIREBASE_CONFIG = {
 const ADMIN_SECRET_KEY = 'mk_admin_2025'; // <-- поменяй на свой ключ
 
 let db = null;
+let auth = null;
+let currentUser = null;
 let isAdmin = false;
 let calYear, calMonth;
-let firebaseEvents = {}; // events from Firebase
-let firebaseAdminTasks = []; // extra tasks added by admin
+let firebaseEvents = {};
+let firebaseAdminTasks = [];
 
-function initFirebase() {
-  try {
-    if (FIREBASE_CONFIG.apiKey === 'REPLACE_WITH_YOUR_API_KEY') {
-      console.warn('Firebase not configured — calendar events disabled');
-      return;
-    }
-    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-    db = firebase.database();
-    // Listen to events in real-time
-    db.ref('calendar_events').on('value', snap => {
-      firebaseEvents = snap.val() || {};
-      if (document.getElementById('tab-calendar').classList.contains('active')) renderCalendar();
-      if (isAdmin && document.getElementById('tab-admin').classList.contains('active')) renderAdminEvents();
-    });
-    // Listen to admin tasks
-    db.ref('admin_tasks').on('value', snap => {
-      firebaseAdminTasks = snap.val() ? Object.values(snap.val()) : [];
-      renderTasks();
-    });
-    // Save/load student progress
-    if (TG?.initDataUnsafe?.user?.id) {
-      const uid = TG.initDataUnsafe.user.id;
-      const uname = TG.initDataUnsafe.user.first_name || 'Ученик';
-      // Save progress periodically
-      setInterval(() => syncProgressToFirebase(uid, uname), 30000);
-    }
-  } catch(e) { console.warn('Firebase init error:', e); }
+// ═══════════════════════════════════════════════════
+//  AUTH SCREEN
+// ═══════════════════════════════════════════════════
+function switchAuthTab(tab) {
+  document.getElementById('authFormLogin').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('authFormReg').style.display  = tab === 'register' ? '' : 'none';
+  document.getElementById('authTabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('authTabReg').classList.toggle('active', tab === 'register');
+  document.getElementById('authError').textContent = '';
 }
 
-function syncProgressToFirebase(uid, name) {
-  if (!db) return;
+function setAuthError(msg) {
+  document.getElementById('authError').textContent = msg;
+}
+
+function setAuthLoading(id, loading) {
+  const btn = document.getElementById(id);
+  btn.disabled = loading;
+  btn.textContent = loading ? 'Подождите...' : (id === 'loginBtn' ? 'Войти →' : 'Создать аккаунт →');
+}
+
+function authLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPassword').value;
+  if (!email || !pass) { setAuthError('Заполни все поля'); return; }
+  setAuthLoading('loginBtn', true);
+  auth.signInWithEmailAndPassword(email, pass)
+    .catch(e => {
+      setAuthLoading('loginBtn', false);
+      const msgs = {
+        'auth/user-not-found': 'Аккаунт не найден. Зарегистрируйся!',
+        'auth/wrong-password': 'Неверный пароль',
+        'auth/invalid-email': 'Неверный формат email',
+        'auth/too-many-requests': 'Слишком много попыток. Подожди немного',
+        'auth/invalid-credential': 'Неверный email или пароль',
+      };
+      setAuthError(msgs[e.code] || 'Ошибка входа. Попробуй ещё раз');
+    });
+}
+
+function authRegister() {
+  const name  = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPassword').value;
+  if (!name || !email || !pass) { setAuthError('Заполни все поля'); return; }
+  if (pass.length < 6) { setAuthError('Пароль минимум 6 символов'); return; }
+  setAuthLoading('registerBtn', true);
+  auth.createUserWithEmailAndPassword(email, pass)
+    .then(cred => cred.user.updateProfile({ displayName: name }))
+    .catch(e => {
+      setAuthLoading('registerBtn', false);
+      const msgs = {
+        'auth/email-already-in-use': 'Этот email уже зарегистрирован. Войди!',
+        'auth/invalid-email': 'Неверный формат email',
+        'auth/weak-password': 'Пароль слишком простой',
+      };
+      setAuthError(msgs[e.code] || 'Ошибка регистрации. Попробуй ещё раз');
+    });
+}
+
+function authResetPassword() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) { setAuthError('Введи email для сброса пароля'); return; }
+  auth.sendPasswordResetEmail(email)
+    .then(() => setAuthError('✅ Письмо отправлено! Проверь почту'))
+    .catch(() => setAuthError('Ошибка. Проверь правильность email'));
+}
+
+function authLogout() {
+  if (!confirm('Выйти из аккаунта?')) return;
+  auth.signOut();
+}
+
+function showAuthScreen() {
+  document.getElementById('authScreen').style.display = 'flex';
+}
+
+function hideAuthScreen() {
+  const el = document.getElementById('authScreen');
+  el.style.opacity = '0';
+  el.style.transition = 'opacity 0.4s';
+  setTimeout(() => { el.style.display = 'none'; el.style.opacity = '1'; }, 400);
+}
+
+function onUserLoggedIn(user) {
+  currentUser = user;
+  hideAuthScreen();
+  // Load progress from Firebase
+  db.ref(`progress/${user.uid}`).once('value', snap => {
+    const saved = snap.val();
+    if (saved) {
+      try { state = { ...state, ...JSON.parse(saved.data) }; } catch(e){}
+    }
+    state.currentWeek = state.currentWeek || getCurrentWeekNum();
+    renderAll();
+    hideLoading();
+  });
+  // Auto-save every 30s
+  setInterval(() => saveProgressToFirebase(), 30000);
+  // Update header user info
+  updateHeaderUser(user);
+}
+
+function onUserLoggedOut() {
+  currentUser = null;
+  showAuthScreen();
+  hideLoading();
+}
+
+function updateHeaderUser(user) {
+  const el = document.getElementById('headerUserName');
+  if (el) el.textContent = user.displayName || user.email.split('@')[0];
+}
+
+function saveProgressToFirebase() {
+  if (!db || !currentUser) return;
+  const uid = currentUser.uid;
+  const name = currentUser.displayName || currentUser.email.split('@')[0];
+  const data = JSON.stringify(state);
+  db.ref(`progress/${uid}`).set({ data, updatedAt: Date.now() });
+  // Also update leaderboard
   db.ref(`students/${uid}`).set({
     name,
     done: getDoneCount(),
@@ -1855,6 +2141,39 @@ function syncProgressToFirebase(uid, name) {
     streak: state.streak || 0,
     updated: Date.now()
   });
+}
+
+function initFirebase() {
+  try {
+    if (FIREBASE_CONFIG.apiKey === 'REPLACE_WITH_YOUR_API_KEY') {
+      console.warn('Firebase not configured');
+      hideLoading();
+      return;
+    }
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    auth = firebase.auth();
+
+    // Auth state listener
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        onUserLoggedIn(user);
+      } else {
+        onUserLoggedOut();
+      }
+    });
+
+    // Listen to shared data (calendar, admin tasks) — no auth needed
+    db.ref('calendar_events').on('value', snap => {
+      firebaseEvents = snap.val() || {};
+      if (document.getElementById('tab-calendar').classList.contains('active')) renderCalendar();
+      if (isAdmin && document.getElementById('tab-admin').classList.contains('active')) renderAdminEvents();
+    });
+    db.ref('admin_tasks').on('value', snap => {
+      firebaseAdminTasks = snap.val() ? Object.values(snap.val()) : [];
+      renderTasks();
+    });
+  } catch(e) { console.warn('Firebase init error:', e); hideLoading(); }
 }
 
 // ─── Check admin (by saved session or URL param) ───
@@ -2225,15 +2544,21 @@ renderAll = function() {
   if (_firstRender) { _firstRender = false; hideLoading(); }
 };
 
-const isAsync = loadState();
-if (!isAsync) {
-  state.currentWeek = state.currentWeek || getCurrentWeekNum();
-  renderAll();
-}
-
+// Auth-based init: Firebase handles rendering after login
+// loadState is called inside onUserLoggedIn after auth
 checkAdmin();
 initFirebase();
-// Если async (TG CloudStorage) — renderAll вызовется внутри loadState автоматически
+// Fallback: if Firebase not configured, load from localStorage directly
+setTimeout(() => {
+  if (!auth) {
+    const s = localStorage.getItem('mk_tracker_v2');
+    if (s) { try { state = { ...state, ...JSON.parse(s) }; } catch(e){} }
+    state.currentWeek = state.currentWeek || getCurrentWeekNum();
+    renderAll();
+    hideLoading();
+    document.getElementById('authScreen').style.display = 'none';
+  }
+}, 500);
 </script>
 </body>
 </html>
