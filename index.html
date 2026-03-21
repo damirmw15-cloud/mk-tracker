@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>МК Трекер — Обществознание</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Unbounded:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -539,6 +542,269 @@ body {
   font-weight: 600;
 }
 .empty-state .e-icon { font-size: 40px; margin-bottom: 10px; }
+
+/* ─── ADMIN BADGE ─── */
+.admin-badge {
+  background: linear-gradient(135deg, var(--gold), #F7C96E);
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: 'Unbounded', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+/* ─── CALENDAR ─── */
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  background: var(--card);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 12px var(--shadow);
+  border: 1.5px solid var(--border);
+}
+.cal-month-label {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: capitalize;
+}
+.cal-nav-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--c4);
+  color: var(--c1);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.cal-nav-btn:active { transform: scale(0.9); }
+
+.cal-grid {
+  background: var(--card);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px var(--shadow);
+  border: 1.5px solid var(--border);
+  margin-bottom: 16px;
+}
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--c4);
+  padding: 8px 0 6px;
+}
+.cal-wd {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text3);
+}
+.cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  padding: 6px;
+}
+.cal-day {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  padding: 2px;
+}
+.cal-day:active { transform: scale(0.92); }
+.cal-day.empty { cursor: default; }
+.cal-day.today {
+  background: var(--c1);
+}
+.cal-day.today .cal-day-num { color: white; font-weight: 900; }
+.cal-day.has-event { background: var(--c5); border: 1.5px solid var(--c3); }
+.cal-day.has-deadline { background: #FFF3E0; border: 1.5px solid #FFD180; }
+.cal-day-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+.cal-day.other-month .cal-day-num { color: var(--text3); }
+.cal-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  margin-top: 2px;
+}
+.cal-dot.event { background: var(--c1); }
+.cal-dot.deadline { background: var(--gold); }
+
+/* ─── EVENTS LIST ─── */
+.event-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: 0 2px 10px var(--shadow);
+  border: 1.5px solid var(--border);
+}
+.event-card.deadline { border-left: 4px solid var(--gold); }
+.event-card.event    { border-left: 4px solid var(--c1); }
+.event-date-badge {
+  min-width: 40px;
+  text-align: center;
+  background: var(--c4);
+  border-radius: 10px;
+  padding: 6px 4px;
+}
+.event-date-day {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--c1);
+  line-height: 1;
+}
+.event-date-mon {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+.event-body { flex: 1; min-width: 0; }
+.event-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.event-desc  { font-size: 11px; color: var(--text3); font-weight: 600; }
+.event-type-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+.event-type-badge.deadline { background: #FFF3CD; color: var(--gold); }
+.event-type-badge.event    { background: var(--c4); color: var(--c1); }
+
+/* ─── ADMIN PANEL ─── */
+.admin-section {
+  background: linear-gradient(135deg, #FFF9F0, white);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1.5px solid #FFE4A0;
+  box-shadow: 0 2px 12px rgba(245,166,35,0.1);
+}
+.admin-section-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.admin-form-row { margin-bottom: 10px; }
+.admin-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text2);
+  margin-bottom: 4px;
+  display: block;
+}
+.admin-input, .admin-select, .admin-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  background: white;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.admin-input:focus, .admin-select:focus, .admin-textarea:focus {
+  border-color: var(--c1);
+}
+.admin-textarea { min-height: 60px; resize: vertical; }
+.admin-btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--gold), #F7C96E);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+.admin-btn:active { transform: scale(0.98); opacity: 0.9; }
+.admin-btn.danger {
+  background: linear-gradient(135deg, #FF6B6B, #FF9898);
+}
+.admin-btn.blue {
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+}
+
+.del-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.del-btn:hover { opacity: 1; }
+
+/* ─── PROGRESS TABLE (admin) ─── */
+.student-row {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.student-name { font-size: 13px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.student-stats { font-size: 11px; color: var(--text3); font-weight: 600; margin-bottom: 6px; }
+.student-bar { height: 6px; background: var(--c4); border-radius: 6px; overflow: hidden; }
+.student-bar-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--c1), var(--c2)); transition: width 0.6s ease; }
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--text);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  z-index: 3000;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
@@ -568,8 +834,9 @@ body {
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="switchTab('home')">🏠 Главная</button>
     <button class="nav-tab" onclick="switchTab('tasks')">📚 Задачи</button>
-    <button class="nav-tab" onclick="switchTab('progress')">📊 Прогресс</button>
-    <button class="nav-tab" onclick="switchTab('rewards')">🎁 Награды</button>
+    <button class="nav-tab" onclick="switchTab('calendar')">📅 Календарь</button>
+    <button class="nav-tab" onclick="switchTab('progress')">📊 Итоги</button>
+    <button class="nav-tab" id="adminTabBtn" style="display:none" onclick="switchTab('admin')">👑 Админ</button>
   </div>
 </div>
 
@@ -648,12 +915,121 @@ body {
   <div id="categoryProgress"></div>
   <div class="section-title">🏅 Достижения</div>
   <div class="achievements-grid" id="achievementsGrid"></div>
-</div>
-
-<!-- ══════════════════════════════════ REWARDS TAB ══════════════════════════════════ -->
-<div class="tab-content" id="tab-rewards">
   <div class="section-title">🎁 Мои награды</div>
   <div id="rewardsList"></div>
+</div>
+
+<!-- ══════════════════════════════════ CALENDAR TAB ══════════════════════════════════ -->
+<div class="tab-content" id="tab-calendar">
+
+  <div class="cal-header">
+    <button class="cal-nav-btn" onclick="calChangeMonth(-1)">‹</button>
+    <div class="cal-month-label" id="calMonthLabel"></div>
+    <button class="cal-nav-btn" onclick="calChangeMonth(1)">›</button>
+  </div>
+
+  <div class="cal-grid">
+    <div class="cal-weekdays">
+      <div class="cal-wd">Пн</div>
+      <div class="cal-wd">Вт</div>
+      <div class="cal-wd">Ср</div>
+      <div class="cal-wd">Чт</div>
+      <div class="cal-wd">Пт</div>
+      <div class="cal-wd">Сб</div>
+      <div class="cal-wd">Вс</div>
+    </div>
+    <div class="cal-days" id="calDays"></div>
+  </div>
+
+  <div class="section-title">📋 События месяца</div>
+  <div id="calEventsList"></div>
+
+</div>
+
+<!-- ══════════════════════════════════ ADMIN TAB ══════════════════════════════════ -->
+<div class="tab-content" id="tab-admin">
+
+  <!-- Add event -->
+  <div class="admin-section">
+    <div class="admin-section-title">📅 Добавить событие / дедлайн</div>
+    <div class="admin-form-row">
+      <label class="admin-label">Тип</label>
+      <select class="admin-select" id="adminEventType">
+        <option value="event">📌 Событие</option>
+        <option value="deadline">⏰ Дедлайн</option>
+      </select>
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Дата</label>
+      <input type="date" class="admin-input" id="adminEventDate">
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Название</label>
+      <input type="text" class="admin-input" id="adminEventTitle" placeholder="Например: Пробник по обществу">
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Описание (необязательно)</label>
+      <textarea class="admin-textarea" id="adminEventDesc" placeholder="Дополнительная информация..."></textarea>
+    </div>
+    <button class="admin-btn" onclick="adminAddEvent()">➕ Добавить в календарь</button>
+  </div>
+
+  <!-- Add task -->
+  <div class="admin-section">
+    <div class="admin-section-title">📝 Добавить задачу ученикам</div>
+    <div class="admin-form-row">
+      <label class="admin-label">Неделя (1–35)</label>
+      <input type="number" class="admin-input" id="adminTaskWeek" min="1" max="35" placeholder="1">
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Предмет</label>
+      <select class="admin-select" id="adminTaskCat">
+        <option value="sociology">👥 Социология</option>
+        <option value="politics">🏛️ Политология</option>
+        <option value="economics">💰 Экономика</option>
+        <option value="law">⚖️ Право</option>
+        <option value="philosophy">🧠 Философия</option>
+        <option value="culturology">🎨 Культурология</option>
+        <option value="crossdiscipline">🔗 Кросс</option>
+      </select>
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Название задачи</label>
+      <input type="text" class="admin-input" id="adminTaskName" placeholder="Название темы">
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">XP за выполнение</label>
+      <select class="admin-select" id="adminTaskXP">
+        <option value="10">10 XP — очень лёгкая</option>
+        <option value="15">15 XP — лёгкая</option>
+        <option value="20" selected>20 XP — средняя</option>
+        <option value="30">30 XP — сложная</option>
+        <option value="50">50 XP — очень сложная</option>
+      </select>
+    </div>
+    <button class="admin-btn blue" onclick="adminAddTask()">➕ Добавить задачу</button>
+  </div>
+
+  <!-- Students progress -->
+  <div class="admin-section">
+    <div class="admin-section-title">👥 Прогресс учеников</div>
+    <div id="adminStudentsList">
+      <div class="empty-state"><div class="e-icon">📊</div>Данные загружаются...</div>
+    </div>
+    <button class="admin-btn blue" style="margin-top:8px" onclick="adminLoadStudents()">🔄 Обновить</button>
+  </div>
+
+  <!-- Manage events -->
+  <div class="admin-section">
+    <div class="admin-section-title">🗑️ Управление событиями</div>
+    <div id="adminEventsList"></div>
+  </div>
+
+  <!-- Logout -->
+  <div style="text-align:center;padding:8px 0 16px">
+    <button class="admin-btn danger" style="width:auto;padding:10px 24px" onclick="adminLogout()">🚪 Выйти из режима админа</button>
+  </div>
+
 </div>
 
 </div><!-- /main -->
@@ -849,12 +1225,70 @@ let state = {
   currentWeek: 1,
 };
 
+// ═══════════════════════════════════════════════════
+//  STORAGE — Telegram CloudStorage с fallback на localStorage
+// ═══════════════════════════════════════════════════
+const TG = window.Telegram?.WebApp;
+const CS = TG?.CloudStorage;
+
+// Telegram CloudStorage работает асинхронно
 function saveState() {
-  localStorage.setItem('mk_tracker_v2', JSON.stringify(state));
+  const data = JSON.stringify(state);
+  if (CS) {
+    // Разбиваем на части если >4096 символов (лимит одного ключа)
+    const chunks = chunkString(data, 4000);
+    CS.setItem('mk_count', String(chunks.length));
+    chunks.forEach((chunk, i) => {
+      CS.setItem(`mk_state_${i}`, chunk);
+    });
+  } else {
+    localStorage.setItem('mk_tracker_v2', data);
+  }
 }
+
+function chunkString(str, size) {
+  const chunks = [];
+  for (let i = 0; i < str.length; i += size) {
+    chunks.push(str.slice(i, i + size));
+  }
+  return chunks.length ? chunks : [''];
+}
+
 function loadState() {
-  const s = localStorage.getItem('mk_tracker_v2');
-  if (s) { try { state = { ...state, ...JSON.parse(s) }; } catch(e){} }
+  if (CS) {
+    // Асинхронная загрузка из Telegram CloudStorage
+    CS.getItem('mk_count', (err, countStr) => {
+      if (err || !countStr) {
+        // Попробуем старый ключ (миграция)
+        CS.getItem('mk_tracker_v2', (err2, val) => {
+          if (!err2 && val) {
+            try { state = { ...state, ...JSON.parse(val) }; } catch(e){}
+          }
+          state.currentWeek = state.currentWeek || getCurrentWeekNum();
+          renderAll();
+        });
+        return;
+      }
+      const count = parseInt(countStr) || 1;
+      const keys = Array.from({length: count}, (_, i) => `mk_state_${i}`);
+      CS.getItems(keys, (err3, values) => {
+        if (!err3 && values) {
+          try {
+            const full = keys.map(k => values[k] || '').join('');
+            if (full) state = { ...state, ...JSON.parse(full) };
+          } catch(e) {}
+        }
+        state.currentWeek = state.currentWeek || getCurrentWeekNum();
+        renderAll();
+      });
+    });
+    return true; // async
+  } else {
+    // Fallback: localStorage
+    const s = localStorage.getItem('mk_tracker_v2');
+    if (s) { try { state = { ...state, ...JSON.parse(s) }; } catch(e){} }
+    return false;
+  }
 }
 
 // ═══════════════════════════════════════════════════
@@ -1178,7 +1612,9 @@ function renderTasks() {
   document.getElementById('weekNum').textContent = `Неделя ${w}`;
   document.getElementById('weekDates').textContent = getWeekDates(w);
 
-  const wTasks = ALL_TASKS.filter(t => t.week === w);
+  // Combine base tasks + admin-added tasks from Firebase
+  const allTasks = [...ALL_TASKS, ...(firebaseAdminTasks || [])];
+  const wTasks = allTasks.filter(t => t.week === w);
   const wDone = wTasks.filter(t => state.done[t.id]).length;
   document.getElementById('weekProg').textContent = `${wDone} из ${wTasks.length} выполнено`;
 
@@ -1303,10 +1739,12 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
   document.getElementById(`tab-${tab}`).classList.add('active');
-  const tabs = ['home','tasks','progress','rewards'];
+  const tabs = ['home','tasks','calendar','progress','admin'];
   const idx = tabs.indexOf(tab);
   document.querySelectorAll('.nav-tab')[idx]?.classList.add('active');
-  renderAll();
+  if (tab === 'calendar') renderCalendar();
+  if (tab === 'admin') { renderAdminEvents(); adminLoadStudents(); }
+  if (tab !== 'tasks') renderAll();
 }
 
 function changeWeek(d) {
@@ -1316,11 +1754,416 @@ function changeWeek(d) {
 }
 
 // ═══════════════════════════════════════════════════
+//  FIREBASE CONFIG
+//  ⚠️ Замени на свои данные из Firebase Console
+// ═══════════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDkalispfWTVINy6U1dGJ6hGPuelq9mg1k",
+  authDomain: "meinkurs-tracker.firebaseapp.com",
+  databaseURL: "https://meinkurs-tracker-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "meinkurs-tracker",
+  storageBucket: "meinkurs-tracker.firebasestorage.app",
+  messagingSenderId: "859829593991",
+  appId: "1:859829593991:web:2b3b5f4ff4019ec7cd5522"
+};
+
+// ═══════════════════════════════════════════════════
+//  ADMIN CONFIG
+//  Доступ по секретной ссылке: ?admin=ТВОЙ_КЛЮЧ
+//  ⚠️ Замени на свой ключ — любое слово/фраза без пробелов
+// ═══════════════════════════════════════════════════
+const ADMIN_SECRET_KEY = 'mk_admin_2025'; // <-- поменяй на свой ключ
+
+let db = null;
+let isAdmin = false;
+let calYear, calMonth;
+let firebaseEvents = {}; // events from Firebase
+let firebaseAdminTasks = []; // extra tasks added by admin
+
+function initFirebase() {
+  try {
+    if (FIREBASE_CONFIG.apiKey === 'REPLACE_WITH_YOUR_API_KEY') {
+      console.warn('Firebase not configured — calendar events disabled');
+      return;
+    }
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.database();
+    // Listen to events in real-time
+    db.ref('calendar_events').on('value', snap => {
+      firebaseEvents = snap.val() || {};
+      if (document.getElementById('tab-calendar').classList.contains('active')) renderCalendar();
+      if (isAdmin && document.getElementById('tab-admin').classList.contains('active')) renderAdminEvents();
+    });
+    // Listen to admin tasks
+    db.ref('admin_tasks').on('value', snap => {
+      firebaseAdminTasks = snap.val() ? Object.values(snap.val()) : [];
+      renderTasks();
+    });
+    // Save/load student progress
+    if (TG?.initDataUnsafe?.user?.id) {
+      const uid = TG.initDataUnsafe.user.id;
+      const uname = TG.initDataUnsafe.user.first_name || 'Ученик';
+      // Save progress periodically
+      setInterval(() => syncProgressToFirebase(uid, uname), 30000);
+    }
+  } catch(e) { console.warn('Firebase init error:', e); }
+}
+
+function syncProgressToFirebase(uid, name) {
+  if (!db) return;
+  db.ref(`students/${uid}`).set({
+    name,
+    done: getDoneCount(),
+    total: ALL_TASKS.length + firebaseAdminTasks.length,
+    xp: getTotalXP(),
+    rank: getLevelInfo(getTotalXP()).rank,
+    streak: state.streak || 0,
+    updated: Date.now()
+  });
+}
+
+// ─── Check admin by secret link or saved session ───
+function checkAdmin() {
+  const params = new URLSearchParams(window.location.search);
+  const keyFromUrl = params.get('admin');
+
+  if (keyFromUrl) {
+    if (keyFromUrl === ADMIN_SECRET_KEY) {
+      isAdmin = true;
+      if (CS) CS.setItem('mk_is_admin', '1');
+      else localStorage.setItem('mk_is_admin', '1');
+    } else {
+      if (CS) CS.removeItem('mk_is_admin');
+      else localStorage.removeItem('mk_is_admin');
+      isAdmin = false;
+    }
+  } else {
+    const savedAdmin = localStorage.getItem('mk_is_admin');
+    if (savedAdmin === '1') isAdmin = true;
+  }
+
+  if (isAdmin) {
+    document.getElementById('adminTabBtn').style.display = '';
+    if (keyFromUrl) setTimeout(() => showToast('👑 Режим админа активирован!'), 800);
+  }
+
+  // Check TG CloudStorage too (async)
+  if (!isAdmin && CS) {
+    CS.getItem('mk_is_admin', (err, val) => {
+      if (!err && val === '1') {
+        isAdmin = true;
+        document.getElementById('adminTabBtn').style.display = '';
+      }
+    });
+  }
+}
+
+// ─── Admin logout ───
+function adminLogout() {
+  if (!confirm('Выйти из режима админа?')) return;
+  if (CS) CS.removeItem('mk_is_admin');
+  localStorage.removeItem('mk_is_admin');
+  isAdmin = false;
+  document.getElementById('adminTabBtn').style.display = 'none';
+  switchTab('home');
+  showToast('👋 Вышли из режима админа');
+}
+
+// ═══════════════════════════════════════════════════
+//  CALENDAR
+// ═══════════════════════════════════════════════════
+function initCalendar() {
+  const now = new Date();
+  calYear  = now.getFullYear();
+  calMonth = now.getMonth();
+}
+
+function calChangeMonth(d) {
+  calMonth += d;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  if (calMonth < 0)  { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const months = ['Январь','Февраль','Март','Апрель','Май','Июнь',
+                  'Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  document.getElementById('calMonthLabel').textContent = `${months[calMonth]} ${calYear}`;
+
+  const today = new Date();
+  const firstDay = new Date(calYear, calMonth, 1);
+  const lastDay  = new Date(calYear, calMonth + 1, 0);
+
+  // Monday-first: 0=Mon..6=Sun
+  let startDow = firstDay.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1;
+
+  const daysEl = document.getElementById('calDays');
+  let html = '';
+
+  // Empty cells before
+  for (let i = 0; i < startDow; i++) {
+    html += `<div class="cal-day empty"></div>`;
+  }
+
+  // Get event dates for this month
+  const eventDates = {};
+  Object.values(firebaseEvents).forEach(ev => {
+    const d = ev.date; // YYYY-MM-DD
+    if (!eventDates[d]) eventDates[d] = [];
+    eventDates[d].push(ev);
+  });
+
+  // Task deadlines from week structure
+  const taskDates = {};
+  for (let w = 1; w <= 35; w++) {
+    const wDate = new Date(SPRINT_START);
+    wDate.setDate(wDate.getDate() + (w-1)*7 + 6); // end of week = Sunday
+    const key = wDate.toISOString().slice(0,10);
+    if (wDate.getFullYear() === calYear && wDate.getMonth() === calMonth) {
+      if (!taskDates[key]) taskDates[key] = [];
+      taskDates[key].push({ title: `Конец недели ${w}`, type: 'deadline' });
+    }
+  }
+
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = today.getDate()===d && today.getMonth()===calMonth && today.getFullYear()===calYear;
+    const evs = eventDates[dateStr] || [];
+    const tds = taskDates[dateStr] || [];
+    const hasEvent    = evs.some(e=>e.type==='event') || false;
+    const hasDeadline = evs.some(e=>e.type==='deadline') || tds.length > 0;
+
+    let cls = 'cal-day';
+    if (isToday) cls += ' today';
+    else if (hasDeadline) cls += ' has-deadline';
+    else if (hasEvent) cls += ' has-event';
+
+    const dots = (hasEvent ? `<div class="cal-dot event"></div>` : '') +
+                 (hasDeadline ? `<div class="cal-dot deadline"></div>` : '');
+
+    html += `<div class="${cls}" onclick="calDayClick('${dateStr}')">
+      <span class="cal-day-num">${d}</span>
+      ${dots}
+    </div>`;
+  }
+
+  daysEl.innerHTML = html;
+  renderCalendarEvents();
+}
+
+function calDayClick(dateStr) {
+  // Scroll to events section and highlight
+  const el = document.getElementById('calEventsList');
+  el.scrollIntoView({ behavior: 'smooth' });
+  renderCalendarEvents(dateStr);
+}
+
+function renderCalendarEvents(filterDate) {
+  const el = document.getElementById('calEventsList');
+  const months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+
+  // Combine firebase events + week deadlines for this month
+  let allEvents = [];
+
+  Object.entries(firebaseEvents).forEach(([id, ev]) => {
+    const d = new Date(ev.date);
+    if (d.getFullYear()===calYear && d.getMonth()===calMonth) {
+      allEvents.push({ ...ev, id, source: 'firebase' });
+    }
+  });
+
+  // Week end deadlines
+  for (let w = 1; w <= 35; w++) {
+    const wDate = new Date(SPRINT_START);
+    wDate.setDate(wDate.getDate() + (w-1)*7 + 6);
+    if (wDate.getFullYear()===calYear && wDate.getMonth()===calMonth) {
+      const wTasks = [...ALL_TASKS, ...firebaseAdminTasks].filter(t=>t.week===w);
+      const wDone  = wTasks.filter(t=>state.done[t.id]).length;
+      allEvents.push({
+        date: wDate.toISOString().slice(0,10),
+        title: `📚 Конец недели ${w}`,
+        desc: `${wDone}/${wTasks.length} задач выполнено`,
+        type: 'deadline',
+        source: 'system'
+      });
+    }
+  }
+
+  if (filterDate) allEvents = allEvents.filter(e => e.date === filterDate);
+  allEvents.sort((a,b) => a.date.localeCompare(b.date));
+
+  if (!allEvents.length) {
+    el.innerHTML = `<div class="empty-state"><div class="e-icon">📭</div>${filterDate ? 'На эту дату событий нет' : 'В этом месяце событий нет'}</div>`;
+    return;
+  }
+
+  el.innerHTML = allEvents.map(ev => {
+    const d = new Date(ev.date);
+    const day = d.getDate();
+    const mon = months[d.getMonth()];
+    return `<div class="event-card ${ev.type}">
+      <div class="event-date-badge">
+        <div class="event-date-day">${day}</div>
+        <div class="event-date-mon">${mon}</div>
+      </div>
+      <div class="event-body">
+        <div class="event-title">${ev.title}</div>
+        ${ev.desc ? `<div class="event-desc">${ev.desc}</div>` : ''}
+      </div>
+      <div class="event-type-badge ${ev.type}">${ev.type==='deadline'?'⏰ Дедлайн':'📌 Событие'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+//  ADMIN FUNCTIONS
+// ═══════════════════════════════════════════════════
+function adminAddEvent() {
+  if (!db) { showToast('⚠️ Firebase не подключён'); return; }
+  const type  = document.getElementById('adminEventType').value;
+  const date  = document.getElementById('adminEventDate').value;
+  const title = document.getElementById('adminEventTitle').value.trim();
+  const desc  = document.getElementById('adminEventDesc').value.trim();
+
+  if (!date || !title) { showToast('⚠️ Заполни дату и название'); return; }
+
+  const ref = db.ref('calendar_events').push();
+  ref.set({ type, date, title, desc, createdAt: Date.now() })
+    .then(() => {
+      document.getElementById('adminEventTitle').value = '';
+      document.getElementById('adminEventDesc').value = '';
+      showToast('✅ Событие добавлено!');
+    })
+    .catch(() => showToast('❌ Ошибка сохранения'));
+}
+
+function adminAddTask() {
+  if (!db) { showToast('⚠️ Firebase не подключён'); return; }
+  const week = parseInt(document.getElementById('adminTaskWeek').value);
+  const cat  = document.getElementById('adminTaskCat').value;
+  const name = document.getElementById('adminTaskName').value.trim();
+  const xp   = parseInt(document.getElementById('adminTaskXP').value);
+
+  if (!week || !name || week < 1 || week > 35) { showToast('⚠️ Заполни все поля корректно'); return; }
+
+  const id = 'at_' + Date.now();
+  const ref = db.ref('admin_tasks').push();
+  ref.set({ id, week, cat, name, xp, diff: xp <= 15 ? 'лёгкая' : xp <= 25 ? 'средняя' : 'сложная', createdAt: Date.now() })
+    .then(() => {
+      document.getElementById('adminTaskName').value = '';
+      showToast('✅ Задача добавлена всем ученикам!');
+    })
+    .catch(() => showToast('❌ Ошибка сохранения'));
+}
+
+function adminLoadStudents() {
+  if (!db) { showToast('⚠️ Firebase не подключён'); return; }
+  db.ref('students').once('value', snap => {
+    const students = snap.val();
+    const el = document.getElementById('adminStudentsList');
+    if (!students) {
+      el.innerHTML = '<div class="empty-state"><div class="e-icon">👤</div>Ученики ещё не заходили</div>';
+      return;
+    }
+    const sorted = Object.values(students).sort((a,b) => b.done - a.done);
+    el.innerHTML = sorted.map((s,i) => {
+      const pct = s.total ? Math.round(s.done/s.total*100) : 0;
+      return `<div class="student-row">
+        <div class="student-name">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'👤'} ${s.name} <span style="font-size:10px;color:var(--text3)">${s.rank}</span></div>
+        <div class="student-stats">✅ ${s.done}/${s.total} задач · ⚡ ${s.xp} XP · 🔥 ${s.streak} дней</div>
+        <div class="student-bar"><div class="student-bar-fill" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+  });
+}
+
+function renderAdminEvents() {
+  const el = document.getElementById('adminEventsList');
+  const evs = Object.entries(firebaseEvents);
+  if (!evs.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text3);font-weight:600">Нет добавленных событий</div>';
+    return;
+  }
+  el.innerHTML = evs.sort((a,b)=>a[1].date.localeCompare(b[1].date)).map(([id,ev]) =>
+    `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:10px;background:white;border-radius:10px;border:1.5px solid var(--border)">
+      <span style="font-size:11px;font-weight:700;color:var(--text);flex:1">${ev.date} — ${ev.title}</span>
+      <button class="del-btn" onclick="adminDeleteEvent('${id}')">🗑️</button>
+    </div>`
+  ).join('');
+}
+
+function adminDeleteEvent(id) {
+  if (!db) return;
+  if (!confirm('Удалить это событие?')) return;
+  db.ref(`calendar_events/${id}`).remove()
+    .then(() => showToast('🗑️ Удалено'))
+    .catch(() => showToast('❌ Ошибка'));
+}
+
+// ─── TOAST ───
+function showToast(msg) {
+  let el = document.getElementById('toastEl');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toastEl';
+    el.className = 'toast';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════
-loadState();
-state.currentWeek = state.currentWeek || getCurrentWeekNum();
-renderAll();
+
+// Инициализируем Telegram WebApp если доступен
+if (TG) {
+  TG.ready();
+  TG.expand();
+}
+
+initCalendar();
+
+// Экран загрузки
+document.body.insertAdjacentHTML('afterbegin', `
+  <div id="loadingScreen" style="
+    position:fixed;inset:0;z-index:2000;
+    background:var(--bg);
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:16px;
+  ">
+    <div style="font-size:48px;animation:spin 1s linear infinite">⭐</div>
+    <div style="font-family:'Unbounded',sans-serif;font-size:14px;font-weight:700;color:var(--c1)">Загружаем прогресс...</div>
+  </div>
+  <style>@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
+`);
+
+function hideLoading() {
+  const el = document.getElementById('loadingScreen');
+  if (el) { el.style.opacity='0'; el.style.transition='opacity 0.3s'; setTimeout(()=>el.remove(),300); }
+}
+
+// Патчим renderAll чтобы убирать загрузку при первом рендере
+let _firstRender = true;
+const _renderAllOrig = renderAll;
+renderAll = function() {
+  _renderAllOrig();
+  if (_firstRender) { _firstRender = false; hideLoading(); }
+};
+
+const isAsync = loadState();
+if (!isAsync) {
+  state.currentWeek = state.currentWeek || getCurrentWeekNum();
+  renderAll();
+}
+
+checkAdmin();
+initFirebase();
+// Если async (TG CloudStorage) — renderAll вызовется внутри loadState автоматически
 </script>
 </body>
 </html>
