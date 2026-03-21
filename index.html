@@ -819,6 +819,22 @@ body {
   </div>
 </div>
 
+<!-- ADMIN LOGIN MODAL -->
+<div class="levelup-overlay" id="adminModal" style="background:rgba(26,41,64,0.92)">
+  <div class="levelup-box" style="width:280px">
+    <div style="font-size:48px;margin-bottom:12px">👑</div>
+    <div class="levelup-text" style="font-size:22px;margin-bottom:6px">Режим админа</div>
+    <div style="font-size:14px;color:rgba(255,255,255,0.8);font-weight:600;margin-bottom:20px">Введи секретный ключ</div>
+    <input id="adminKeyInput" type="password"
+      placeholder="Секретный ключ..."
+      style="width:100%;padding:12px 16px;border-radius:12px;border:none;font-family:Nunito,sans-serif;font-size:14px;font-weight:700;outline:none;margin-bottom:10px;text-align:center"
+      onkeydown="if(event.key==='Enter')adminLoginSubmit()">
+    <div id="adminKeyError" style="color:#FF6B6B;font-size:12px;font-weight:700;margin-bottom:10px;min-height:16px"></div>
+    <button class="levelup-close" style="margin-bottom:10px;width:100%" onclick="adminLoginSubmit()">Войти 🔑</button>
+    <button onclick="closeAdminModal()" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:13px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif">Отмена</button>
+  </div>
+</div>
+
 <!-- HEADER -->
 <div class="header">
   <div class="header-top">
@@ -837,6 +853,7 @@ body {
     <button class="nav-tab" onclick="switchTab('calendar')">📅 Календарь</button>
     <button class="nav-tab" onclick="switchTab('progress')">📊 Итоги</button>
     <button class="nav-tab" id="adminTabBtn" style="display:none" onclick="switchTab('admin')">👑 Админ</button>
+    <button class="nav-tab" id="adminLoginBtn" style="display:none" onclick="openAdminModal()">🔑 Войти</button>
   </div>
 </div>
 
@@ -1840,39 +1857,73 @@ function syncProgressToFirebase(uid, name) {
   });
 }
 
-// ─── Check admin by secret link or saved session ───
+// ─── Check admin (by saved session or URL param) ───
 function checkAdmin() {
   const params = new URLSearchParams(window.location.search);
   const keyFromUrl = params.get('admin');
 
-  if (keyFromUrl) {
-    if (keyFromUrl === ADMIN_SECRET_KEY) {
-      isAdmin = true;
-      if (CS) CS.setItem('mk_is_admin', '1');
-      else localStorage.setItem('mk_is_admin', '1');
-    } else {
-      if (CS) CS.removeItem('mk_is_admin');
-      else localStorage.removeItem('mk_is_admin');
-      isAdmin = false;
-    }
-  } else {
-    const savedAdmin = localStorage.getItem('mk_is_admin');
-    if (savedAdmin === '1') isAdmin = true;
+  // Check URL param first
+  if (keyFromUrl === ADMIN_SECRET_KEY) {
+    isAdmin = true;
+    localStorage.setItem('mk_is_admin', '1');
+    if (CS) CS.setItem('mk_is_admin', '1');
   }
 
-  if (isAdmin) {
-    document.getElementById('adminTabBtn').style.display = '';
-    if (keyFromUrl) setTimeout(() => showToast('👑 Режим админа активирован!'), 800);
+  // Check localStorage
+  if (!isAdmin && localStorage.getItem('mk_is_admin') === '1') {
+    isAdmin = true;
   }
 
-  // Check TG CloudStorage too (async)
+  // Check TG CloudStorage (async)
   if (!isAdmin && CS) {
     CS.getItem('mk_is_admin', (err, val) => {
       if (!err && val === '1') {
         isAdmin = true;
-        document.getElementById('adminTabBtn').style.display = '';
+        showAdminTab();
       }
     });
+  }
+
+  if (isAdmin) {
+    showAdminTab();
+    if (keyFromUrl) setTimeout(() => showToast('👑 Режим админа активирован!'), 800);
+  } else {
+    // Show login button for non-admins
+    document.getElementById('adminLoginBtn').style.display = '';
+  }
+}
+
+function showAdminTab() {
+  document.getElementById('adminTabBtn').style.display = '';
+  document.getElementById('adminLoginBtn').style.display = 'none';
+}
+
+// ─── Admin modal ───
+function openAdminModal() {
+  document.getElementById('adminModal').classList.add('show');
+  document.getElementById('adminKeyInput').value = '';
+  document.getElementById('adminKeyError').textContent = '';
+  setTimeout(() => document.getElementById('adminKeyInput').focus(), 300);
+}
+
+function closeAdminModal() {
+  document.getElementById('adminModal').classList.remove('show');
+}
+
+function adminLoginSubmit() {
+  const key = document.getElementById('adminKeyInput').value.trim();
+  if (key === ADMIN_SECRET_KEY) {
+    isAdmin = true;
+    localStorage.setItem('mk_is_admin', '1');
+    if (CS) CS.setItem('mk_is_admin', '1');
+    closeAdminModal();
+    showAdminTab();
+    showToast('👑 Режим админа активирован!');
+    setTimeout(() => switchTab('admin'), 400);
+  } else {
+    document.getElementById('adminKeyError').textContent = '❌ Неверный ключ, попробуй ещё раз';
+    document.getElementById('adminKeyInput').value = '';
+    document.getElementById('adminKeyInput').focus();
   }
 }
 
@@ -1883,6 +1934,7 @@ function adminLogout() {
   localStorage.removeItem('mk_is_admin');
   isAdmin = false;
   document.getElementById('adminTabBtn').style.display = 'none';
+  document.getElementById('adminLoginBtn').style.display = '';
   switchTab('home');
   showToast('👋 Вышли из режима админа');
 }
