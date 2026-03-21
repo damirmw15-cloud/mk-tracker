@@ -1433,91 +1433,27 @@ let state = {
 };
 
 // ═══════════════════════════════════════════════════
-//  STORAGE — Telegram CloudStorage с fallback на localStorage
+//  STORAGE — Firebase (основное) + localStorage (кэш)
+//  Прогресс привязан к email-аккаунту, работает везде:
+//  Telegram, MAX, браузер — один и тот же прогресс
 // ═══════════════════════════════════════════════════
 const TG = window.Telegram?.WebApp;
-const CS = TG?.CloudStorage;
 
-// Telegram CloudStorage работает асинхронно
 function saveState() {
   const data = JSON.stringify(state);
-  // Always save to localStorage as backup
+  // localStorage — быстрый локальный кэш
   localStorage.setItem('mk_tracker_v2', data);
-  // Save to Firebase if logged in
+  // Firebase — основное облачное хранилище
   if (db && currentUser) {
     saveProgressToFirebase();
   }
-  // Also save to TG CloudStorage if available
-  if (CS) {
-    const chunks = chunkString(data, 4000);
-    CS.setItem('mk_count', String(chunks.length));
-    chunks.forEach((chunk, i) => {
-      CS.setItem(`mk_state_${i}`, chunk);
-    });
-  }
-}
-
-function chunkString(str, size) {
-  const chunks = [];
-  for (let i = 0; i < str.length; i += size) {
-    chunks.push(str.slice(i, i + size));
-  }
-  return chunks.length ? chunks : [''];
 }
 
 function loadState() {
-  // Fallback: всегда грузим из localStorage сначала (работает в браузере)
+  // Грузим из localStorage как быстрый кэш пока Firebase не ответил
   const s = localStorage.getItem('mk_tracker_v2');
   if (s) { try { state = { ...state, ...JSON.parse(s) }; } catch(e){} }
-
-  if (CS) {
-    // Таймаут — если TG CloudStorage не ответил за 3 сек, рендерим что есть
-    let done = false;
-    const fallbackTimer = setTimeout(() => {
-      if (!done) {
-        done = true;
-        state.currentWeek = state.currentWeek || getCurrentWeekNum();
-        renderAll();
-      }
-    }, 3000);
-
-    CS.getItem('mk_count', (err, countStr) => {
-      if (err || !countStr) {
-        CS.getItem('mk_tracker_v2', (err2, val) => {
-          if (!done) {
-            done = true;
-            clearTimeout(fallbackTimer);
-            if (!err2 && val) {
-              try { state = { ...state, ...JSON.parse(val) }; } catch(e){}
-            }
-            state.currentWeek = state.currentWeek || getCurrentWeekNum();
-            renderAll();
-          }
-        });
-        return;
-      }
-      const count = parseInt(countStr) || 1;
-      const keys = Array.from({length: count}, (_, i) => `mk_state_${i}`);
-      CS.getItems(keys, (err3, values) => {
-        if (!done) {
-          done = true;
-          clearTimeout(fallbackTimer);
-          if (!err3 && values) {
-            try {
-              const full = keys.map(k => values[k] || '').join('');
-              if (full) state = { ...state, ...JSON.parse(full) };
-            } catch(e) {}
-          }
-          state.currentWeek = state.currentWeek || getCurrentWeekNum();
-          renderAll();
-        }
-      });
-    });
-    return true; // async
-  } else {
-    // Нет Telegram — просто localStorage
-    return false;
-  }
+  // Основная загрузка — из Firebase, вызывается в onUserLoggedIn
 }
 
 // ═══════════════════════════════════════════════════
@@ -2185,22 +2121,11 @@ function checkAdmin() {
   if (keyFromUrl === ADMIN_SECRET_KEY) {
     isAdmin = true;
     localStorage.setItem('mk_is_admin', '1');
-    if (CS) CS.setItem('mk_is_admin', '1');
   }
 
-  // Check localStorage
+  // Check localStorage (persists across sessions)
   if (!isAdmin && localStorage.getItem('mk_is_admin') === '1') {
     isAdmin = true;
-  }
-
-  // Check TG CloudStorage (async)
-  if (!isAdmin && CS) {
-    CS.getItem('mk_is_admin', (err, val) => {
-      if (!err && val === '1') {
-        isAdmin = true;
-        showAdminTab();
-      }
-    });
   }
 
   if (isAdmin) {
@@ -2234,7 +2159,6 @@ function adminLoginSubmit() {
   if (key === ADMIN_SECRET_KEY) {
     isAdmin = true;
     localStorage.setItem('mk_is_admin', '1');
-    if (CS) CS.setItem('mk_is_admin', '1');
     closeAdminModal();
     showAdminTab();
     showToast('👑 Режим админа активирован!');
@@ -2249,7 +2173,6 @@ function adminLoginSubmit() {
 // ─── Admin logout ───
 function adminLogout() {
   if (!confirm('Выйти из режима админа?')) return;
-  if (CS) CS.removeItem('mk_is_admin');
   localStorage.removeItem('mk_is_admin');
   isAdmin = false;
   document.getElementById('adminTabBtn').style.display = 'none';
