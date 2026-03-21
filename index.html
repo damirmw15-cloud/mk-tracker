@@ -1255,38 +1255,56 @@ function chunkString(str, size) {
 }
 
 function loadState() {
+  // Fallback: всегда грузим из localStorage сначала (работает в браузере)
+  const s = localStorage.getItem('mk_tracker_v2');
+  if (s) { try { state = { ...state, ...JSON.parse(s) }; } catch(e){} }
+
   if (CS) {
-    // Асинхронная загрузка из Telegram CloudStorage
+    // Таймаут — если TG CloudStorage не ответил за 3 сек, рендерим что есть
+    let done = false;
+    const fallbackTimer = setTimeout(() => {
+      if (!done) {
+        done = true;
+        state.currentWeek = state.currentWeek || getCurrentWeekNum();
+        renderAll();
+      }
+    }, 3000);
+
     CS.getItem('mk_count', (err, countStr) => {
       if (err || !countStr) {
-        // Попробуем старый ключ (миграция)
         CS.getItem('mk_tracker_v2', (err2, val) => {
-          if (!err2 && val) {
-            try { state = { ...state, ...JSON.parse(val) }; } catch(e){}
+          if (!done) {
+            done = true;
+            clearTimeout(fallbackTimer);
+            if (!err2 && val) {
+              try { state = { ...state, ...JSON.parse(val) }; } catch(e){}
+            }
+            state.currentWeek = state.currentWeek || getCurrentWeekNum();
+            renderAll();
           }
-          state.currentWeek = state.currentWeek || getCurrentWeekNum();
-          renderAll();
         });
         return;
       }
       const count = parseInt(countStr) || 1;
       const keys = Array.from({length: count}, (_, i) => `mk_state_${i}`);
       CS.getItems(keys, (err3, values) => {
-        if (!err3 && values) {
-          try {
-            const full = keys.map(k => values[k] || '').join('');
-            if (full) state = { ...state, ...JSON.parse(full) };
-          } catch(e) {}
+        if (!done) {
+          done = true;
+          clearTimeout(fallbackTimer);
+          if (!err3 && values) {
+            try {
+              const full = keys.map(k => values[k] || '').join('');
+              if (full) state = { ...state, ...JSON.parse(full) };
+            } catch(e) {}
+          }
+          state.currentWeek = state.currentWeek || getCurrentWeekNum();
+          renderAll();
         }
-        state.currentWeek = state.currentWeek || getCurrentWeekNum();
-        renderAll();
       });
     });
     return true; // async
   } else {
-    // Fallback: localStorage
-    const s = localStorage.getItem('mk_tracker_v2');
-    if (s) { try { state = { ...state, ...JSON.parse(s) }; } catch(e){} }
+    // Нет Telegram — просто localStorage
     return false;
   }
 }
