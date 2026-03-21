@@ -1051,6 +1051,7 @@ body {
     <button class="nav-tab" onclick="switchTab('calendar')">📅 Календарь</button>
     <button class="nav-tab" onclick="switchTab('progress')">📊 Итоги</button>
     <button class="nav-tab" id="adminTabBtn" style="display:none" onclick="switchTab('admin')">👑 Админ</button>
+    <button class="nav-tab" id="adminLoginBtn" onclick="openAdminModal()">🔑 Войти как админ</button>
 
   </div>
 </div>
@@ -2184,7 +2185,9 @@ function checkAdmin() {
 
 function showAdminTab() {
   document.getElementById('adminTabBtn').style.display = '';
-  }
+  const lb = document.getElementById('adminLoginBtn');
+  if (lb) lb.style.display = 'none';
+}
 
 // ─── Admin modal ───
 function openAdminModal() {
@@ -2220,7 +2223,9 @@ function adminLogout() {
   localStorage.removeItem('mk_is_admin');
   isAdmin = false;
   document.getElementById('adminTabBtn').style.display = 'none';
-    switchTab('home');
+  const lb = document.getElementById('adminLoginBtn');
+  if (lb) lb.style.display = '';
+  switchTab('home');
   showToast('👋 Вышли из режима админа');
 }
 
