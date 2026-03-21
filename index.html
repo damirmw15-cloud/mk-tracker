@@ -1025,7 +1025,10 @@ body {
   <div class="header-top">
     <div>
       <div class="header-title">МК ТРЕКЕР</div>
-      <div id="headerUserName" style="font-size:10px;color:rgba(255,255,255,0.8);font-weight:700;margin-top:1px;cursor:pointer" onclick="authLogout()">— выйти</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
+        <div id="headerUserName" style="font-size:10px;color:rgba(255,255,255,0.85);font-weight:700;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+        <button onclick="showAccountMenu()" style="background:rgba(255,255,255,0.2);border:none;border-radius:6px;padding:2px 7px;font-size:10px;font-weight:800;color:white;cursor:pointer;font-family:Nunito,sans-serif">⇄</button>
+      </div>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <div class="streak-pill" onclick="clickStreak()">
@@ -2016,8 +2019,39 @@ function authResetPassword() {
 }
 
 function authLogout() {
-  if (!confirm('Выйти из аккаунта?')) return;
-  auth.signOut();
+  saveProgressToFirebase(); // save before logout
+  localStorage.removeItem('mk_tracker_v2');
+  state = { done:{}, streak:0, lastStreakDate:null, totalXP:0, level:1, rank:'Новичок',
+            charStage:0, unlockedAchievements:{}, todayDone:0, currentWeek:getCurrentWeekNum() };
+  if (auth) auth.signOut();
+}
+
+// Account menu — показывается по кнопке ⇄ в шапке
+function showAccountMenu() {
+  const user = currentUser;
+  const name = user ? (user.displayName || user.email) : 'Не вошёл';
+  const menu = document.createElement('div');
+  menu.id = 'accountMenuOverlay';
+  menu.style.cssText = `position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.5);display:flex;align-items:flex-start;justify-content:flex-start;padding:70px 16px 0`;
+  menu.innerHTML = `
+    <div style="background:white;border-radius:16px;padding:16px;width:100%;max-width:320px;box-shadow:0 8px 40px rgba(0,0,0,0.2)">
+      <div style="font-family:Unbounded,sans-serif;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:12px">👤 Аккаунт</div>
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">${user?.displayName || '—'}</div>
+      <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:16px">${user?.email || '—'}</div>
+      <button onclick="closeAccountMenu();authLogout()" style="width:100%;padding:12px;background:var(--c5);border:1.5px solid var(--border);border-radius:12px;font-family:Nunito,sans-serif;font-size:13px;font-weight:800;color:var(--c1);cursor:pointer;margin-bottom:8px">
+        🔄 Сменить аккаунт
+      </button>
+      <button onclick="closeAccountMenu()" style="width:100%;padding:12px;background:none;border:none;font-family:Nunito,sans-serif;font-size:13px;font-weight:700;color:var(--text3);cursor:pointer">
+        Отмена
+      </button>
+    </div>`;
+  menu.addEventListener('click', e => { if (e.target === menu) closeAccountMenu(); });
+  document.body.appendChild(menu);
+}
+
+function closeAccountMenu() {
+  const el = document.getElementById('accountMenuOverlay');
+  if (el) el.remove();
 }
 
 function showAuthScreen() {
@@ -2058,7 +2092,7 @@ function onUserLoggedOut() {
 
 function updateHeaderUser(user) {
   const el = document.getElementById('headerUserName');
-  if (el) el.textContent = user.displayName || user.email.split('@')[0];
+  if (el) el.textContent = user.displayName || user.email;
 }
 
 function saveProgressToFirebase() {
@@ -2115,6 +2149,13 @@ function initFirebase() {
 // ─── Check admin (by saved session or URL param) ───
 function checkAdmin() {
   const params = new URLSearchParams(window.location.search);
+  // ?logout=1 — быстрый сброс аккаунта через URL
+  if (params.get('logout') === '1') {
+    localStorage.removeItem('mk_is_admin');
+    localStorage.removeItem('mk_tracker_v2');
+    if (auth) auth.signOut();
+    window.history.replaceState({}, '', window.location.pathname);
+  }
   const keyFromUrl = params.get('admin');
 
   // Check URL param first
