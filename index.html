@@ -1018,6 +1018,11 @@ body {
     <div class="auth-error" id="authError"></div>
     <div class="auth-hint">Прогресс сохраняется на всех устройствах<br>и в любом мессенджере 🌍</div>
   </div>
+
+  <!-- Admin entry -->
+  <button onclick="openAdminModal()" style="margin-top:16px;background:none;border:none;font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:rgba(100,175,220,0.7);cursor:pointer;padding:8px 16px;border-radius:10px;transition:all 0.2s" onmouseover="this.style.color='var(--c1)'" onmouseout="this.style.color='rgba(100,175,220,0.7)'">
+    👑 Войти как администратор
+  </button>
 </div>
 
 <!-- HEADER -->
@@ -1025,10 +1030,10 @@ body {
   <div class="header-top">
     <div>
       <div class="header-title">МК ТРЕКЕР</div>
-      <div style="display:flex;align-items:center;gap:6px;margin-top:2px">
-        <div id="headerUserName" style="font-size:10px;color:rgba(255,255,255,0.85);font-weight:700;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-        <button onclick="showAccountMenu()" style="background:rgba(255,255,255,0.2);border:none;border-radius:6px;padding:2px 7px;font-size:10px;font-weight:800;color:white;cursor:pointer;font-family:Nunito,sans-serif">⇄</button>
-      </div>
+      <button onclick="showAccountMenu()" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:8px;padding:3px 8px;margin-top:2px;cursor:pointer">
+        <div id="headerUserName" style="font-size:10px;color:rgba(255,255,255,0.9);font-weight:700;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+        <span style="font-size:10px;color:rgba(255,255,255,0.7)">⇄</span>
+      </button>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
       <div class="streak-pill" onclick="clickStreak()">
@@ -1046,7 +1051,7 @@ body {
     <button class="nav-tab" onclick="switchTab('calendar')">📅 Календарь</button>
     <button class="nav-tab" onclick="switchTab('progress')">📊 Итоги</button>
     <button class="nav-tab" id="adminTabBtn" style="display:none" onclick="switchTab('admin')">👑 Админ</button>
-    <button class="nav-tab" id="adminLoginBtn" style="display:none" onclick="openAdminModal()">🔑 Войти</button>
+
   </div>
 </div>
 
@@ -2174,14 +2179,12 @@ function checkAdmin() {
     if (keyFromUrl) setTimeout(() => showToast('👑 Режим админа активирован!'), 800);
   } else {
     // Show login button for non-admins
-    document.getElementById('adminLoginBtn').style.display = '';
-  }
+      }
 }
 
 function showAdminTab() {
   document.getElementById('adminTabBtn').style.display = '';
-  document.getElementById('adminLoginBtn').style.display = 'none';
-}
+  }
 
 // ─── Admin modal ───
 function openAdminModal() {
@@ -2217,8 +2220,7 @@ function adminLogout() {
   localStorage.removeItem('mk_is_admin');
   isAdmin = false;
   document.getElementById('adminTabBtn').style.display = 'none';
-  document.getElementById('adminLoginBtn').style.display = '';
-  switchTab('home');
+    switchTab('home');
   showToast('👋 Вышли из режима админа');
 }
 
