@@ -676,6 +676,25 @@ body {
   text-decoration: underline;
 }
 
+/* ─── ADMIN MODAL ─── */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,41,64,0.92);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.admin-modal-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
 /* ─── ADMIN BADGE ─── */
 .admin-badge {
   background: linear-gradient(135deg, var(--gold), #F7C96E);
@@ -953,7 +972,7 @@ body {
 </div>
 
 <!-- ADMIN LOGIN MODAL -->
-<div class="levelup-overlay" id="adminModal" style="background:rgba(26,41,64,0.92)">
+<div class="admin-modal-overlay" id="adminModal">
   <div class="levelup-box" style="width:280px">
     <div style="font-size:48px;margin-bottom:12px">👑</div>
     <div class="levelup-text" style="font-size:22px;margin-bottom:6px">Режим админа</div>
@@ -1019,7 +1038,6 @@ body {
     <div class="auth-hint">Прогресс сохраняется на всех устройствах<br>и в любом мессенджере 🌍</div>
   </div>
 
-  <!-- Admin entry -->
   <button onclick="openAdminModal()" style="margin-top:16px;background:none;border:none;font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:rgba(100,175,220,0.7);cursor:pointer;padding:8px 16px;border-radius:10px;transition:all 0.2s" onmouseover="this.style.color='var(--c1)'" onmouseout="this.style.color='rgba(100,175,220,0.7)'">
     👑 Войти как администратор
   </button>
@@ -1051,8 +1069,6 @@ body {
     <button class="nav-tab" onclick="switchTab('calendar')">📅 Календарь</button>
     <button class="nav-tab" onclick="switchTab('progress')">📊 Итоги</button>
     <button class="nav-tab" id="adminTabBtn" style="display:none" onclick="switchTab('admin')">👑 Админ</button>
-
-
   </div>
 </div>
 
@@ -2185,11 +2201,18 @@ function checkAdmin() {
 
 function showAdminTab() {
   document.getElementById('adminTabBtn').style.display = '';
-
+  const lb = document.getElementById('adminLoginBtn');
+  if (lb) lb.style.display = 'none';
 }
 
 // ─── Admin modal ───
 function openAdminModal() {
+  // Если authScreen видим — временно скрываем чтобы модалка была поверх
+  const authScreen = document.getElementById('authScreen');
+  if (authScreen && authScreen.style.display !== 'none') {
+    authScreen.dataset.wasVisible = '1';
+    authScreen.style.display = 'none';
+  }
   document.getElementById('adminModal').classList.add('show');
   document.getElementById('adminKeyInput').value = '';
   document.getElementById('adminKeyError').textContent = '';
@@ -2198,6 +2221,12 @@ function openAdminModal() {
 
 function closeAdminModal() {
   document.getElementById('adminModal').classList.remove('show');
+  // Возвращаем authScreen если он был скрыт
+  const authScreen = document.getElementById('authScreen');
+  if (authScreen && authScreen.dataset.wasVisible === '1') {
+    authScreen.style.display = 'flex';
+    delete authScreen.dataset.wasVisible;
+  }
 }
 
 function adminLoginSubmit() {
@@ -2222,7 +2251,8 @@ function adminLogout() {
   localStorage.removeItem('mk_is_admin');
   isAdmin = false;
   document.getElementById('adminTabBtn').style.display = 'none';
-
+  const lb = document.getElementById('adminLoginBtn');
+  if (lb) lb.style.display = '';
   switchTab('home');
   showToast('👋 Вышли из режима админа');
 }
