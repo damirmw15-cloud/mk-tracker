@@ -681,7 +681,7 @@ body {
   position: fixed;
   inset: 0;
   background: rgba(26,41,64,0.92);
-  z-index: 2000;
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2207,6 +2207,12 @@ function showAdminTab() {
 
 // ─── Admin modal ───
 function openAdminModal() {
+  // Если authScreen видим — временно скрываем чтобы модалка была поверх
+  const authScreen = document.getElementById('authScreen');
+  if (authScreen && authScreen.style.display !== 'none') {
+    authScreen.dataset.wasVisible = '1';
+    authScreen.style.display = 'none';
+  }
   document.getElementById('adminModal').classList.add('show');
   document.getElementById('adminKeyInput').value = '';
   document.getElementById('adminKeyError').textContent = '';
@@ -2215,6 +2221,12 @@ function openAdminModal() {
 
 function closeAdminModal() {
   document.getElementById('adminModal').classList.remove('show');
+  // Возвращаем authScreen если он был скрыт
+  const authScreen = document.getElementById('authScreen');
+  if (authScreen && authScreen.dataset.wasVisible === '1') {
+    authScreen.style.display = 'flex';
+    delete authScreen.dataset.wasVisible;
+  }
 }
 
 function adminLoginSubmit() {
