@@ -676,6 +676,252 @@ body {
   text-decoration: underline;
 }
 
+/* ─── QUIZ STYLES ─── */
+.quiz-mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.quiz-mode-card {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 10px var(--shadow);
+}
+.quiz-mode-card:active { transform: scale(0.97); }
+.quiz-mode-card.active { border-color: var(--c1); background: var(--c5); }
+.quiz-mode-icon { font-size: 28px; margin-bottom: 6px; }
+.quiz-mode-name { font-size: 12px; font-weight: 800; color: var(--text); margin-bottom: 2px; }
+.quiz-mode-desc { font-size: 10px; color: var(--text3); font-weight: 600; }
+
+.quiz-filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.quiz-filter-btn {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.quiz-filter-btn.active {
+  background: var(--c1);
+  border-color: var(--c1);
+  color: white;
+}
+
+.quiz-question-card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 20px var(--shadow);
+  border: 1.5px solid var(--border);
+}
+.quiz-meta {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.quiz-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--c4);
+  color: var(--c1);
+}
+.quiz-badge.olympiad { background: #FFF3CD; color: var(--gold); }
+.quiz-badge.theme { background: var(--c5); color: var(--text2); }
+.quiz-question-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.quiz-num {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+
+/* Options */
+.quiz-options { display: flex; flex-direction: column; gap: 8px; }
+.quiz-option {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  transition: all 0.2s;
+  text-align: left;
+  font-family: 'Nunito', sans-serif;
+  line-height: 1.4;
+}
+.quiz-option:active { transform: scale(0.98); }
+.quiz-option.selected { border-color: var(--c1); background: var(--c5); }
+.quiz-option.correct { border-color: var(--success); background: #F0FFF6; color: #1A6B3C; }
+.quiz-option.wrong { border-color: #FF6B6B; background: #FFF0F0; color: #C0392B; }
+
+/* Match question */
+.quiz-match-pairs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.quiz-match-row { display: flex; gap: 8px; align-items: center; }
+.quiz-match-term {
+  flex: 1;
+  padding: 10px 12px;
+  background: var(--c4);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+.quiz-match-select {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  background: white;
+  outline: none;
+}
+
+/* Answer feedback */
+.quiz-feedback {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 14px;
+  display: none;
+}
+.quiz-feedback.show { display: block; }
+.quiz-feedback.correct-fb { background: #F0FFF6; border: 1.5px solid var(--success); }
+.quiz-feedback.wrong-fb { background: #FFF0F0; border: 1.5px solid #FF6B6B; }
+.quiz-feedback-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.quiz-feedback.correct-fb .quiz-feedback-title { color: #1A6B3C; }
+.quiz-feedback.wrong-fb .quiz-feedback-title { color: #C0392B; }
+.quiz-feedback-text { font-size: 12px; font-weight: 600; color: var(--text2); line-height: 1.5; }
+.quiz-ai-analysis {
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(100,175,220,0.1);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  line-height: 1.5;
+  display: none;
+}
+.quiz-ai-analysis.show { display: block; }
+
+.quiz-action-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.quiz-btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: 14px;
+  border: none;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.quiz-btn:active { transform: scale(0.97); }
+.quiz-btn.primary { background: linear-gradient(135deg, var(--c1), var(--c2)); color: white; }
+.quiz-btn.secondary { background: var(--c5); color: var(--c1); border: 1.5px solid var(--border); }
+
+/* Stats */
+.quiz-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.quiz-stat-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 12px 8px;
+  text-align: center;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.quiz-stat-val {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--c1);
+}
+.quiz-stat-lbl { font-size: 10px; color: var(--text3); font-weight: 700; }
+
+.weak-theme-item {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1.5px solid var(--border);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.weak-theme-name { flex: 1; font-size: 13px; font-weight: 700; color: var(--text); }
+.weak-theme-pct { font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 700; }
+.weak-theme-pct.bad { color: #FF6B6B; }
+.weak-theme-pct.ok { color: var(--gold); }
+.weak-theme-pct.good { color: var(--success); }
+
+/* Admin quiz form */
+.quiz-type-tabs {
+  display: flex;
+  background: var(--c5);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 12px;
+}
+.quiz-type-tab {
+  flex: 1;
+  padding: 7px 4px;
+  border: none;
+  background: transparent;
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.quiz-type-tab.active { background: white; color: var(--c1); box-shadow: 0 2px 6px var(--shadow); }
+
 /* ─── ADMIN MODAL ─── */
 .admin-modal-overlay {
   position: fixed;
@@ -1069,6 +1315,7 @@ body {
     <button class="nav-tab" onclick="switchTab('calendar')">📅 Календарь</button>
     <button class="nav-tab" onclick="switchTab('progress')">📊 Итоги</button>
     <button class="nav-tab" id="adminTabBtn" style="display:none" onclick="switchTab('admin')">👑 Админ</button>
+    <button class="nav-tab" onclick="switchTab('quiz')">🧪 Тесты</button>
   </div>
 </div>
 
@@ -1257,10 +1504,254 @@ body {
     <div id="adminEventsList"></div>
   </div>
 
+  <!-- Add question -->
+  <div class="admin-section">
+    <div class="admin-section-title">🧪 Добавить вопрос в базу тестов</div>
+
+    <div class="quiz-type-tabs">
+      <button class="quiz-type-tab active" id="addTypeBtn_single" onclick="setAddQType('single')">Один ответ</button>
+      <button class="quiz-type-tab" id="addTypeBtn_multi" onclick="setAddQType('multi')">Несколько</button>
+      <button class="quiz-type-tab" id="addTypeBtn_match" onclick="setAddQType('match')">Сопоставление</button>
+    </div>
+
+    <div class="admin-form-row">
+      <label class="admin-label">Тема</label>
+      <select class="admin-select" id="addQTheme">
+        <option value="sociology">👥 Социология</option>
+        <option value="politics">🏛️ Политология</option>
+        <option value="economics">💰 Экономика</option>
+        <option value="law">⚖️ Право</option>
+        <option value="philosophy">🧠 Философия</option>
+        <option value="culturology">🎨 Культурология</option>
+      </select>
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Подтема (например: Классики социологии)</label>
+      <input type="text" class="admin-input" id="addQSubtopic" placeholder="Уточни тему">
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Олимпиада</label>
+      <select class="admin-select" id="addQOlympiad">
+        <option value="lomonosov">Ломоносов</option>
+        <option value="perechen">Перечневые</option>
+        <option value="vsosh">ВсОШ</option>
+        <option value="mk">Пробники МК</option>
+      </select>
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Год</label>
+      <input type="number" class="admin-input" id="addQYear" placeholder="2024" min="2010" max="2030">
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Текст вопроса</label>
+      <textarea class="admin-textarea" id="addQText" placeholder="Введи вопрос..." style="min-height:80px"></textarea>
+    </div>
+
+    <!-- Single/Multi options -->
+    <div id="addQOptionsBlock">
+      <div class="admin-form-row">
+        <label class="admin-label">Варианты ответов (по одному в строку)</label>
+        <textarea class="admin-textarea" id="addQOptions" placeholder="А) Первый вариант&#10;Б) Второй вариант&#10;В) Третий вариант&#10;Г) Четвёртый вариант"></textarea>
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Правильный ответ (например: В или А,В для нескольких)</label>
+        <input type="text" class="admin-input" id="addQCorrect" placeholder="В">
+      </div>
+    </div>
+
+    <!-- Match pairs -->
+    <div id="addQMatchBlock" style="display:none">
+      <div class="admin-form-row">
+        <label class="admin-label">Пары сопоставления (термин|определение, каждая с новой строки)</label>
+        <textarea class="admin-textarea" id="addQPairs" placeholder="Социализация|Процесс усвоения норм&#10;Девиация|Отклонение от нормы&#10;Стратификация|Социальное расслоение" style="min-height:100px"></textarea>
+      </div>
+    </div>
+
+    <div class="admin-form-row">
+      <label class="admin-label">Объяснение правильного ответа</label>
+      <textarea class="admin-textarea" id="addQExplanation" placeholder="Почему именно этот ответ верный..."></textarea>
+    </div>
+
+    <button class="admin-btn blue" onclick="adminAddQuestion()">➕ Добавить вопрос</button>
+  </div>
+
+  <!-- Quiz stats for admin -->
+  <div class="admin-section">
+    <div class="admin-section-title">📊 Статистика тестов учеников</div>
+    <div id="adminQuizStats">
+      <div style="font-size:12px;color:var(--text3);font-weight:600">Загрузка...</div>
+    </div>
+    <button class="admin-btn blue" style="margin-top:8px" onclick="adminLoadQuizStats()">🔄 Обновить</button>
+  </div>
+
+  <!-- Question list editor -->
+  <div class="admin-section">
+    <div class="admin-section-title">📝 Все вопросы в базе</div>
+    <div class="admin-form-row">
+      <input type="text" class="admin-input" id="qSearchInput" placeholder="🔍 Поиск по тексту или теме..." oninput="renderAdminQuestionList()">
+    </div>
+    <div style="font-size:11px;color:var(--text3);font-weight:700;margin-bottom:8px" id="qListCount"></div>
+    <div id="adminQuestionList"></div>
+  </div>
+
+  <!-- Edit question modal -->
+  <div id="editQModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.5);overflow-y:auto;padding:20px">
+    <div style="background:white;border-radius:20px;padding:20px;max-width:460px;margin:0 auto">
+      <div style="font-family:Unbounded,sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px">✏️ Редактировать вопрос</div>
+
+      <div class="admin-form-row">
+        <label class="admin-label">Тема</label>
+        <select class="admin-select" id="editQTheme">
+          <option value="sociology">👥 Социология</option>
+          <option value="politics">🏛️ Политология</option>
+          <option value="economics">💰 Экономика</option>
+          <option value="law">⚖️ Право</option>
+          <option value="philosophy">🧠 Философия</option>
+          <option value="culturology">🎨 Культурология</option>
+        </select>
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Подтема</label>
+        <input type="text" class="admin-input" id="editQSubtopic">
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Олимпиада</label>
+        <select class="admin-select" id="editQOlympiad">
+          <option value="lomonosov">Ломоносов</option>
+          <option value="perechen">Перечневые</option>
+          <option value="vsosh">ВсОШ</option>
+          <option value="mk">Пробники МК</option>
+        </select>
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Год</label>
+        <input type="number" class="admin-input" id="editQYear">
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Текст вопроса</label>
+        <textarea class="admin-textarea" id="editQText" style="min-height:80px"></textarea>
+      </div>
+      <div id="editQOptionsBlock">
+        <div class="admin-form-row">
+          <label class="admin-label">Варианты ответов (по одному в строку)</label>
+          <textarea class="admin-textarea" id="editQOptions"></textarea>
+        </div>
+        <div class="admin-form-row">
+          <label class="admin-label">Правильный ответ</label>
+          <input type="text" class="admin-input" id="editQCorrect">
+        </div>
+      </div>
+      <div id="editQMatchBlock" style="display:none">
+        <div class="admin-form-row">
+          <label class="admin-label">Пары (термин|определение, каждая с новой строки)</label>
+          <textarea class="admin-textarea" id="editQPairs" style="min-height:100px"></textarea>
+        </div>
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Объяснение</label>
+        <textarea class="admin-textarea" id="editQExplanation"></textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="admin-btn blue" style="flex:2" onclick="adminSaveQuestion()">💾 Сохранить</button>
+        <button class="admin-btn" style="flex:1;background:var(--c5);color:var(--c1)" onclick="closeEditQModal()">Отмена</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Logout -->
   <div style="text-align:center;padding:8px 0 16px">
     <button class="admin-btn danger" style="width:auto;padding:10px 24px" onclick="adminLogout()">🚪 Выйти из режима админа</button>
   </div>
+
+</div>
+
+<!-- ══════════════════════════════════ QUIZ TAB ══════════════════════════════════ -->
+<div class="tab-content" id="tab-quiz">
+
+  <!-- Stats row -->
+  <div class="quiz-stats-row">
+    <div class="quiz-stat-card">
+      <div class="quiz-stat-val" id="quizStatTotal">0</div>
+      <div class="quiz-stat-lbl">Вопросов</div>
+    </div>
+    <div class="quiz-stat-card">
+      <div class="quiz-stat-val" id="quizStatCorrect">0</div>
+      <div class="quiz-stat-lbl">Правильно</div>
+    </div>
+    <div class="quiz-stat-card">
+      <div class="quiz-stat-val" id="quizStatPct">0%</div>
+      <div class="quiz-stat-lbl">Точность</div>
+    </div>
+  </div>
+
+  <!-- Mode selector -->
+  <div class="section-title">🎯 Режим тренировки</div>
+  <div class="quiz-mode-grid" style="margin-bottom:14px">
+    <div class="quiz-mode-card active" id="modeRandom" onclick="setQuizMode('random')">
+      <div class="quiz-mode-icon">🎲</div>
+      <div class="quiz-mode-name">Случайные</div>
+      <div class="quiz-mode-desc">Микс из базы</div>
+    </div>
+    <div class="quiz-mode-card" id="modeWeak" onclick="setQuizMode('weak')">
+      <div class="quiz-mode-icon">🎯</div>
+      <div class="quiz-mode-name">Слабые темы</div>
+      <div class="quiz-mode-desc">AI подбирает</div>
+    </div>
+    <div class="quiz-mode-card" id="modeTheme" onclick="setQuizMode('theme')">
+      <div class="quiz-mode-icon">📚</div>
+      <div class="quiz-mode-name">По теме</div>
+      <div class="quiz-mode-desc">Выбери предмет</div>
+    </div>
+    <div class="quiz-mode-card" id="modeOlympiad" onclick="setQuizMode('olympiad')">
+      <div class="quiz-mode-icon">🏆</div>
+      <div class="quiz-mode-name">По олимпиаде</div>
+      <div class="quiz-mode-desc">Ломоносов, ВсОШ...</div>
+    </div>
+  </div>
+
+  <!-- Theme filter (hidden by default) -->
+  <div id="quizThemeFilter" style="display:none;margin-bottom:12px">
+    <div class="quiz-filter-row">
+      <button class="quiz-filter-btn active" onclick="setQuizFilter('theme','all')">Все</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','sociology')">👥 Социология</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','politics')">🏛️ Политология</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','economics')">💰 Экономика</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','law')">⚖️ Право</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','philosophy')">🧠 Философия</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','culturology')">🎨 Культурология</button>
+    </div>
+  </div>
+
+  <!-- Olympiad filter (hidden by default) -->
+  <div id="quizOlympiadFilter" style="display:none;margin-bottom:12px">
+    <div class="quiz-filter-row">
+      <button class="quiz-filter-btn active" onclick="setQuizFilter('olympiad','all')">Все</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','lomonosov')">Ломоносов</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','perechen')">Перечневые</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','vsosh')">ВсОШ</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','mk')">Пробники МК</button>
+    </div>
+  </div>
+
+  <!-- Weak themes list -->
+  <div id="quizWeakList" style="display:none;margin-bottom:14px">
+    <div class="section-title">📊 Твои слабые темы</div>
+    <div id="weakThemesList"></div>
+  </div>
+
+  <!-- Question area -->
+  <div id="quizQuestionArea">
+    <div class="empty-state">
+      <div class="e-icon">🧪</div>
+      <div>Нажми кнопку ниже чтобы начать!</div>
+    </div>
+  </div>
+
+  <!-- Start / Next button -->
+  <button class="quiz-btn primary" id="quizStartBtn" onclick="quizNext()" style="width:100%;margin-top:8px">
+    Начать тест →
+  </button>
 
 </div>
 
@@ -1270,6 +1761,11 @@ body {
 // ═══════════════════════════════════════════════════
 //  DATA
 // ═══════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════
+//  СЕРВЕР — Яндекс Cloud Functions (работает из России)
+// ═══════════════════════════════════════════════════
+const SERVER_URL = 'https://functions.yandexcloud.net/d4evsqthteafbgu33s0b';
 
 const SPRINT_START = new Date('2025-03-30');
 const SPRINT_END   = new Date('2025-11-30');
@@ -1929,11 +2425,12 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
   document.getElementById(`tab-${tab}`).classList.add('active');
-  const tabs = ['home','tasks','calendar','progress','admin'];
+  const tabs = ['home','tasks','calendar','progress','admin','quiz'];
   const idx = tabs.indexOf(tab);
   document.querySelectorAll('.nav-tab')[idx]?.classList.add('active');
   if (tab === 'calendar') renderCalendar();
-  if (tab === 'admin') { renderAdminEvents(); adminLoadStudents(); }
+  if (tab === 'admin') { renderAdminEvents(); adminLoadStudents(); adminLoadQuizStats(); renderAdminQuestionList(); }
+  if (tab === 'quiz') { renderQuizStats(); if (quizMode === 'weak') renderWeakThemes(); }
   if (tab !== 'tasks') renderAll();
 }
 
@@ -2104,6 +2601,9 @@ function onUserLoggedIn(user) {
   setInterval(() => saveProgressToFirebase(), 30000);
   // Update header user info
   updateHeaderUser(user);
+  // Load quiz data
+  loadQuizQuestions();
+  loadQuizResults();
 }
 
 function onUserLoggedOut() {
@@ -2558,6 +3058,532 @@ setTimeout(() => {
     document.getElementById('authScreen').style.display = 'none';
   }
 }, 500);
+
+// ═══════════════════════════════════════════════════
+//  QUIZ ENGINE
+// ═══════════════════════════════════════════════════
+
+let quizMode = 'random';
+let quizThemeFilter = 'all';
+let quizOlympiadFilter = 'all';
+let quizQuestions = []; // loaded from Firebase
+let quizResults = {};   // userId results from Firebase
+let currentQuestion = null;
+let quizAnswered = false;
+let addQType = 'single';
+let quizSession = { correct: 0, total: 0 }; // session stats
+
+// ─── Load questions from Firebase ───
+function loadQuizQuestions() {
+  if (!db) return;
+  db.ref('questions').on('value', snap => {
+    quizQuestions = snap.val() ? Object.values(snap.val()) : [];
+    console.log(`📚 Загружено вопросов: ${quizQuestions.length}`);
+  });
+}
+
+// ─── Load user results from Firebase ───
+function loadQuizResults() {
+  if (!db || !currentUser) return;
+  db.ref(`quiz_results/${currentUser.uid}`).on('value', snap => {
+    quizResults = snap.val() || {};
+    renderQuizStats();
+  });
+}
+
+// ─── Save result ───
+function saveQuizResult(qid, correct) {
+  if (!db || !currentUser) return;
+  const prev = quizResults[qid] || { correct: 0, wrong: 0, attempts: 0 };
+  const updated = {
+    ...prev,
+    attempts: (prev.attempts || 0) + 1,
+    correct: (prev.correct || 0) + (correct ? 1 : 0),
+    wrong: (prev.wrong || 0) + (correct ? 0 : 1),
+    lastAt: Date.now(),
+    theme: currentQuestion?.theme || '',
+    subtopic: currentQuestion?.subtopic || '',
+  };
+  quizResults[qid] = updated;
+  db.ref(`quiz_results/${currentUser.uid}/${qid}`).set(updated);
+  // Give XP for correct answer
+  if (correct) {
+    state.totalXP = (state.totalXP || 0);
+    const xpGain = 5;
+    showXPPopup(xpGain, document.getElementById('quizStartBtn'));
+    state.done = state.done || {};
+    saveState();
+  }
+}
+
+// ─── Stats ───
+function getQuizStats() {
+  const keys = Object.keys(quizResults);
+  const total = keys.reduce((s, k) => s + (quizResults[k].attempts || 0), 0);
+  const correct = keys.reduce((s, k) => s + (quizResults[k].correct || 0), 0);
+  return { total, correct, pct: total ? Math.round(correct/total*100) : 0 };
+}
+
+function renderQuizStats() {
+  const { total, correct, pct } = getQuizStats();
+  const el = id => document.getElementById(id);
+  if (el('quizStatTotal')) el('quizStatTotal').textContent = total;
+  if (el('quizStatCorrect')) el('quizStatCorrect').textContent = correct;
+  if (el('quizStatPct')) el('quizStatPct').textContent = pct + '%';
+}
+
+// ─── Mode & Filter ───
+function setQuizMode(mode) {
+  quizMode = mode;
+  document.querySelectorAll('.quiz-mode-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(`mode${mode.charAt(0).toUpperCase()+mode.slice(1)}`).classList.add('active');
+  document.getElementById('quizThemeFilter').style.display = mode === 'theme' ? '' : 'none';
+  document.getElementById('quizOlympiadFilter').style.display = mode === 'olympiad' ? '' : 'none';
+  document.getElementById('quizWeakList').style.display = mode === 'weak' ? '' : 'none';
+  if (mode === 'weak') renderWeakThemes();
+  document.getElementById('quizStartBtn').textContent = 'Начать тест →';
+  document.getElementById('quizQuestionArea').innerHTML = `<div class="empty-state"><div class="e-icon">🧪</div><div>Нажми кнопку ниже чтобы начать!</div></div>`;
+  quizAnswered = false;
+}
+
+function setQuizFilter(type, val) {
+  if (type === 'theme') quizThemeFilter = val;
+  if (type === 'olympiad') quizOlympiadFilter = val;
+  document.querySelectorAll(`#quiz${type.charAt(0).toUpperCase()+type.slice(1)}Filter .quiz-filter-btn`).forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// ─── Get filtered questions ───
+function getFilteredQuestions() {
+  let pool = [...quizQuestions];
+  if (quizMode === 'theme' && quizThemeFilter !== 'all') {
+    pool = pool.filter(q => q.theme === quizThemeFilter);
+  }
+  if (quizMode === 'olympiad' && quizOlympiadFilter !== 'all') {
+    pool = pool.filter(q => q.olympiad === quizOlympiadFilter);
+  }
+  if (quizMode === 'weak') {
+    const weakThemes = getWeakThemes().map(w => w.subtopic);
+    pool = pool.filter(q => weakThemes.includes(q.subtopic));
+    if (!pool.length) pool = [...quizQuestions]; // fallback
+  }
+  return pool;
+}
+
+// ─── Weak themes analysis ───
+function getWeakThemes() {
+  const themeStats = {};
+  Object.values(quizResults).forEach(r => {
+    const key = r.subtopic || r.theme || 'Другое';
+    if (!themeStats[key]) themeStats[key] = { correct: 0, total: 0 };
+    themeStats[key].correct += r.correct || 0;
+    themeStats[key].total  += r.attempts || 0;
+  });
+  return Object.entries(themeStats)
+    .filter(([, s]) => s.total >= 2)
+    .map(([subtopic, s]) => ({ subtopic, pct: Math.round(s.correct/s.total*100) }))
+    .sort((a, b) => a.pct - b.pct);
+}
+
+function renderWeakThemes() {
+  const weak = getWeakThemes();
+  const el = document.getElementById('weakThemesList');
+  if (!weak.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text3);font-weight:600;padding:8px">Ответь на несколько вопросов — AI проанализирует слабые места</div>';
+    return;
+  }
+  el.innerHTML = weak.slice(0, 6).map(w => `
+    <div class="weak-theme-item">
+      <div class="weak-theme-name">${w.subtopic}</div>
+      <div class="weak-theme-pct ${w.pct < 50 ? 'bad' : w.pct < 75 ? 'ok' : 'good'}">${w.pct}%</div>
+    </div>`).join('');
+}
+
+// ─── Pick next question ───
+function quizNext() {
+  const pool = getFilteredQuestions();
+  if (!pool.length) {
+    showToast('⚠️ Нет вопросов для этого режима');
+    return;
+  }
+  // Prioritize questions with fewer attempts or wrong answers
+  const scored = pool.map(q => {
+    const r = quizResults[q.id] || { attempts: 0, wrong: 0 };
+    const score = (r.wrong || 0) * 3 - (r.attempts || 0) + Math.random() * 5;
+    return { q, score };
+  });
+  scored.sort((a, b) => b.score - a.score);
+  currentQuestion = scored[0].q;
+  quizAnswered = false;
+  renderQuestion(currentQuestion);
+  document.getElementById('quizStartBtn').textContent = 'Следующий вопрос →';
+}
+
+// ─── Render question ───
+function renderQuestion(q) {
+  const area = document.getElementById('quizQuestionArea');
+  const olympiadLabels = { lomonosov:'Ломоносов', perechen:'Перечневые', vsosh:'ВсОШ', mk:'МК' };
+  const themeIcons = { sociology:'👥', politics:'🏛️', economics:'💰', law:'⚖️', philosophy:'🧠', culturology:'🎨' };
+
+  let optionsHTML = '';
+  if (q.type === 'single' || q.type === 'multi') {
+    const opts = (q.options || []);
+    optionsHTML = `<div class="quiz-options">${opts.map((opt, i) =>
+      `<button class="quiz-option" data-idx="${i}" onclick="quizSelect(this, '${q.type}')">${opt}</button>`
+    ).join('')}</div>`;
+  } else if (q.type === 'match') {
+    const pairs = q.pairs || [];
+    const shuffledDefs = [...pairs.map(p=>p.definition)].sort(()=>Math.random()-0.5);
+    optionsHTML = `<div class="quiz-match-pairs">${pairs.map((p, i) =>
+      `<div class="quiz-match-row">
+        <div class="quiz-match-term">${p.term}</div>
+        <select class="quiz-match-select" data-idx="${i}">
+          <option value="">— выбери —</option>
+          ${shuffledDefs.map(d => `<option value="${d}">${d}</option>`).join('')}
+        </select>
+      </div>`
+    ).join('')}</div>`;
+  }
+
+  area.innerHTML = `
+    <div class="quiz-question-card">
+      <div class="quiz-meta">
+        <span class="quiz-badge">${themeIcons[q.theme]||''} ${CATEGORIES[q.theme]?.name||q.theme}</span>
+        <span class="quiz-badge olympiad">${olympiadLabels[q.olympiad]||q.olympiad} ${q.year||''}</span>
+        ${q.subtopic ? `<span class="quiz-badge theme">${q.subtopic}</span>` : ''}
+      </div>
+      <div class="quiz-question-text">${q.question}</div>
+      ${optionsHTML}
+      <div class="quiz-feedback" id="quizFeedback">
+        <div class="quiz-feedback-title" id="quizFeedbackTitle"></div>
+        <div class="quiz-feedback-text" id="quizFeedbackText"></div>
+        <div class="quiz-ai-analysis" id="quizAiAnalysis">🤖 AI анализирует...</div>
+      </div>
+    </div>
+    ${q.type === 'match' ? `<button class="quiz-btn primary" onclick="quizCheckMatch()" style="width:100%;margin-bottom:10px">Проверить →</button>` : ''}
+  `;
+}
+
+// ─── Select answer (single/multi) ───
+function quizSelect(btn, type) {
+  if (quizAnswered) return;
+  if (type === 'single') {
+    document.querySelectorAll('.quiz-option').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    quizCheckSingle();
+  } else {
+    btn.classList.toggle('selected');
+  }
+}
+
+function quizCheckSingle() {
+  if (quizAnswered || !currentQuestion) return;
+  quizAnswered = true;
+  const selected = document.querySelector('.quiz-option.selected');
+  if (!selected) return;
+  const idx = parseInt(selected.dataset.idx);
+  const opts = currentQuestion.options || [];
+  const selectedLetter = opts[idx]?.charAt(0);
+  const correct = currentQuestion.correct?.trim().toUpperCase();
+  const isCorrect = selectedLetter === correct;
+
+  // Color options
+  document.querySelectorAll('.quiz-option').forEach((b, i) => {
+    const letter = opts[i]?.charAt(0);
+    if (letter === correct) b.classList.add('correct');
+    else if (b.classList.contains('selected')) b.classList.add('wrong');
+  });
+
+  showFeedback(isCorrect, currentQuestion.explanation);
+  saveQuizResult(currentQuestion.id, isCorrect);
+  if (isCorrect) getAiExplanation(currentQuestion, true);
+  else getAiExplanation(currentQuestion, false);
+}
+
+function quizCheckMatch() {
+  if (quizAnswered || !currentQuestion) return;
+  quizAnswered = true;
+  const selects = document.querySelectorAll('.quiz-match-select');
+  const pairs = currentQuestion.pairs || [];
+  let correct = 0;
+  selects.forEach((sel, i) => {
+    if (sel.value === pairs[i]?.definition) {
+      sel.style.border = '2px solid var(--success)';
+      correct++;
+    } else {
+      sel.style.border = '2px solid #FF6B6B';
+    }
+  });
+  const isCorrect = correct === pairs.length;
+  showFeedback(isCorrect, currentQuestion.explanation || `Правильно: ${correct} из ${pairs.length}`);
+  saveQuizResult(currentQuestion.id, isCorrect);
+  getAiExplanation(currentQuestion, isCorrect);
+}
+
+// ─── Show feedback ───
+function showFeedback(isCorrect, explanation) {
+  const fb = document.getElementById('quizFeedback');
+  const title = document.getElementById('quizFeedbackTitle');
+  const text = document.getElementById('quizFeedbackText');
+  fb.className = `quiz-feedback show ${isCorrect ? 'correct-fb' : 'wrong-fb'}`;
+  title.textContent = isCorrect ? '✅ Правильно!' : '❌ Неверно';
+  text.textContent = explanation || '';
+}
+
+// ─── AI explanation via Anthropic API ───
+async function getAiExplanation(q, isCorrect) {
+  const aiEl = document.getElementById('quizAiAnalysis');
+  if (!aiEl) return;
+  aiEl.classList.add('show');
+  aiEl.textContent = '🤖 AI анализирует...';
+
+  const weak = getWeakThemes().slice(0, 3).map(w => w.subtopic).join(', ');
+
+  try {
+    // Вызываем через Яндекс сервер — работает из России!
+    const response = await fetch(SERVER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'ai_analyze',
+        question: q.question,
+        correct: q.correct,
+        isCorrect,
+        theme: q.theme,
+        subtopic: q.subtopic || q.theme,
+        weakThemes: weak || 'пока нет данных'
+      })
+    });
+    const data = await response.json();
+    aiEl.textContent = '🤖 ' + (data.text || 'Продолжай практиковаться!');
+  } catch(e) {
+    aiEl.textContent = '🤖 Продолжай практиковаться — повторение укрепляет знания!';
+  }
+}
+
+// ─── Add question type toggle ───
+function setAddQType(type) {
+  addQType = type;
+  document.querySelectorAll('.quiz-type-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`addTypeBtn_${type}`).classList.add('active');
+  document.getElementById('addQOptionsBlock').style.display = type !== 'match' ? '' : 'none';
+  document.getElementById('addQMatchBlock').style.display = type === 'match' ? '' : 'none';
+}
+
+// ─── Admin: add question ───
+function adminAddQuestion() {
+  if (!db) { showToast('⚠️ Firebase не подключён'); return; }
+  const theme    = document.getElementById('addQTheme').value;
+  const subtopic = document.getElementById('addQSubtopic').value.trim();
+  const olympiad = document.getElementById('addQOlympiad').value;
+  const year     = document.getElementById('addQYear').value;
+  const text     = document.getElementById('addQText').value.trim();
+  const explanation = document.getElementById('addQExplanation').value.trim();
+
+  if (!text) { showToast('⚠️ Введи текст вопроса'); return; }
+
+  const qData = {
+    id: 'q_' + Date.now(),
+    type: addQType,
+    theme, subtopic, olympiad,
+    year: year ? parseInt(year) : null,
+    question: text,
+    explanation,
+    createdAt: Date.now(),
+  };
+
+  if (addQType === 'single' || addQType === 'multi') {
+    const optsRaw = document.getElementById('addQOptions').value.trim();
+    const correct = document.getElementById('addQCorrect').value.trim().toUpperCase();
+    if (!optsRaw || !correct) { showToast('⚠️ Заполни варианты и правильный ответ'); return; }
+    qData.options = optsRaw.split('
+').filter(l => l.trim());
+    qData.correct = correct;
+  } else if (addQType === 'match') {
+    const pairsRaw = document.getElementById('addQPairs').value.trim();
+    if (!pairsRaw) { showToast('⚠️ Введи пары сопоставления'); return; }
+    qData.pairs = pairsRaw.split('
+').filter(l => l.includes('|')).map(l => {
+      const [term, definition] = l.split('|');
+      return { term: term.trim(), definition: definition.trim() };
+    });
+    if (!qData.pairs.length) { showToast('⚠️ Формат: термин|определение'); return; }
+  }
+
+  const ref = db.ref('questions').push();
+  qData.id = ref.key;
+  ref.set(qData)
+    .then(() => {
+      // Clear form
+      document.getElementById('addQText').value = '';
+      document.getElementById('addQSubtopic').value = '';
+      document.getElementById('addQOptions').value = '';
+      document.getElementById('addQCorrect').value = '';
+      document.getElementById('addQPairs').value = '';
+      document.getElementById('addQExplanation').value = '';
+      showToast(`✅ Вопрос добавлен! Всего: ${quizQuestions.length}`);
+    })
+    .catch(() => showToast('❌ Ошибка сохранения'));
+}
+
+// ─── Admin: quiz stats ───
+function adminLoadQuizStats() {
+  if (!db) return;
+  db.ref('quiz_results').once('value', snap => {
+    const all = snap.val() || {};
+    const students = Object.keys(all).length;
+    let totalAnswers = 0, totalCorrect = 0;
+    const themeErrors = {};
+    Object.values(all).forEach(userResults => {
+      Object.values(userResults).forEach(r => {
+        totalAnswers += r.attempts || 0;
+        totalCorrect += r.correct || 0;
+        if ((r.wrong || 0) > 0) {
+          const key = r.subtopic || r.theme || 'Другое';
+          themeErrors[key] = (themeErrors[key] || 0) + (r.wrong || 0);
+        }
+      });
+    });
+    const pct = totalAnswers ? Math.round(totalCorrect/totalAnswers*100) : 0;
+    const topErrors = Object.entries(themeErrors)
+      .sort((a,b) => b[1]-a[1]).slice(0,5);
+
+    const el = document.getElementById('adminQuizStats');
+    el.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">
+        <div class="quiz-stat-card"><div class="quiz-stat-val">${students}</div><div class="quiz-stat-lbl">Учеников</div></div>
+        <div class="quiz-stat-card"><div class="quiz-stat-val">${totalAnswers}</div><div class="quiz-stat-lbl">Ответов</div></div>
+        <div class="quiz-stat-card"><div class="quiz-stat-val">${pct}%</div><div class="quiz-stat-lbl">Точность</div></div>
+      </div>
+      <div style="font-size:11px;font-weight:800;color:var(--text2);margin-bottom:6px">🔴 Проблемные темы у учеников:</div>
+      ${topErrors.map(([theme, errors]) => `
+        <div style="display:flex;justify-content:space-between;padding:6px 10px;background:var(--c5);border-radius:8px;margin-bottom:4px;font-size:12px;font-weight:700">
+          <span>${theme}</span><span style="color:#FF6B6B">${errors} ошибок</span>
+        </div>`).join('') || '<div style="font-size:12px;color:var(--text3)">Данных пока нет</div>'}
+    `;
+  });
+}
+
+
+// ═══════════════════════════════════════════════════
+//  QUESTION EDITOR (ADMIN)
+// ═══════════════════════════════════════════════════
+
+let editingQId = null;
+
+function renderAdminQuestionList() {
+  const el = document.getElementById('adminQuestionList');
+  const countEl = document.getElementById('qListCount');
+  if (!el) return;
+
+  const search = (document.getElementById('qSearchInput')?.value || '').toLowerCase();
+  const filtered = quizQuestions.filter(q =>
+    !search ||
+    q.question?.toLowerCase().includes(search) ||
+    q.subtopic?.toLowerCase().includes(search) ||
+    CATEGORIES[q.theme]?.name?.toLowerCase().includes(search)
+  );
+
+  const olympiadLabels = { lomonosov:'Ломоносов', perechen:'Перечневые', vsosh:'ВсОШ', mk:'МК' };
+  if (countEl) countEl.textContent = `Найдено: ${filtered.length} из ${quizQuestions.length}`;
+
+  if (!filtered.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text3);font-weight:600;padding:8px">Вопросов нет — добавь первый выше ⬆️</div>';
+    return;
+  }
+
+  el.innerHTML = filtered.slice(0, 50).map(q => `
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px">
+      <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+        <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:var(--c4);color:var(--c1)">${CATEGORIES[q.theme]?.icon||''} ${CATEGORIES[q.theme]?.name||q.theme}</span>
+        <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:#FFF3CD;color:var(--gold)">${olympiadLabels[q.olympiad]||q.olympiad} ${q.year||''}</span>
+        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--c5);color:var(--text3)">${q.type==='single'?'Один':'q.type'==='multi'?'Несколько':'Сопоставление'}</span>
+      </div>
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.4">${q.question?.slice(0,120)}${q.question?.length>120?'...':''}</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="openEditQModal('${q.id}')" style="flex:1;padding:7px;background:var(--c4);border:none;border-radius:8px;font-family:Nunito,sans-serif;font-size:11px;font-weight:800;color:var(--c1);cursor:pointer">✏️ Редактировать</button>
+        <button onclick="adminDeleteQuestion('${q.id}')" style="padding:7px 12px;background:#FFF0F0;border:none;border-radius:8px;font-family:Nunito,sans-serif;font-size:11px;font-weight:800;color:#FF6B6B;cursor:pointer">🗑️</button>
+      </div>
+    </div>
+  `).join('') + (filtered.length > 50 ? `<div style="text-align:center;font-size:12px;color:var(--text3);font-weight:700;padding:8px">Показаны первые 50. Используй поиск для фильтрации.</div>` : '');
+}
+
+function openEditQModal(qid) {
+  const q = quizQuestions.find(q => q.id === qid);
+  if (!q) return;
+  editingQId = qid;
+
+  document.getElementById('editQTheme').value = q.theme || 'sociology';
+  document.getElementById('editQSubtopic').value = q.subtopic || '';
+  document.getElementById('editQOlympiad').value = q.olympiad || 'lomonosov';
+  document.getElementById('editQYear').value = q.year || '';
+  document.getElementById('editQText').value = q.question || '';
+  document.getElementById('editQExplanation').value = q.explanation || '';
+
+  const isMatch = q.type === 'match';
+  document.getElementById('editQOptionsBlock').style.display = isMatch ? 'none' : '';
+  document.getElementById('editQMatchBlock').style.display = isMatch ? '' : 'none';
+
+  if (!isMatch) {
+    document.getElementById('editQOptions').value = (q.options || []).join('
+');
+    document.getElementById('editQCorrect').value = q.correct || '';
+  } else {
+    document.getElementById('editQPairs').value = (q.pairs || []).map(p => `${p.term}|${p.definition}`).join('
+');
+  }
+
+  document.getElementById('editQModal').style.display = 'block';
+  document.getElementById('editQModal').scrollTop = 0;
+}
+
+function closeEditQModal() {
+  document.getElementById('editQModal').style.display = 'none';
+  editingQId = null;
+}
+
+function adminSaveQuestion() {
+  if (!editingQId || !db) return;
+  const q = quizQuestions.find(q => q.id === editingQId);
+  if (!q) return;
+
+  const updated = {
+    ...q,
+    theme:      document.getElementById('editQTheme').value,
+    subtopic:   document.getElementById('editQSubtopic').value.trim(),
+    olympiad:   document.getElementById('editQOlympiad').value,
+    year:       parseInt(document.getElementById('editQYear').value) || null,
+    question:   document.getElementById('editQText').value.trim(),
+    explanation:document.getElementById('editQExplanation').value.trim(),
+    updatedAt:  Date.now(),
+  };
+
+  if (q.type !== 'match') {
+    updated.options = document.getElementById('editQOptions').value.trim().split('
+').filter(l=>l.trim());
+    updated.correct = document.getElementById('editQCorrect').value.trim().toUpperCase();
+  } else {
+    updated.pairs = document.getElementById('editQPairs').value.trim()
+      .split('
+').filter(l=>l.includes('|'))
+      .map(l => { const [term, definition] = l.split('|'); return { term: term.trim(), definition: definition.trim() }; });
+  }
+
+  db.ref(`questions/${editingQId}`).set(updated)
+    .then(() => {
+      closeEditQModal();
+      showToast('✅ Вопрос сохранён!');
+    })
+    .catch(() => showToast('❌ Ошибка сохранения'));
+}
+
+function adminDeleteQuestion(qid) {
+  if (!confirm('Удалить этот вопрос?')) return;
+  if (!db) return;
+  db.ref(`questions/${qid}`).remove()
+    .then(() => showToast('🗑️ Вопрос удалён'))
+    .catch(() => showToast('❌ Ошибка'));
+}
 </script>
 </body>
 </html>
