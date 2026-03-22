@@ -2496,18 +2496,24 @@ function authLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass  = document.getElementById('loginPassword').value;
   if (!email || !pass) { setAuthError('Заполни все поля'); return; }
+  if (!auth) { setAuthError('Firebase не инициализирован. Обнови страницу.'); return; }
   setAuthLoading('loginBtn', true);
+  setAuthError('');
   auth.signInWithEmailAndPassword(email, pass)
+    .then(() => { setAuthLoading('loginBtn', false); })
     .catch(e => {
       setAuthLoading('loginBtn', false);
+      console.error('Auth error:', e.code, e.message);
       const msgs = {
         'auth/user-not-found': 'Аккаунт не найден. Зарегистрируйся!',
         'auth/wrong-password': 'Неверный пароль',
         'auth/invalid-email': 'Неверный формат email',
         'auth/too-many-requests': 'Слишком много попыток. Подожди немного',
         'auth/invalid-credential': 'Неверный email или пароль',
+        'auth/network-request-failed': 'Нет интернета. Проверь подключение.',
+        'auth/operation-not-allowed': '⚠️ Email/пароль не включён в Firebase. Включи в Authentication → Sign-in method.',
       };
-      setAuthError(msgs[e.code] || 'Ошибка входа. Попробуй ещё раз');
+      setAuthError(msgs[e.code] || `Ошибка: ${e.code}`);
     });
 }
 
