@@ -1984,6 +1984,8 @@ function getDoneCount() { return Object.keys(state.done).filter(k => state.done[
 function getTotalXP() { return ALL_TASKS.filter(t => state.done[t.id]).reduce((s,t)=>s+t.xp,0); }
 function getCurrentWeekNum() {
   const now = new Date();
+  // Если курс ещё не начался — показываем неделю 1
+  if (now < SPRINT_START) return 1;
   const diff = Math.floor((now - SPRINT_START) / (7*24*3600*1000));
   return Math.min(Math.max(1, diff + 1), 35);
 }
