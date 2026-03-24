@@ -1838,7 +1838,7 @@ body {
 // ═══════════════════════════════════════════════════
 const SERVER_URL = 'https://functions.yandexcloud.net/d4evsqthteafbgu33s0b';
 
-const SPRINT_START = new Date('2025-03-30');
+const SPRINT_START = new Date('2026-03-30');
 const SPRINT_END   = new Date('2025-11-30');
 
 const CATEGORIES = {
@@ -2053,11 +2053,27 @@ function loadState() {
 // ═══════════════════════════════════════════════════
 function getDoneCount() { return Object.keys(state.done).filter(k => state.done[k]).length; }
 function getTotalXP() { return ALL_TASKS.filter(t => state.done[t.id]).reduce((s,t)=>s+t.xp,0); }
+function normalizeDate(d) {
+  const x = new Date(d);
+  x.setHours(0,0,0,0);
+  return x;
+}
+function isCourseStarted() {
+  return normalizeDate(new Date()) >= normalizeDate(SPRINT_START);
+}
+function getDaysUntilStart() {
+  const now = normalizeDate(new Date());
+  const start = normalizeDate(SPRINT_START);
+  return Math.max(0, Math.ceil((start - now) / (24*3600*1000)));
+}
+function formatStartDate() {
+  return SPRINT_START.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
+}
 function getCurrentWeekNum() {
-  const now = new Date();
-  // Если курс ещё не начался — показываем неделю 1
-  if (now < SPRINT_START) return 1;
-  const diff = Math.floor((now - SPRINT_START) / (7*24*3600*1000));
+  if (!isCourseStarted()) return 0;
+  const now = normalizeDate(new Date());
+  const start = normalizeDate(SPRINT_START);
+  const diff = Math.floor((now - start) / (7*24*3600*1000));
   return Math.min(Math.max(1, diff + 1), 35);
 }
 function getWeekDates(w) {
@@ -2313,10 +2329,24 @@ function renderHero() {
 }
 
 function renderCurrentWeekPreview() {
+  const el = document.getElementById('currentWeekPreview');
+
+  if (!isCourseStarted()) {
+    const daysLeft = getDaysUntilStart();
+    el.innerHTML = `
+      <div class="empty-state">
+        <div class="e-icon">⏳</div>
+        Курс ещё не начался<br>
+        <span style="font-size:12px;color:var(--text3);font-weight:700">
+          Старт: ${formatStartDate()}${daysLeft ? ` · осталось ${daysLeft} дн.` : ''}
+        </span>
+      </div>`;
+    return;
+  }
+
   const cw = getCurrentWeekNum();
   const wTasks = ALL_TASKS.filter(t => t.week === cw);
   const wDone = wTasks.filter(t => state.done[t.id]).length;
-  const el = document.getElementById('currentWeekPreview');
   if (!wTasks.length) { el.innerHTML = '<div class="empty-state"><div class="e-icon">✅</div>Задач на эту неделю нет</div>'; return; }
   el.innerHTML = `
     <div class="week-nav" style="margin-bottom:8px">
@@ -2367,6 +2397,17 @@ function renderTaskHTML(t) {
 }
 
 function renderTasks() {
+  const el = document.getElementById('tasksList');
+
+  if (!isCourseStarted()) {
+    const daysLeft = getDaysUntilStart();
+    document.getElementById('weekNum').textContent = 'Курс ещё не начался';
+    document.getElementById('weekDates').textContent = `Старт: ${formatStartDate()}`;
+    document.getElementById('weekProg').textContent = daysLeft ? `До старта ${daysLeft} дн.` : '';
+    el.innerHTML = '<div class="empty-state"><div class="e-icon">⏳</div>До старта курса отсчёт недель не идёт</div>';
+    return;
+  }
+
   const w = state.currentWeek;
   document.getElementById('weekNum').textContent = `Неделя ${w}`;
   document.getElementById('weekDates').textContent = getWeekDates(w);
@@ -2378,7 +2419,6 @@ function renderTasks() {
   document.getElementById('weekProg').textContent = `${wDone} из ${wTasks.length} выполнено`;
 
   const cats = [...new Set(wTasks.map(t => t.cat))];
-  const el = document.getElementById('tasksList');
 
   if (!wTasks.length) {
     el.innerHTML = '<div class="empty-state"><div class="e-icon">📭</div>На этой неделе задач нет</div>';
@@ -2508,6 +2548,7 @@ function switchTab(tab) {
 }
 
 function changeWeek(d) {
+  if (!isCourseStarted()) return;
   state.currentWeek = Math.max(1, Math.min(35, state.currentWeek + d));
   saveState();
   renderTasks();
@@ -3419,12 +3460,12 @@ async function getAiExplanation(q, isCorrect) {
   const weak = getWeakThemes().slice(0, 3).map(w => w.subtopic).join(', ');
 
   try {
-    // Вызываем через Яндекс сервер — работает из России!
+    // Вызываем через Яндекс Cloud Functions + YandexGPT
     const response = await fetch(SERVER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        event: 'ai_analyze',
+        event_name: 'ai_analyze',
         question: q.question,
         correct: q.correct,
         isCorrect,
@@ -3433,8 +3474,19 @@ async function getAiExplanation(q, isCorrect) {
         weakThemes: weak || 'пока нет данных'
       })
     });
+
     const data = await response.json();
-    aiEl.textContent = '🤖 ' + (data.text || 'Продолжай практиковаться!');
+    let text = data?.text || '';
+
+    // Для Cloud Functions бывает формат: { statusCode, body: "{\"text\":\"...\"}" }
+    if (!text && data?.body) {
+      try {
+        const inner = typeof data.body === 'string' ? JSON.parse(data.body) : data.body;
+        text = inner?.text || '';
+      } catch (_) {}
+    }
+
+    aiEl.textContent = '🤖 ' + (text || 'Продолжай практиковаться!');
   } catch(e) {
     aiEl.textContent = '🤖 Продолжай практиковаться — повторение укрепляет знания!';
   }
