@@ -3415,7 +3415,9 @@ function renderQuestion(q) {
         </div>
       </div>
     </div>
-    ${q.type === 'match' ? `<button class="quiz-btn primary" onclick="quizCheckMatch()" style="width:100%;margin-bottom:10px">Проверить →</button>` : ''}
+    ${(q.type === 'match' || q.type === 'multi')
+      ? `<button class="quiz-btn primary" onclick="${q.type === 'match' ? 'quizCheckMatch()' : 'quizCheckMulti()'}" style="width:100%;margin-bottom:10px">Проверить →</button>`
+      : ''}
   `;
 }
 
@@ -3453,6 +3455,44 @@ function quizCheckSingle() {
   saveQuizResult(currentQuestion.id, isCorrect);
   if (isCorrect) getAiExplanation(currentQuestion, true);
   else getAiExplanation(currentQuestion, false);
+}
+
+function quizCheckMulti() {
+  if (quizAnswered || !currentQuestion) return;
+
+  const selectedBtns = [...document.querySelectorAll('.quiz-option.selected')];
+  if (!selectedBtns.length) return;
+
+  quizAnswered = true;
+
+  const opts = currentQuestion.options || [];
+  const selectedLetters = selectedBtns
+    .map(btn => parseInt(btn.dataset.idx, 10))
+    .filter(i => !Number.isNaN(i))
+    .map(i => (opts[i] || '').trim().charAt(0).toUpperCase())
+    .sort();
+
+  const correctLetters = String(currentQuestion.correct || '')
+    .split(/[;,\s]+/)
+    .map(x => x.trim().toUpperCase())
+    .filter(Boolean)
+    .sort();
+
+  const isCorrect = selectedLetters.length === correctLetters.length &&
+    selectedLetters.every((v, i) => v === correctLetters[i]);
+
+  document.querySelectorAll('.quiz-option').forEach((b, i) => {
+    const letter = (opts[i] || '').trim().charAt(0).toUpperCase();
+    if (correctLetters.includes(letter)) {
+      b.classList.add('correct');
+    } else if (b.classList.contains('selected')) {
+      b.classList.add('wrong');
+    }
+  });
+
+  showFeedback(isCorrect, currentQuestion.explanation || 'Проверь выбранные варианты и сравни их с правильным набором ответов.');
+  saveQuizResult(currentQuestion.id, isCorrect);
+  getAiExplanation(currentQuestion, isCorrect);
 }
 
 function quizCheckMatch() {
