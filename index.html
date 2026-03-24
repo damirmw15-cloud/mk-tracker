@@ -3433,21 +3433,57 @@ function quizSelect(btn, type) {
   }
 }
 
+function parseCorrectOptionIndexes(correctRaw, options = []) {
+  const normalizeToken = (token) => String(token || '').trim().toUpperCase();
+
+  const tokens = Array.isArray(correctRaw)
+    ? correctRaw.map(normalizeToken).filter(Boolean)
+    : String(correctRaw || '')
+        .split(/[;,\s]+/)
+        .map(normalizeToken)
+        .filter(Boolean);
+
+  const ruLetters = ['А','Б','В','Г','Д','Е','Ж','З','И','К','Л','М','Н','О','П'];
+  const enLetters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P'];
+
+  return tokens
+    .map(token => {
+      if (/^\d+$/.test(token)) {
+        const idx = parseInt(token, 10) - 1;
+        return idx >= 0 ? idx : null;
+      }
+
+      const ruIndex = ruLetters.indexOf(token);
+      if (ruIndex !== -1) return ruIndex;
+
+      const enIndex = enLetters.indexOf(token);
+      if (enIndex !== -1) return enIndex;
+
+      const byTextIndex = options.findIndex(opt => String(opt || '').trim().toUpperCase() === token);
+      if (byTextIndex !== -1) return byTextIndex;
+
+      return null;
+    })
+    .filter(v => v !== null)
+    .filter((v, i, arr) => arr.indexOf(v) === i)
+    .sort((a, b) => a - b);
+}
+
 function quizCheckSingle() {
   if (quizAnswered || !currentQuestion) return;
-  quizAnswered = true;
   const selected = document.querySelector('.quiz-option.selected');
   if (!selected) return;
-  const idx = parseInt(selected.dataset.idx);
-  const opts = currentQuestion.options || [];
-  const selectedLetter = opts[idx]?.charAt(0);
-  const correct = currentQuestion.correct?.trim().toUpperCase();
-  const isCorrect = selectedLetter === correct;
 
-  // Color options
+  quizAnswered = true;
+
+  const idx = parseInt(selected.dataset.idx, 10);
+  const opts = currentQuestion.options || [];
+  const correctIndexes = parseCorrectOptionIndexes(currentQuestion.correct, opts);
+  const correctIndex = correctIndexes.length ? correctIndexes[0] : -1;
+  const isCorrect = idx === correctIndex;
+
   document.querySelectorAll('.quiz-option').forEach((b, i) => {
-    const letter = opts[i]?.charAt(0);
-    if (letter === correct) b.classList.add('correct');
+    if (i === correctIndex) b.classList.add('correct');
     else if (b.classList.contains('selected')) b.classList.add('wrong');
   });
 
@@ -3466,24 +3502,18 @@ function quizCheckMulti() {
   quizAnswered = true;
 
   const opts = currentQuestion.options || [];
-  const selectedLetters = selectedBtns
+  const selectedIndexes = selectedBtns
     .map(btn => parseInt(btn.dataset.idx, 10))
     .filter(i => !Number.isNaN(i))
-    .map(i => (opts[i] || '').trim().charAt(0).toUpperCase())
-    .sort();
+    .sort((a, b) => a - b);
 
-  const correctLetters = String(currentQuestion.correct || '')
-    .split(/[;,\s]+/)
-    .map(x => x.trim().toUpperCase())
-    .filter(Boolean)
-    .sort();
+  const correctIndexes = parseCorrectOptionIndexes(currentQuestion.correct, opts);
 
-  const isCorrect = selectedLetters.length === correctLetters.length &&
-    selectedLetters.every((v, i) => v === correctLetters[i]);
+  const isCorrect = selectedIndexes.length === correctIndexes.length &&
+    selectedIndexes.every((v, i) => v === correctIndexes[i]);
 
   document.querySelectorAll('.quiz-option').forEach((b, i) => {
-    const letter = (opts[i] || '').trim().charAt(0).toUpperCase();
-    if (correctLetters.includes(letter)) {
+    if (correctIndexes.includes(i)) {
       b.classList.add('correct');
     } else if (b.classList.contains('selected')) {
       b.classList.add('wrong');
@@ -3612,10 +3642,12 @@ function adminAddQuestion() {
 
   if (addQType === 'single' || addQType === 'multi') {
     const optsRaw = document.getElementById('addQOptions').value.trim();
-    const correct = document.getElementById('addQCorrect').value.trim().toUpperCase();
+    const correct = document.getElementById('addQCorrect').value.trim();
     if (!optsRaw || !correct) { showToast('⚠️ Заполни варианты и правильный ответ'); return; }
     qData.options = optsRaw.split('\n').filter(l => l.trim());
-    qData.correct = correct;
+    qData.correct = (addQType === 'multi'
+      ? correct.split(/[;,\s]+/).map(x => x.trim()).filter(Boolean)
+      : correct);
   } else if (addQType === 'match') {
     const pairsRaw = document.getElementById('addQPairs').value.trim();
     if (!pairsRaw) { showToast('⚠️ Введи пары сопоставления'); return; }
@@ -3742,7 +3774,7 @@ function openEditQModal(qid) {
 
   if (!isMatch) {
     document.getElementById('editQOptions').value = (q.options || []).join('\n');
-    document.getElementById('editQCorrect').value = q.correct || '';
+    document.getElementById('editQCorrect').value = Array.isArray(q.correct) ? q.correct.join(', ') : (q.correct || '');
   } else {
     document.getElementById('editQPairs').value = (q.pairs || []).map(p => `${p.term}|${p.definition}`).join('\n');
   }
@@ -3774,7 +3806,9 @@ function adminSaveQuestion() {
 
   if (q.type !== 'match') {
     updated.options = document.getElementById('editQOptions').value.trim().split('\n').filter(l=>l.trim());
-    updated.correct = document.getElementById('editQCorrect').value.trim().toUpperCase();
+    updated.correct = (q.type === 'multi'
+      ? document.getElementById('editQCorrect').value.trim().split(/[;,\s]+/).map(x => x.trim()).filter(Boolean)
+      : document.getElementById('editQCorrect').value.trim());
   } else {
     updated.pairs = document.getElementById('editQPairs').value.trim()
       .split('\n').filter(l=>l.includes('|'))
