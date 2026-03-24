@@ -898,17 +898,48 @@ body {
 .quiz-feedback.wrong-fb .quiz-feedback-title { color: #C0392B; }
 .quiz-feedback-text { font-size: 12px; font-weight: 600; color: var(--text2); line-height: 1.5; }
 .quiz-ai-analysis {
-  margin-top: 10px;
-  padding: 10px;
-  background: rgba(100,175,220,0.1);
-  border-radius: 10px;
-  font-size: 12px;
+  margin-top: 14px;
+  padding: 14px 14px 12px;
+  background: linear-gradient(180deg, #F5FAFF 0%, #EEF6FF 100%);
+  border: 1.5px solid #D7E8FB;
+  border-radius: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text2);
-  line-height: 1.5;
+  line-height: 1.55;
   display: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
 }
 .quiz-ai-analysis.show { display: block; }
+.quiz-ai-analysis.loading {
+  color: #6B87A8;
+}
+.quiz-ai-analysis-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4A78A8;
+  margin-bottom: 8px;
+}
+.quiz-ai-analysis-body {
+  color: var(--text2);
+}
+.quiz-ai-analysis.soft {
+  background: linear-gradient(180deg, #F8FAFC 0%, #F2F5F9 100%);
+  border-color: #E4EAF2;
+}
+.quiz-ai-analysis.error {
+  background: linear-gradient(180deg, #FFF7F7 0%, #FFF1F1 100%);
+  border-color: #F5CACA;
+}
+.quiz-ai-analysis-tip {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #7A8AA0;
+}
 
 .quiz-action-row {
   display: flex;
@@ -3377,7 +3408,11 @@ function renderQuestion(q) {
       <div class="quiz-feedback" id="quizFeedback">
         <div class="quiz-feedback-title" id="quizFeedbackTitle"></div>
         <div class="quiz-feedback-text" id="quizFeedbackText"></div>
-        <div class="quiz-ai-analysis" id="quizAiAnalysis">🤖 AI анализирует...</div>
+        <div class="quiz-ai-analysis loading" id="quizAiAnalysis">
+          <div class="quiz-ai-analysis-title">🤖 Совет от ИИ</div>
+          <div class="quiz-ai-analysis-body" id="quizAiAnalysisBody">AI анализирует ответ...</div>
+          <div class="quiz-ai-analysis-tip" id="quizAiAnalysisTip">Это короткая подсказка по ошибке или теме.</div>
+        </div>
       </div>
     </div>
     ${q.type === 'match' ? `<button class="quiz-btn primary" onclick="quizCheckMatch()" style="width:100%;margin-bottom:10px">Проверить →</button>` : ''}
@@ -3453,14 +3488,17 @@ function showFeedback(isCorrect, explanation) {
 // ─── AI explanation via Anthropic API ───
 async function getAiExplanation(q, isCorrect) {
   const aiEl = document.getElementById('quizAiAnalysis');
-  if (!aiEl) return;
-  aiEl.classList.add('show');
-  aiEl.textContent = '🤖 AI анализирует...';
+  const aiBody = document.getElementById('quizAiAnalysisBody');
+  const aiTip = document.getElementById('quizAiAnalysisTip');
+  if (!aiEl || !aiBody || !aiTip) return;
+
+  aiEl.className = 'quiz-ai-analysis show loading';
+  aiBody.textContent = 'AI анализирует ответ и подбирает короткую подсказку...';
+  aiTip.textContent = isCorrect ? 'Подсказка поможет закрепить тему.' : 'Подсказка объяснит, что именно перепутано.';
 
   const weak = getWeakThemes().slice(0, 3).map(w => w.subtopic).join(', ');
 
   try {
-    // Вызываем через Яндекс Cloud Functions + YandexGPT
     const response = await fetch(SERVER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -3478,7 +3516,6 @@ async function getAiExplanation(q, isCorrect) {
     const data = await response.json();
     let text = data?.text || '';
 
-    // Для Cloud Functions бывает формат: { statusCode, body: "{\"text\":\"...\"}" }
     if (!text && data?.body) {
       try {
         const inner = typeof data.body === 'string' ? JSON.parse(data.body) : data.body;
@@ -3486,9 +3523,19 @@ async function getAiExplanation(q, isCorrect) {
       } catch (_) {}
     }
 
-    aiEl.textContent = '🤖 ' + (text || 'Продолжай практиковаться!');
+    aiEl.className = 'quiz-ai-analysis show';
+    aiBody.textContent = text || (isCorrect
+      ? 'Ответ верный. Коротко повтори тему ещё раз, чтобы закрепить её.'
+      : 'Продолжай практиковаться — повторение укрепляет знания.');
+    aiTip.textContent = isCorrect
+      ? 'Совет от ИИ для закрепления правильного ответа.'
+      : 'Совет от ИИ показывает, что повторить перед следующим вопросом.';
   } catch(e) {
-    aiEl.textContent = '🤖 Продолжай практиковаться — повторение укрепляет знания!';
+    aiEl.className = 'quiz-ai-analysis show soft';
+    aiBody.textContent = isCorrect
+      ? 'Ответ засчитан. Для закрепления ещё раз проговори ключевое различие по теме.'
+      : 'Не страшно. Сверь пары ещё раз и попробуй коротко объяснить их своими словами.';
+    aiTip.textContent = 'Если сеть недоступна, приложение показывает локальную подсказку.';
   }
 }
 
