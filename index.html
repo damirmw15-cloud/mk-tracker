@@ -1647,7 +1647,9 @@ body {
       <div class="admin-form-row">
         <label class="admin-label">Тип</label>
         <select class="admin-select" id="adminEventType">
-          <option value="event">📌 Событие</option>
+          <option value="lecture">📚 Лекция</option>
+          <option value="seminar">🗣️ Семинар</option>
+          <option value="exam">📝 Зачёт</option>
           <option value="deadline">⏰ Дедлайн</option>
         </select>
       </div>
@@ -2036,7 +2038,7 @@ body {
 const SERVER_URL = 'https://functions.yandexcloud.net/d4evsqthteafbgu33s0b';
 
 const SPRINT_START = new Date('2026-03-30');
-const SPRINT_END   = new Date('2025-11-30');
+const SPRINT_END   = new Date('2026-11-30');
 
 const CATEGORIES = {
   sociology:    { name: 'Социология',    color: '#64AFDC', dot: '#64AFDC', icon: '👥' },
@@ -3137,7 +3139,7 @@ function adminAddEvent() {
     .then(() => {
       document.getElementById('adminEventTitle').value = '';
       document.getElementById('adminEventDesc').value = '';
-      showToast('✅ Событие добавлено!');
+      showToast('✅ Запись добавлена в календарь!');
     })
     .catch(() => showToast('❌ Ошибка сохранения'));
 }
