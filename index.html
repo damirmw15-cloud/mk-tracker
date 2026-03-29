@@ -1659,7 +1659,7 @@ body {
       <span class="admin-section-arrow">▼</span>
     </button>
     <div class="admin-section-body">
-      <div style="font-size:11px;color:var(--text3);font-weight:700;margin-bottom:10px" id="taskEditorModeLabel">Режим: добавление новой задачи</div>
+      <div style="font-size:13px;color:var(--text2);font-weight:800;margin-bottom:10px" id="taskEditorModeLabel">Новая задача</div>
       <div class="admin-inline-grid">
         <div class="admin-form-row">
           <label class="admin-label">Неделя (1–35)</label>
@@ -1722,6 +1722,7 @@ body {
         <label class="admin-label">Поиск по названию</label>
         <input type="text" class="admin-input" id="taskFilterSearch" placeholder="🔍 Найти задачу..." oninput="renderTaskEditorList()">
       </div>
+      <div style="font-size:13px;color:var(--text2);font-weight:800;margin:6px 0 8px">Существующие задачи</div>
       <div style="font-size:11px;color:var(--text3);font-weight:700;margin-bottom:8px" id="taskEditorCount"></div>
       <div id="taskEditorList"></div>
     </div>
@@ -3250,7 +3251,7 @@ function renderTaskEditorWeekOptions() {
 
 function taskEditorReset() {
   taskEditorEditingId = null;
-  document.getElementById('taskEditorModeLabel').textContent = 'Режим: добавление новой задачи';
+  document.getElementById('taskEditorModeLabel').textContent = 'Новая задача';
   document.getElementById('taskEditorWeek').value = '';
   document.getElementById('taskEditorCat').value = 'sociology';
   document.getElementById('taskEditorName').value = '';
@@ -3261,7 +3262,7 @@ function taskEditorEdit(taskId) {
   const task = (firebaseTasks || []).find(t => t.id === taskId);
   if (!task) return;
   taskEditorEditingId = taskId;
-  document.getElementById('taskEditorModeLabel').textContent = `Режим: редактирование задачи ${task.name}`;
+  document.getElementById('taskEditorModeLabel').textContent = `Редактирование задачи: ${task.name}`;
   document.getElementById('taskEditorWeek').value = task.week || '';
   document.getElementById('taskEditorCat').value = task.cat || 'sociology';
   document.getElementById('taskEditorName').value = task.name || '';
