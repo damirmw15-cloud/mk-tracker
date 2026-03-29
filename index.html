@@ -83,108 +83,116 @@ body {
 }
 .streak-label { font-size: 11px; color: rgba(255,255,255,0.85); font-weight: 600; }
 
-/* ─── CHECK-IN MODAL ─── */
-.checkin-overlay {
+.course-pill {
+  background: rgba(255,255,255,0.18);
+  border-radius: 18px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid rgba(255,255,255,0.28);
+  max-width: 170px;
+}
+.course-pill:active { transform: scale(0.97); }
+.course-pill-icon { font-size: 16px; }
+.course-pill-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.course-pill-title {
+  font-size: 11px;
+  color: white;
+  font-weight: 800;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.course-pill-sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.78);
+  font-weight: 700;
+}
+.course-modal {
   position: fixed;
   inset: 0;
-  background: rgba(20, 30, 48, 0.55);
+  background: rgba(24, 37, 54, 0.55);
   backdrop-filter: blur(4px);
-  z-index: 1200;
+  z-index: 1300;
   display: none;
   align-items: center;
   justify-content: center;
   padding: 18px;
 }
-.checkin-overlay.show { display: flex; }
-.checkin-card {
+.course-modal.show { display: flex; }
+.course-modal-card {
   width: 100%;
-  max-width: 360px;
-  background: linear-gradient(180deg, #FFFFFF 0%, #F7FBFF 100%);
+  max-width: 380px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F8FBFF 100%);
   border: 1.5px solid var(--border);
   border-radius: 22px;
-  box-shadow: 0 16px 40px rgba(24, 86, 126, 0.18);
-  padding: 22px 18px 18px;
-  text-align: center;
+  box-shadow: 0 18px 40px rgba(24,86,126,0.18);
+  padding: 18px;
 }
-.checkin-emoji {
-  font-size: 44px;
-  margin-bottom: 10px;
-}
-.checkin-title {
+.course-modal-title {
   font-family: 'Unbounded', sans-serif;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--text);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
-.checkin-subtitle {
-  font-size: 13px;
-  line-height: 1.45;
-  color: var(--text2);
-  margin-bottom: 14px;
-  font-weight: 700;
-}
-.checkin-streak {
-  background: rgba(100, 175, 220, 0.10);
-  border: 1.5px solid #D4E7F8;
-  border-radius: 16px;
-  padding: 12px;
-  margin-bottom: 14px;
-}
-.checkin-streak-top {
-  font-size: 22px;
-  font-weight: 900;
-  color: var(--c1);
-  margin-bottom: 2px;
-}
-.checkin-streak-bottom {
+.course-modal-sub {
   font-size: 12px;
   color: var(--text3);
   font-weight: 700;
+  margin-bottom: 14px;
 }
-.checkin-rewards {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.checkin-reward {
-  flex: 1;
-  background: var(--c5);
+.course-option {
   border: 1.5px solid var(--border);
-  border-radius: 14px;
-  padding: 12px 8px;
+  background: white;
+  border-radius: 16px;
+  padding: 14px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
-.checkin-reward-val {
-  font-family: 'Unbounded', sans-serif;
-  font-size: 16px;
+.course-option.active {
+  border-color: var(--c1);
+  background: var(--c5);
+  box-shadow: 0 6px 18px rgba(100,175,220,0.12);
+}
+.course-option-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.course-option-sub {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text3);
+}
+.course-option-empty {
+  margin-top: 6px;
+  font-size: 11px;
   color: var(--c1);
   font-weight: 800;
 }
-.checkin-reward-lbl {
-  font-size: 11px;
-  color: var(--text3);
-  font-weight: 700;
-  margin-top: 4px;
-}
-.checkin-btn {
+.course-modal-close {
   width: 100%;
+  margin-top: 6px;
   border: none;
-  border-radius: 16px;
-  padding: 14px;
+  border-radius: 14px;
+  padding: 13px;
   background: linear-gradient(135deg, var(--c1), var(--c2));
   color: white;
   font-family: 'Unbounded', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(100,175,220,0.25);
-}
-.checkin-btn:active { transform: scale(0.98); }
-.checkin-note {
-  margin-top: 10px;
-  font-size: 11px;
-  color: var(--text3);
-  font-weight: 700;
 }
 
 
@@ -1405,6 +1413,13 @@ body {
       </button>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
+      <div class="course-pill" onclick="openCourseModal()">
+        <div class="course-pill-icon">🎓</div>
+        <div class="course-pill-text">
+          <div class="course-pill-title" id="courseSwitchTitle">Обществознание</div>
+          <div class="course-pill-sub" id="courseSwitchSub">Поток 1</div>
+        </div>
+      </div>
       <div class="streak-pill" onclick="openCheckinInfo()">
         <span>🔥</span>
         <div>
@@ -1885,6 +1900,16 @@ const CATEGORIES = {
   crossdiscipline:{ name: 'Кросс',       color: '#90CADC', dot: '#90CADC', icon: '🔗' },
 };
 
+const HISTORY_CATEGORIES = {
+  ancient:      { name: 'Древняя Русь',            color: '#B38BD4', dot: '#B38BD4', icon: '🏺' },
+  medieval:     { name: 'Средневековье',           color: '#9C8AE6', dot: '#9C8AE6', icon: '🏰' },
+  earlymodern:  { name: 'XVI–XVII века',           color: '#A69BE8', dot: '#A69BE8', icon: '📜' },
+  empire:       { name: 'XVIII–XIX века',          color: '#8FAAD8', dot: '#8FAAD8', icon: '👑' },
+  modern:       { name: 'XX век',                  color: '#7CB8D8', dot: '#7CB8D8', icon: '🕰️' },
+  war:          { name: 'Великая Отечественная',   color: '#7DAE9E', dot: '#7DAE9E', icon: '⭐' },
+  soviet:       { name: 'Вторая половина XX века', color: '#88B7C8', dot: '#88B7C8', icon: '🚩' },
+};
+
 // All tasks distributed across 35 weeks (30 March – 30 November)
 // Week 1 = 30 March – 5 April, etc.
 const ALL_TASKS = [
@@ -2014,6 +2039,62 @@ const ALL_TASKS = [
   { id:'t89', week:35, cat:'politics',    name:'Финальное закрепление: политология',          xp:40, diff:'сложная' },
 ];
 
+const HISTORY_TASKS = [];
+
+const COURSES = {
+  society_stream1: {
+    id: 'society_stream1',
+    title: 'Обществознание',
+    shortTitle: 'Общество',
+    streamLabel: 'Поток 1',
+    fullTitle: 'Обществознание · Поток 1',
+    start: new Date('2025-03-30'),
+    end: new Date('2025-11-30'),
+    categories: CATEGORIES,
+    getTasks: () => ALL_TASKS
+  },
+  history_stream1: {
+    id: 'history_stream1',
+    title: 'История',
+    shortTitle: 'История',
+    streamLabel: 'Поток 1',
+    fullTitle: 'История · Поток 1',
+    start: new Date('2025-03-30'),
+    end: new Date('2025-11-30'),
+    categories: HISTORY_CATEGORIES,
+    getTasks: () => HISTORY_TASKS
+  }
+};
+
+function getCurrentCourse() {
+  return COURSES[state.currentCourseId] || COURSES.society_stream1;
+}
+function getCurrentCourseTasks() {
+  return getCurrentCourse().getTasks();
+}
+function getCurrentCourseCategories() {
+  return getCurrentCourse().categories || {};
+}
+function getCurrentCourseStart() {
+  return getCurrentCourse().start;
+}
+function getCurrentCourseEnd() {
+  return getCurrentCourse().end;
+}
+function getCurrentCourseWeekLimit() {
+  const start = getCurrentCourseStart();
+  const end = getCurrentCourseEnd();
+  return Math.max(1, Math.ceil((end - start + 24*3600*1000) / (7*24*3600*1000)));
+}
+function getCurrentCourseTasksWithAdmin() {
+  const base = [...getCurrentCourseTasks()];
+  if (state.currentCourseId === 'society_stream1') {
+    return [...base, ...(firebaseAdminTasks || [])];
+  }
+  return base;
+}
+
+
 const REWARDS = [
   { id:'r1', icon:'🛌', name:'День полного безделья',          cond:'Закрой первую неделю (все задачи)',  target:4,  type:'week1' },
   { id:'r2', icon:'📖', name:'Книга по социологии',            cond:'Выполни 25% задач',                 target:22, type:'done' },
@@ -2049,14 +2130,14 @@ let state = {
   done: {},          // taskId -> true
   streak: 0,
   lastStreakDate: null,
-  lastCheckinClaim: null,
-  bonusXP: 0,
   totalXP: 0,
   level: 1,
   rank: 'Новичок',
   charStage: 0,
   unlockedAchievements: {},
   todayDone: 0,
+  currentCourseId: 'society_stream1',
+  courseWeeks: {},
   currentWeek: 1,
 };
 
@@ -2069,6 +2150,7 @@ const TG = window.Telegram?.WebApp;
 
 function saveState() {
   const data = JSON.stringify(state);
+  localStorage.setItem('mk_last_course', state.currentCourseId || 'society_stream1');
   // localStorage — быстрый локальный кэш
   localStorage.setItem('mk_tracker_v2', data);
   // Firebase — основное облачное хранилище
@@ -2081,23 +2163,28 @@ function loadState() {
   // Грузим из localStorage как быстрый кэш пока Firebase не ответил
   const s = localStorage.getItem('mk_tracker_v2');
   if (s) { try { state = { ...state, ...JSON.parse(s) }; } catch(e){} }
+  const savedCourse = localStorage.getItem('mk_last_course');
+  if (!state.currentCourseId && savedCourse) state.currentCourseId = savedCourse;
+  if (!COURSES[state.currentCourseId]) state.currentCourseId = 'society_stream1';
+  state.courseWeeks = state.courseWeeks || {};
   // Основная загрузка — из Firebase, вызывается в onUserLoggedIn
 }
 
 // ═══════════════════════════════════════════════════
 //  COMPUTED
 // ═══════════════════════════════════════════════════
-function getDoneCount() { return Object.keys(state.done).filter(k => state.done[k]).length; }
-function getTotalXP() { return ALL_TASKS.filter(t => state.done[t.id]).reduce((s,t)=>s+t.xp,0) + (state.bonusXP || 0); }
+function getDoneCount() { return getCurrentCourseTasks().filter(t => state.done[t.id]).length; }
+function getTotalXP() { return getCurrentCourseTasks().filter(t => state.done[t.id]).reduce((s,t)=>s+t.xp,0) + (state.bonusXP || 0); }
 function getCurrentWeekNum() {
   const now = new Date();
-  // Если курс ещё не начался — показываем неделю 1
-  if (now < SPRINT_START) return 1;
-  const diff = Math.floor((now - SPRINT_START) / (7*24*3600*1000));
-  return Math.min(Math.max(1, diff + 1), 35);
+  const start = getCurrentCourseStart();
+  const maxWeeks = getCurrentCourseWeekLimit();
+  if (now < start) return 1;
+  const diff = Math.floor((now - start) / (7*24*3600*1000));
+  return Math.min(Math.max(1, diff + 1), maxWeeks);
 }
 function getWeekDates(w) {
-  const d = new Date(SPRINT_START);
+  const d = new Date(getCurrentCourseStart());
   d.setDate(d.getDate() + (w-1)*7);
   const end = new Date(d); end.setDate(end.getDate()+6);
   const fmt = d => d.toLocaleDateString('ru-RU', {day:'numeric',month:'short'});
@@ -2109,8 +2196,8 @@ function getLevelInfo(xp) {
   }
   return LEVELS[0];
 }
-function getCatDone(cat) { return ALL_TASKS.filter(t=>t.cat===cat && state.done[t.id]).length; }
-function getCatTotal(cat){ return ALL_TASKS.filter(t=>t.cat===cat).length; }
+function getCatDone(cat) { return getCurrentCourseTasks().filter(t=>t.cat===cat && state.done[t.id]).length; }
+function getCatTotal(cat){ return getCurrentCourseTasks().filter(t=>t.cat===cat).length; }
 
 // ═══════════════════════════════════════════════════
 //  CHARACTER SVG STAGES
@@ -2272,7 +2359,7 @@ function checkAchievements() {
 //  TASK TOGGLE
 // ═══════════════════════════════════════════════════
 function toggleTask(taskId, el) {
-  const task = ALL_TASKS.find(t => t.id === taskId);
+  const task = getCurrentCourseTasksWithAdmin().find(t => t.id === taskId);
   if (!task) return;
 
   const wasDone = !!state.done[taskId];
@@ -2303,106 +2390,21 @@ function toggleTask(taskId, el) {
 }
 
 // ═══════════════════════════════════════════════════
-//  CHECK-IN / STREAK
+//  STREAK
 // ═══════════════════════════════════════════════════
-function formatCheckinDate(date = new Date()) {
-  return date.toDateString();
-}
-
-function getCheckinReward() {
-  const streak = state.streak || 0;
-  if (streak >= 30) return 40;
-  if (streak >= 14) return 30;
-  if (streak >= 7) return 25;
-  if (streak >= 3) return 20;
-  return 15;
-}
-
-function isCheckinAvailableToday() {
-  return state.lastCheckinClaim !== formatCheckinDate();
-}
-
-function refreshCheckinModal() {
-  const streakEl = document.getElementById('checkinStreakValue');
-  const hintEl = document.getElementById('checkinStreakHint');
-  const noteEl = document.getElementById('checkinNote');
-  const rewardEl = document.getElementById('checkinXpReward');
-  const claimBtn = document.getElementById('checkinClaimBtn');
-  if (!streakEl || !hintEl || !noteEl || !rewardEl || !claimBtn) return;
-
-  const streak = state.streak || 0;
-  const reward = getCheckinReward();
-  const available = isCheckinAvailableToday();
-
-  streakEl.textContent = `${streak} ${streak === 1 ? 'день' : (streak >= 2 && streak <= 4 ? 'дня' : 'дней')}`;
-  rewardEl.textContent = `+${reward}`;
-  hintEl.textContent = available
-    ? 'Сегодня можно забрать награду'
-    : 'Бонус за сегодня уже получен';
-  noteEl.textContent = available
-    ? 'Награда начислится в твой текущий XP и обновит прогресс.'
-    : 'Возвращайся завтра, чтобы продолжить серию.';
-  claimBtn.disabled = !available;
-  claimBtn.style.opacity = available ? '1' : '0.6';
-  claimBtn.textContent = available ? 'Забрать награду' : 'Уже забрано';
-}
-
-function showCheckinModal() {
-  refreshCheckinModal();
-  const modal = document.getElementById('checkinModal');
-  if (modal) modal.classList.add('show');
-}
-
-function closeCheckinModal() {
-  const modal = document.getElementById('checkinModal');
-  if (modal) modal.classList.remove('show');
-}
-
-document.addEventListener('click', (e) => {
-  const modal = document.getElementById('checkinModal');
-  if (modal && e.target === modal) closeCheckinModal();
-});
-
-function maybeShowDailyCheckin() {
-  if (isCheckinAvailableToday()) {
-    setTimeout(showCheckinModal, 450);
-  }
-}
-
-function openCheckinInfo() {
-  if (isCheckinAvailableToday()) {
-    showCheckinModal();
-    return;
-  }
-  showToast(`🔥 Серия: ${state.streak || 0} дней подряд`);
-}
-
-function claimDailyCheckin() {
-  if (!isCheckinAvailableToday()) {
-    closeCheckinModal();
-    showToast('✅ Сегодняшний бонус уже забран');
-    return;
-  }
-
-  const today = new Date();
-  const todayKey = formatCheckinDate(today);
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-
-  if (state.lastStreakDate === formatCheckinDate(yesterday)) {
-    state.streak = (state.streak || 0) + 1;
-  } else if (state.lastStreakDate !== todayKey) {
+function clickStreak() {
+  const today = new Date().toDateString();
+  if (state.lastStreakDate === today) return;
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate()-1);
+  if (state.lastStreakDate === yesterday.toDateString()) {
+    state.streak++;
+  } else {
     state.streak = 1;
   }
-
-  state.lastStreakDate = todayKey;
-  state.lastCheckinClaim = todayKey;
-  state.bonusXP = (state.bonusXP || 0) + getCheckinReward();
-
+  state.lastStreakDate = today;
   saveState();
-  renderAll();
-  closeCheckinModal();
-  showToast(`🔥 Чек-ин засчитан: +${getCheckinReward()} XP`);
+  document.getElementById('streakCount').textContent = state.streak;
 }
 
 // ═══════════════════════════════════════════════════
@@ -2426,7 +2428,7 @@ function renderHero() {
     ? `${xp - li.xpMin} / ${li.xpMax - li.xpMin}`
     : 'МАКС';
 
-  const total = ALL_TASKS.length;
+  const total = getCurrentCourseTasks().length;
   const pctDone = Math.round(done/total*100);
   document.getElementById('statDone').textContent = done;
   document.getElementById('statTotal').textContent = total;
@@ -2435,7 +2437,7 @@ function renderHero() {
 
 function renderCurrentWeekPreview() {
   const cw = getCurrentWeekNum();
-  const wTasks = ALL_TASKS.filter(t => t.week === cw);
+  const wTasks = getCurrentCourseTasksWithAdmin().filter(t => t.week === cw);
   const wDone = wTasks.filter(t => state.done[t.id]).length;
   const el = document.getElementById('currentWeekPreview');
   if (!wTasks.length) { el.innerHTML = '<div class="empty-state"><div class="e-icon">✅</div>Задач на эту неделю нет</div>'; return; }
@@ -2493,7 +2495,7 @@ function renderTasks() {
   document.getElementById('weekDates').textContent = getWeekDates(w);
 
   // Combine base tasks + admin-added tasks from Firebase
-  const allTasks = [...ALL_TASKS, ...(firebaseAdminTasks || [])];
+  const allTasks = getCurrentCourseTasksWithAdmin();
   const wTasks = allTasks.filter(t => t.week === w);
   const wDone = wTasks.filter(t => state.done[t.id]).length;
   document.getElementById('weekProg').textContent = `${wDone} из ${wTasks.length} выполнено`;
@@ -2502,13 +2504,13 @@ function renderTasks() {
   const el = document.getElementById('tasksList');
 
   if (!wTasks.length) {
-    el.innerHTML = '<div class="empty-state"><div class="e-icon">📭</div>На этой неделе задач нет</div>';
+    el.innerHTML = `<div class="empty-state"><div class="e-icon">📭</div>${getCurrentCourse().getTasks().length ? 'На этой неделе задач нет' : 'Для этого курса пока не добавлены задачи'}</div>`;
     return;
   }
 
   el.innerHTML = cats.map(cat => {
     const catTasks = wTasks.filter(t => t.cat === cat);
-    const catInfo = CATEGORIES[cat];
+    const catInfo = getCurrentCourseCategories()[cat];
     const catXP = catTasks.reduce((s,t) => s + t.xp, 0);
     return `<div class="category-block">
       <div class="cat-header">
@@ -2528,12 +2530,17 @@ function renderTasks() {
 }
 
 function renderProgress() {
-  const cats = Object.keys(CATEGORIES);
+  const cats = Object.keys(getCurrentCourseCategories());
+  if (!cats.length) {
+    document.getElementById('categoryProgress').innerHTML = '<div class="empty-state"><div class="e-icon">📚</div>Для этого курса блоки прогресса появятся после добавления программы</div>';
+    document.getElementById('achievementsGrid').innerHTML = '';
+    return;
+  }
   document.getElementById('categoryProgress').innerHTML = cats.map(cat => {
     const total = getCatTotal(cat);
     const done = getCatDone(cat);
     const pct = total ? Math.round(done/total*100) : 0;
-    const catInfo = CATEGORIES[cat];
+    const catInfo = getCurrentCourseCategories()[cat];
     return `<div class="cat-progress-card">
       <div class="cat-progress-header">
         <div class="cat-progress-name">
@@ -2578,9 +2585,13 @@ function renderProgress() {
 
 function renderRewards() {
   const done = getDoneCount();
-  const week1Tasks = ALL_TASKS.filter(t => t.week === 1);
+  if (!getCurrentCourseTasks().length) {
+    document.getElementById('rewardsList').innerHTML = '<div class="empty-state"><div class="e-icon">🎁</div>Награды появятся после добавления задач в этот курс</div>';
+    return;
+  }
+  const week1Tasks = getCurrentCourseTasks().filter(t => t.week === 1);
   const week1Done = week1Tasks.filter(t => state.done[t.id]).length;
-  const total = ALL_TASKS.length;
+  const total = getCurrentCourseTasks().length;
 
   document.getElementById('rewardsList').innerHTML = REWARDS.map(r => {
     let prog = 0, progMax = r.target, unlocked = false;
@@ -2603,6 +2614,7 @@ function renderRewards() {
 }
 
 function renderAll() {
+  renderCourseSwitcherLabel();
   renderHero();
   renderCurrentWeekPreview();
   renderRecentBadges();
@@ -2610,6 +2622,49 @@ function renderAll() {
   renderProgress();
   renderRewards();
   updateCharStage();
+}
+
+function renderCourseSwitcherLabel() {
+  const course = getCurrentCourse();
+  const titleEl = document.getElementById('courseSwitchTitle');
+  const subEl = document.getElementById('courseSwitchSub');
+  if (titleEl) titleEl.textContent = course.shortTitle || course.title;
+  if (subEl) subEl.textContent = course.streamLabel || '';
+}
+
+function openCourseModal() {
+  const modal = document.getElementById('courseModal');
+  const list = document.getElementById('courseOptions');
+  if (!modal || !list) return;
+
+  list.innerHTML = Object.values(COURSES).map(course => {
+    const isActive = course.id === state.currentCourseId;
+    const empty = course.getTasks().length === 0;
+    return `<div class="course-option ${isActive ? 'active' : ''}" onclick="selectCourse('${course.id}')">
+      <div class="course-option-title">${course.title} · ${course.streamLabel}</div>
+      <div class="course-option-sub">Откроется последний использованный курс без лишнего выбора при входе.</div>
+      ${empty ? `<div class="course-option-empty">Контент для этого курса можно добавить позже</div>` : ''}
+    </div>`;
+  }).join('');
+
+  modal.classList.add('show');
+}
+
+function closeCourseModal() {
+  const modal = document.getElementById('courseModal');
+  if (modal) modal.classList.remove('show');
+}
+
+function selectCourse(courseId) {
+  if (!COURSES[courseId]) return;
+  state.currentCourseId = courseId;
+  state.courseWeeks = state.courseWeeks || {};
+  state.currentWeek = state.courseWeeks[courseId] || getCurrentWeekNum();
+  localStorage.setItem('mk_last_course', courseId);
+  saveState();
+  closeCourseModal();
+  renderAll();
+  showToast(`📚 Курс переключён: ${COURSES[courseId].title}`);
 }
 
 // ═══════════════════════════════════════════════════
@@ -2629,7 +2684,10 @@ function switchTab(tab) {
 }
 
 function changeWeek(d) {
-  state.currentWeek = Math.max(1, Math.min(35, state.currentWeek + d));
+  const maxWeeks = getCurrentCourseWeekLimit();
+  state.currentWeek = Math.max(1, Math.min(maxWeeks, state.currentWeek + d));
+  state.courseWeeks = state.courseWeeks || {};
+  state.courseWeeks[state.currentCourseId] = state.currentWeek;
   saveState();
   renderTasks();
 }
@@ -2793,9 +2851,10 @@ function onUserLoggedIn(user) {
     if (saved) {
       try { state = { ...state, ...JSON.parse(saved.data) }; } catch(e){}
     }
-    state.currentWeek = state.currentWeek || getCurrentWeekNum();
+    if (!COURSES[state.currentCourseId]) state.currentCourseId = localStorage.getItem('mk_last_course') || 'society_stream1';
+    state.courseWeeks = state.courseWeeks || {};
+    state.currentWeek = state.courseWeeks[state.currentCourseId] || getCurrentWeekNum();
     renderAll();
-    maybeShowDailyCheckin();
     hideLoading();
   });
   // Auto-save every 30s
@@ -2828,7 +2887,7 @@ function saveProgressToFirebase() {
   db.ref(`students/${uid}`).set({
     name,
     done: getDoneCount(),
-    total: ALL_TASKS.length + firebaseAdminTasks.length,
+    total: getCurrentCourseTasksWithAdmin().length,
     xp: getTotalXP(),
     rank: getLevelInfo(getTotalXP()).rank,
     streak: state.streak || 0,
@@ -3006,7 +3065,7 @@ function renderCalendar() {
   // Task deadlines from week structure
   const taskDates = {};
   for (let w = 1; w <= 35; w++) {
-    const wDate = new Date(SPRINT_START);
+    const wDate = new Date(getCurrentCourseStart());
     wDate.setDate(wDate.getDate() + (w-1)*7 + 6); // end of week = Sunday
     const key = wDate.toISOString().slice(0,10);
     if (wDate.getFullYear() === calYear && wDate.getMonth() === calMonth) {
@@ -3064,10 +3123,10 @@ function renderCalendarEvents(filterDate) {
 
   // Week end deadlines
   for (let w = 1; w <= 35; w++) {
-    const wDate = new Date(SPRINT_START);
+    const wDate = new Date(getCurrentCourseStart());
     wDate.setDate(wDate.getDate() + (w-1)*7 + 6);
     if (wDate.getFullYear()===calYear && wDate.getMonth()===calMonth) {
-      const wTasks = [...ALL_TASKS, ...firebaseAdminTasks].filter(t=>t.week===w);
+      const wTasks = getCurrentCourseTasksWithAdmin().filter(t=>t.week===w);
       const wDone  = wTasks.filter(t=>state.done[t.id]).length;
       allEvents.push({
         date: wDate.toISOString().slice(0,10),
@@ -3786,33 +3845,5 @@ function adminDeleteQuestion(qid) {
     .catch(() => showToast('❌ Ошибка'));
 }
 </script>
-
-<div class="checkin-overlay" id="checkinModal">
-  <div class="checkin-card">
-    <div class="checkin-emoji">🔥</div>
-    <div class="checkin-title">Ежедневный чек-ин</div>
-    <div class="checkin-subtitle">Забери бонус за вход и поддерживай серию дней подряд.</div>
-
-    <div class="checkin-streak">
-      <div class="checkin-streak-top" id="checkinStreakValue">0 дней</div>
-      <div class="checkin-streak-bottom" id="checkinStreakHint">Сегодня можно забрать награду</div>
-    </div>
-
-    <div class="checkin-rewards">
-      <div class="checkin-reward">
-        <div class="checkin-reward-val" id="checkinXpReward">+15</div>
-        <div class="checkin-reward-lbl">XP</div>
-      </div>
-      <div class="checkin-reward">
-        <div class="checkin-reward-val">🔥</div>
-        <div class="checkin-reward-lbl">в серию</div>
-      </div>
-    </div>
-
-    <button class="checkin-btn" id="checkinClaimBtn" onclick="claimDailyCheckin()">Забрать награду</button>
-    <div class="checkin-note" id="checkinNote">Чем длиннее серия, тем приятнее прогресс.</div>
-  </div>
-</div>
-
 </body>
 </html>
