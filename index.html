@@ -38,13 +38,12 @@ body {
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
 }
 
 /* ─── HEADER ─── */
 .header {
   background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 100%);
-  padding: calc(12px + env(safe-area-inset-top)) 16px 0;
+  padding: 20px 16px 0;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -83,6 +82,111 @@ body {
   color: white;
 }
 .streak-label { font-size: 11px; color: rgba(255,255,255,0.85); font-weight: 600; }
+
+/* ─── CHECK-IN MODAL ─── */
+.checkin-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 30, 48, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+.checkin-overlay.show { display: flex; }
+.checkin-card {
+  width: 100%;
+  max-width: 360px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #F7FBFF 100%);
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(24, 86, 126, 0.18);
+  padding: 22px 18px 18px;
+  text-align: center;
+}
+.checkin-emoji {
+  font-size: 44px;
+  margin-bottom: 10px;
+}
+.checkin-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.checkin-subtitle {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text2);
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+.checkin-streak {
+  background: rgba(100, 175, 220, 0.10);
+  border: 1.5px solid #D4E7F8;
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+.checkin-streak-top {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--c1);
+  margin-bottom: 2px;
+}
+.checkin-streak-bottom {
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 700;
+}
+.checkin-rewards {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.checkin-reward {
+  flex: 1;
+  background: var(--c5);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 8px;
+}
+.checkin-reward-val {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 16px;
+  color: var(--c1);
+  font-weight: 800;
+}
+.checkin-reward-lbl {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 700;
+  margin-top: 4px;
+}
+.checkin-btn {
+  width: 100%;
+  border: none;
+  border-radius: 16px;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  color: white;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(100,175,220,0.25);
+}
+.checkin-btn:active { transform: scale(0.98); }
+.checkin-note {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 700;
+}
+
 
 /* ─── NAV TABS ─── */
 .nav-tabs {
@@ -784,98 +888,28 @@ body {
 .quiz-option.wrong { border-color: #FF6B6B; background: #FFF0F0; color: #C0392B; }
 
 /* Match question */
-.quiz-match-pairs { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
-.quiz-match-row { display: flex; gap: 12px; align-items: stretch; }
+.quiz-match-pairs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.quiz-match-row { display: flex; gap: 8px; align-items: center; }
 .quiz-match-term {
   flex: 1;
-  min-width: 0;
-  padding: 14px 16px;
+  padding: 10px 12px;
   background: var(--c4);
-  border-radius: 16px;
-  font-size: 13px;
-  line-height: 1.35;
-  font-weight: 800;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--text);
 }
 .quiz-match-select {
   flex: 1;
-  min-width: 0;
-  width: 100%;
-  padding: 14px 16px;
+  padding: 10px 12px;
   border: 1.5px solid var(--border);
-  border-radius: 16px;
+  border-radius: 10px;
   font-family: 'Nunito', sans-serif;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--text);
   background: white;
   outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-
-@media (max-width: 700px) {
-  .header {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-  .header-top {
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  .header-title {
-    font-size: 15px;
-    line-height: 1.15;
-  }
-  .streak-pill {
-    padding: 6px 10px;
-    border-radius: 16px;
-  }
-  .streak-count {
-    font-size: 12px;
-  }
-  .streak-label {
-    font-size: 10px;
-  }
-  .nav-tabs {
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
-  }
-  .nav-tabs::-webkit-scrollbar {
-    display: none;
-  }
-  .nav-tab {
-    flex: 0 0 auto;
-    min-width: 74px;
-    padding: 10px 8px;
-    font-size: 11px;
-    white-space: nowrap;
-  }
-  .main {
-    padding: 12px;
-  }
-}
-
-@media (max-width: 520px) {
-  .quiz-question-card {
-    padding: 16px;
-    border-radius: 18px;
-  }
-  .quiz-question-text {
-    font-size: 15px;
-    line-height: 1.4;
-  }
-  .quiz-match-row {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .quiz-match-term,
-  .quiz-match-select {
-    width: 100%;
-  }
 }
 
 /* Answer feedback */
@@ -898,48 +932,17 @@ body {
 .quiz-feedback.wrong-fb .quiz-feedback-title { color: #C0392B; }
 .quiz-feedback-text { font-size: 12px; font-weight: 600; color: var(--text2); line-height: 1.5; }
 .quiz-ai-analysis {
-  margin-top: 14px;
-  padding: 14px 14px 12px;
-  background: linear-gradient(180deg, #F5FAFF 0%, #EEF6FF 100%);
-  border: 1.5px solid #D7E8FB;
-  border-radius: 14px;
-  font-size: 13px;
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(100,175,220,0.1);
+  border-radius: 10px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--text2);
-  line-height: 1.55;
+  line-height: 1.5;
   display: none;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
 }
 .quiz-ai-analysis.show { display: block; }
-.quiz-ai-analysis.loading {
-  color: #6B87A8;
-}
-.quiz-ai-analysis-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: 'Unbounded', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  color: #4A78A8;
-  margin-bottom: 8px;
-}
-.quiz-ai-analysis-body {
-  color: var(--text2);
-}
-.quiz-ai-analysis.soft {
-  background: linear-gradient(180deg, #F8FAFC 0%, #F2F5F9 100%);
-  border-color: #E4EAF2;
-}
-.quiz-ai-analysis.error {
-  background: linear-gradient(180deg, #FFF7F7 0%, #FFF1F1 100%);
-  border-color: #F5CACA;
-}
-.quiz-ai-analysis-tip {
-  margin-top: 8px;
-  font-size: 11px;
-  color: #7A8AA0;
-}
 
 .quiz-action-row {
   display: flex;
@@ -1402,7 +1405,7 @@ body {
       </button>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
-      <div class="streak-pill" onclick="clickStreak()">
+      <div class="streak-pill" onclick="openCheckinInfo()">
         <span>🔥</span>
         <div>
           <div class="streak-count" id="streakCount">0</div>
@@ -1869,7 +1872,7 @@ body {
 // ═══════════════════════════════════════════════════
 const SERVER_URL = 'https://functions.yandexcloud.net/d4evsqthteafbgu33s0b';
 
-const SPRINT_START = new Date('2026-03-30');
+const SPRINT_START = new Date('2025-03-30');
 const SPRINT_END   = new Date('2025-11-30');
 
 const CATEGORIES = {
@@ -2046,6 +2049,8 @@ let state = {
   done: {},          // taskId -> true
   streak: 0,
   lastStreakDate: null,
+  lastCheckinClaim: null,
+  bonusXP: 0,
   totalXP: 0,
   level: 1,
   rank: 'Новичок',
@@ -2083,28 +2088,12 @@ function loadState() {
 //  COMPUTED
 // ═══════════════════════════════════════════════════
 function getDoneCount() { return Object.keys(state.done).filter(k => state.done[k]).length; }
-function getTotalXP() { return ALL_TASKS.filter(t => state.done[t.id]).reduce((s,t)=>s+t.xp,0); }
-function normalizeDate(d) {
-  const x = new Date(d);
-  x.setHours(0,0,0,0);
-  return x;
-}
-function isCourseStarted() {
-  return normalizeDate(new Date()) >= normalizeDate(SPRINT_START);
-}
-function getDaysUntilStart() {
-  const now = normalizeDate(new Date());
-  const start = normalizeDate(SPRINT_START);
-  return Math.max(0, Math.ceil((start - now) / (24*3600*1000)));
-}
-function formatStartDate() {
-  return SPRINT_START.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
-}
+function getTotalXP() { return ALL_TASKS.filter(t => state.done[t.id]).reduce((s,t)=>s+t.xp,0) + (state.bonusXP || 0); }
 function getCurrentWeekNum() {
-  if (!isCourseStarted()) return 0;
-  const now = normalizeDate(new Date());
-  const start = normalizeDate(SPRINT_START);
-  const diff = Math.floor((now - start) / (7*24*3600*1000));
+  const now = new Date();
+  // Если курс ещё не начался — показываем неделю 1
+  if (now < SPRINT_START) return 1;
+  const diff = Math.floor((now - SPRINT_START) / (7*24*3600*1000));
   return Math.min(Math.max(1, diff + 1), 35);
 }
 function getWeekDates(w) {
@@ -2314,21 +2303,106 @@ function toggleTask(taskId, el) {
 }
 
 // ═══════════════════════════════════════════════════
-//  STREAK
+//  CHECK-IN / STREAK
 // ═══════════════════════════════════════════════════
-function clickStreak() {
-  const today = new Date().toDateString();
-  if (state.lastStreakDate === today) return;
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate()-1);
-  if (state.lastStreakDate === yesterday.toDateString()) {
-    state.streak++;
-  } else {
+function formatCheckinDate(date = new Date()) {
+  return date.toDateString();
+}
+
+function getCheckinReward() {
+  const streak = state.streak || 0;
+  if (streak >= 30) return 40;
+  if (streak >= 14) return 30;
+  if (streak >= 7) return 25;
+  if (streak >= 3) return 20;
+  return 15;
+}
+
+function isCheckinAvailableToday() {
+  return state.lastCheckinClaim !== formatCheckinDate();
+}
+
+function refreshCheckinModal() {
+  const streakEl = document.getElementById('checkinStreakValue');
+  const hintEl = document.getElementById('checkinStreakHint');
+  const noteEl = document.getElementById('checkinNote');
+  const rewardEl = document.getElementById('checkinXpReward');
+  const claimBtn = document.getElementById('checkinClaimBtn');
+  if (!streakEl || !hintEl || !noteEl || !rewardEl || !claimBtn) return;
+
+  const streak = state.streak || 0;
+  const reward = getCheckinReward();
+  const available = isCheckinAvailableToday();
+
+  streakEl.textContent = `${streak} ${streak === 1 ? 'день' : (streak >= 2 && streak <= 4 ? 'дня' : 'дней')}`;
+  rewardEl.textContent = `+${reward}`;
+  hintEl.textContent = available
+    ? 'Сегодня можно забрать награду'
+    : 'Бонус за сегодня уже получен';
+  noteEl.textContent = available
+    ? 'Награда начислится в твой текущий XP и обновит прогресс.'
+    : 'Возвращайся завтра, чтобы продолжить серию.';
+  claimBtn.disabled = !available;
+  claimBtn.style.opacity = available ? '1' : '0.6';
+  claimBtn.textContent = available ? 'Забрать награду' : 'Уже забрано';
+}
+
+function showCheckinModal() {
+  refreshCheckinModal();
+  const modal = document.getElementById('checkinModal');
+  if (modal) modal.classList.add('show');
+}
+
+function closeCheckinModal() {
+  const modal = document.getElementById('checkinModal');
+  if (modal) modal.classList.remove('show');
+}
+
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('checkinModal');
+  if (modal && e.target === modal) closeCheckinModal();
+});
+
+function maybeShowDailyCheckin() {
+  if (isCheckinAvailableToday()) {
+    setTimeout(showCheckinModal, 450);
+  }
+}
+
+function openCheckinInfo() {
+  if (isCheckinAvailableToday()) {
+    showCheckinModal();
+    return;
+  }
+  showToast(`🔥 Серия: ${state.streak || 0} дней подряд`);
+}
+
+function claimDailyCheckin() {
+  if (!isCheckinAvailableToday()) {
+    closeCheckinModal();
+    showToast('✅ Сегодняшний бонус уже забран');
+    return;
+  }
+
+  const today = new Date();
+  const todayKey = formatCheckinDate(today);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (state.lastStreakDate === formatCheckinDate(yesterday)) {
+    state.streak = (state.streak || 0) + 1;
+  } else if (state.lastStreakDate !== todayKey) {
     state.streak = 1;
   }
-  state.lastStreakDate = today;
+
+  state.lastStreakDate = todayKey;
+  state.lastCheckinClaim = todayKey;
+  state.bonusXP = (state.bonusXP || 0) + getCheckinReward();
+
   saveState();
-  document.getElementById('streakCount').textContent = state.streak;
+  renderAll();
+  closeCheckinModal();
+  showToast(`🔥 Чек-ин засчитан: +${getCheckinReward()} XP`);
 }
 
 // ═══════════════════════════════════════════════════
@@ -2360,24 +2434,10 @@ function renderHero() {
 }
 
 function renderCurrentWeekPreview() {
-  const el = document.getElementById('currentWeekPreview');
-
-  if (!isCourseStarted()) {
-    const daysLeft = getDaysUntilStart();
-    el.innerHTML = `
-      <div class="empty-state">
-        <div class="e-icon">⏳</div>
-        Курс ещё не начался<br>
-        <span style="font-size:12px;color:var(--text3);font-weight:700">
-          Старт: ${formatStartDate()}${daysLeft ? ` · осталось ${daysLeft} дн.` : ''}
-        </span>
-      </div>`;
-    return;
-  }
-
   const cw = getCurrentWeekNum();
   const wTasks = ALL_TASKS.filter(t => t.week === cw);
   const wDone = wTasks.filter(t => state.done[t.id]).length;
+  const el = document.getElementById('currentWeekPreview');
   if (!wTasks.length) { el.innerHTML = '<div class="empty-state"><div class="e-icon">✅</div>Задач на эту неделю нет</div>'; return; }
   el.innerHTML = `
     <div class="week-nav" style="margin-bottom:8px">
@@ -2428,17 +2488,6 @@ function renderTaskHTML(t) {
 }
 
 function renderTasks() {
-  const el = document.getElementById('tasksList');
-
-  if (!isCourseStarted()) {
-    const daysLeft = getDaysUntilStart();
-    document.getElementById('weekNum').textContent = 'Курс ещё не начался';
-    document.getElementById('weekDates').textContent = `Старт: ${formatStartDate()}`;
-    document.getElementById('weekProg').textContent = daysLeft ? `До старта ${daysLeft} дн.` : '';
-    el.innerHTML = '<div class="empty-state"><div class="e-icon">⏳</div>До старта курса отсчёт недель не идёт</div>';
-    return;
-  }
-
   const w = state.currentWeek;
   document.getElementById('weekNum').textContent = `Неделя ${w}`;
   document.getElementById('weekDates').textContent = getWeekDates(w);
@@ -2450,6 +2499,7 @@ function renderTasks() {
   document.getElementById('weekProg').textContent = `${wDone} из ${wTasks.length} выполнено`;
 
   const cats = [...new Set(wTasks.map(t => t.cat))];
+  const el = document.getElementById('tasksList');
 
   if (!wTasks.length) {
     el.innerHTML = '<div class="empty-state"><div class="e-icon">📭</div>На этой неделе задач нет</div>';
@@ -2579,7 +2629,6 @@ function switchTab(tab) {
 }
 
 function changeWeek(d) {
-  if (!isCourseStarted()) return;
   state.currentWeek = Math.max(1, Math.min(35, state.currentWeek + d));
   saveState();
   renderTasks();
@@ -2746,6 +2795,7 @@ function onUserLoggedIn(user) {
     }
     state.currentWeek = state.currentWeek || getCurrentWeekNum();
     renderAll();
+    maybeShowDailyCheckin();
     hideLoading();
   });
   // Auto-save every 30s
@@ -3408,16 +3458,10 @@ function renderQuestion(q) {
       <div class="quiz-feedback" id="quizFeedback">
         <div class="quiz-feedback-title" id="quizFeedbackTitle"></div>
         <div class="quiz-feedback-text" id="quizFeedbackText"></div>
-        <div class="quiz-ai-analysis loading" id="quizAiAnalysis">
-          <div class="quiz-ai-analysis-title">🤖 Совет от ИИ</div>
-          <div class="quiz-ai-analysis-body" id="quizAiAnalysisBody">AI анализирует ответ...</div>
-          <div class="quiz-ai-analysis-tip" id="quizAiAnalysisTip">Это короткая подсказка по ошибке или теме.</div>
-        </div>
+        <div class="quiz-ai-analysis" id="quizAiAnalysis">🤖 AI анализирует...</div>
       </div>
     </div>
-    ${(q.type === 'match' || q.type === 'multi')
-      ? `<button class="quiz-btn primary" onclick="${q.type === 'match' ? 'quizCheckMatch()' : 'quizCheckMulti()'}" style="width:100%;margin-bottom:10px">Проверить →</button>`
-      : ''}
+    ${q.type === 'match' ? `<button class="quiz-btn primary" onclick="quizCheckMatch()" style="width:100%;margin-bottom:10px">Проверить →</button>` : ''}
   `;
 }
 
@@ -3433,57 +3477,21 @@ function quizSelect(btn, type) {
   }
 }
 
-function parseCorrectOptionIndexes(correctRaw, options = []) {
-  const normalizeToken = (token) => String(token || '').trim().toUpperCase();
-
-  const tokens = Array.isArray(correctRaw)
-    ? correctRaw.map(normalizeToken).filter(Boolean)
-    : String(correctRaw || '')
-        .split(/[;,\s]+/)
-        .map(normalizeToken)
-        .filter(Boolean);
-
-  const ruLetters = ['А','Б','В','Г','Д','Е','Ж','З','И','К','Л','М','Н','О','П'];
-  const enLetters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P'];
-
-  return tokens
-    .map(token => {
-      if (/^\d+$/.test(token)) {
-        const idx = parseInt(token, 10) - 1;
-        return idx >= 0 ? idx : null;
-      }
-
-      const ruIndex = ruLetters.indexOf(token);
-      if (ruIndex !== -1) return ruIndex;
-
-      const enIndex = enLetters.indexOf(token);
-      if (enIndex !== -1) return enIndex;
-
-      const byTextIndex = options.findIndex(opt => String(opt || '').trim().toUpperCase() === token);
-      if (byTextIndex !== -1) return byTextIndex;
-
-      return null;
-    })
-    .filter(v => v !== null)
-    .filter((v, i, arr) => arr.indexOf(v) === i)
-    .sort((a, b) => a - b);
-}
-
 function quizCheckSingle() {
   if (quizAnswered || !currentQuestion) return;
+  quizAnswered = true;
   const selected = document.querySelector('.quiz-option.selected');
   if (!selected) return;
-
-  quizAnswered = true;
-
-  const idx = parseInt(selected.dataset.idx, 10);
+  const idx = parseInt(selected.dataset.idx);
   const opts = currentQuestion.options || [];
-  const correctIndexes = parseCorrectOptionIndexes(currentQuestion.correct, opts);
-  const correctIndex = correctIndexes.length ? correctIndexes[0] : -1;
-  const isCorrect = idx === correctIndex;
+  const selectedLetter = opts[idx]?.charAt(0);
+  const correct = currentQuestion.correct?.trim().toUpperCase();
+  const isCorrect = selectedLetter === correct;
 
+  // Color options
   document.querySelectorAll('.quiz-option').forEach((b, i) => {
-    if (i === correctIndex) b.classList.add('correct');
+    const letter = opts[i]?.charAt(0);
+    if (letter === correct) b.classList.add('correct');
     else if (b.classList.contains('selected')) b.classList.add('wrong');
   });
 
@@ -3491,38 +3499,6 @@ function quizCheckSingle() {
   saveQuizResult(currentQuestion.id, isCorrect);
   if (isCorrect) getAiExplanation(currentQuestion, true);
   else getAiExplanation(currentQuestion, false);
-}
-
-function quizCheckMulti() {
-  if (quizAnswered || !currentQuestion) return;
-
-  const selectedBtns = [...document.querySelectorAll('.quiz-option.selected')];
-  if (!selectedBtns.length) return;
-
-  quizAnswered = true;
-
-  const opts = currentQuestion.options || [];
-  const selectedIndexes = selectedBtns
-    .map(btn => parseInt(btn.dataset.idx, 10))
-    .filter(i => !Number.isNaN(i))
-    .sort((a, b) => a - b);
-
-  const correctIndexes = parseCorrectOptionIndexes(currentQuestion.correct, opts);
-
-  const isCorrect = selectedIndexes.length === correctIndexes.length &&
-    selectedIndexes.every((v, i) => v === correctIndexes[i]);
-
-  document.querySelectorAll('.quiz-option').forEach((b, i) => {
-    if (correctIndexes.includes(i)) {
-      b.classList.add('correct');
-    } else if (b.classList.contains('selected')) {
-      b.classList.add('wrong');
-    }
-  });
-
-  showFeedback(isCorrect, currentQuestion.explanation || 'Проверь выбранные варианты и сравни их с правильным набором ответов.');
-  saveQuizResult(currentQuestion.id, isCorrect);
-  getAiExplanation(currentQuestion, isCorrect);
 }
 
 function quizCheckMatch() {
@@ -3558,22 +3534,19 @@ function showFeedback(isCorrect, explanation) {
 // ─── AI explanation via Anthropic API ───
 async function getAiExplanation(q, isCorrect) {
   const aiEl = document.getElementById('quizAiAnalysis');
-  const aiBody = document.getElementById('quizAiAnalysisBody');
-  const aiTip = document.getElementById('quizAiAnalysisTip');
-  if (!aiEl || !aiBody || !aiTip) return;
-
-  aiEl.className = 'quiz-ai-analysis show loading';
-  aiBody.textContent = 'AI анализирует ответ и подбирает короткую подсказку...';
-  aiTip.textContent = isCorrect ? 'Подсказка поможет закрепить тему.' : 'Подсказка объяснит, что именно перепутано.';
+  if (!aiEl) return;
+  aiEl.classList.add('show');
+  aiEl.textContent = '🤖 AI анализирует...';
 
   const weak = getWeakThemes().slice(0, 3).map(w => w.subtopic).join(', ');
 
   try {
+    // Вызываем через Яндекс сервер — работает из России!
     const response = await fetch(SERVER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        event_name: 'ai_analyze',
+        event: 'ai_analyze',
         question: q.question,
         correct: q.correct,
         isCorrect,
@@ -3582,30 +3555,10 @@ async function getAiExplanation(q, isCorrect) {
         weakThemes: weak || 'пока нет данных'
       })
     });
-
     const data = await response.json();
-    let text = data?.text || '';
-
-    if (!text && data?.body) {
-      try {
-        const inner = typeof data.body === 'string' ? JSON.parse(data.body) : data.body;
-        text = inner?.text || '';
-      } catch (_) {}
-    }
-
-    aiEl.className = 'quiz-ai-analysis show';
-    aiBody.textContent = text || (isCorrect
-      ? 'Ответ верный. Коротко повтори тему ещё раз, чтобы закрепить её.'
-      : 'Продолжай практиковаться — повторение укрепляет знания.');
-    aiTip.textContent = isCorrect
-      ? 'Совет от ИИ для закрепления правильного ответа.'
-      : 'Совет от ИИ показывает, что повторить перед следующим вопросом.';
+    aiEl.textContent = '🤖 ' + (data.text || 'Продолжай практиковаться!');
   } catch(e) {
-    aiEl.className = 'quiz-ai-analysis show soft';
-    aiBody.textContent = isCorrect
-      ? 'Ответ засчитан. Для закрепления ещё раз проговори ключевое различие по теме.'
-      : 'Не страшно. Сверь пары ещё раз и попробуй коротко объяснить их своими словами.';
-    aiTip.textContent = 'Если сеть недоступна, приложение показывает локальную подсказку.';
+    aiEl.textContent = '🤖 Продолжай практиковаться — повторение укрепляет знания!';
   }
 }
 
@@ -3642,16 +3595,16 @@ function adminAddQuestion() {
 
   if (addQType === 'single' || addQType === 'multi') {
     const optsRaw = document.getElementById('addQOptions').value.trim();
-    const correct = document.getElementById('addQCorrect').value.trim();
+    const correct = document.getElementById('addQCorrect').value.trim().toUpperCase();
     if (!optsRaw || !correct) { showToast('⚠️ Заполни варианты и правильный ответ'); return; }
-    qData.options = optsRaw.split('\n').filter(l => l.trim());
-    qData.correct = (addQType === 'multi'
-      ? correct.split(/[;,\s]+/).map(x => x.trim()).filter(Boolean)
-      : correct);
+    qData.options = optsRaw.split('
+').filter(l => l.trim());
+    qData.correct = correct;
   } else if (addQType === 'match') {
     const pairsRaw = document.getElementById('addQPairs').value.trim();
     if (!pairsRaw) { showToast('⚠️ Введи пары сопоставления'); return; }
-    qData.pairs = pairsRaw.split('\n').filter(l => l.includes('|')).map(l => {
+    qData.pairs = pairsRaw.split('
+').filter(l => l.includes('|')).map(l => {
       const [term, definition] = l.split('|');
       return { term: term.trim(), definition: definition.trim() };
     });
@@ -3773,10 +3726,12 @@ function openEditQModal(qid) {
   document.getElementById('editQMatchBlock').style.display = isMatch ? '' : 'none';
 
   if (!isMatch) {
-    document.getElementById('editQOptions').value = (q.options || []).join('\n');
-    document.getElementById('editQCorrect').value = Array.isArray(q.correct) ? q.correct.join(', ') : (q.correct || '');
+    document.getElementById('editQOptions').value = (q.options || []).join('
+');
+    document.getElementById('editQCorrect').value = q.correct || '';
   } else {
-    document.getElementById('editQPairs').value = (q.pairs || []).map(p => `${p.term}|${p.definition}`).join('\n');
+    document.getElementById('editQPairs').value = (q.pairs || []).map(p => `${p.term}|${p.definition}`).join('
+');
   }
 
   document.getElementById('editQModal').style.display = 'block';
@@ -3805,13 +3760,13 @@ function adminSaveQuestion() {
   };
 
   if (q.type !== 'match') {
-    updated.options = document.getElementById('editQOptions').value.trim().split('\n').filter(l=>l.trim());
-    updated.correct = (q.type === 'multi'
-      ? document.getElementById('editQCorrect').value.trim().split(/[;,\s]+/).map(x => x.trim()).filter(Boolean)
-      : document.getElementById('editQCorrect').value.trim());
+    updated.options = document.getElementById('editQOptions').value.trim().split('
+').filter(l=>l.trim());
+    updated.correct = document.getElementById('editQCorrect').value.trim().toUpperCase();
   } else {
     updated.pairs = document.getElementById('editQPairs').value.trim()
-      .split('\n').filter(l=>l.includes('|'))
+      .split('
+').filter(l=>l.includes('|'))
       .map(l => { const [term, definition] = l.split('|'); return { term: term.trim(), definition: definition.trim() }; });
   }
 
@@ -3831,5 +3786,33 @@ function adminDeleteQuestion(qid) {
     .catch(() => showToast('❌ Ошибка'));
 }
 </script>
+
+<div class="checkin-overlay" id="checkinModal">
+  <div class="checkin-card">
+    <div class="checkin-emoji">🔥</div>
+    <div class="checkin-title">Ежедневный чек-ин</div>
+    <div class="checkin-subtitle">Забери бонус за вход и поддерживай серию дней подряд.</div>
+
+    <div class="checkin-streak">
+      <div class="checkin-streak-top" id="checkinStreakValue">0 дней</div>
+      <div class="checkin-streak-bottom" id="checkinStreakHint">Сегодня можно забрать награду</div>
+    </div>
+
+    <div class="checkin-rewards">
+      <div class="checkin-reward">
+        <div class="checkin-reward-val" id="checkinXpReward">+15</div>
+        <div class="checkin-reward-lbl">XP</div>
+      </div>
+      <div class="checkin-reward">
+        <div class="checkin-reward-val">🔥</div>
+        <div class="checkin-reward-lbl">в серию</div>
+      </div>
+    </div>
+
+    <button class="checkin-btn" id="checkinClaimBtn" onclick="claimDailyCheckin()">Забрать награду</button>
+    <div class="checkin-note" id="checkinNote">Чем длиннее серия, тем приятнее прогресс.</div>
+  </div>
+</div>
+
 </body>
 </html>
