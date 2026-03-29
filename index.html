@@ -3687,14 +3687,12 @@ function adminAddQuestion() {
     const optsRaw = document.getElementById('addQOptions').value.trim();
     const correct = document.getElementById('addQCorrect').value.trim().toUpperCase();
     if (!optsRaw || !correct) { showToast('⚠️ Заполни варианты и правильный ответ'); return; }
-    qData.options = optsRaw.split('
-').filter(l => l.trim());
+    qData.options = optsRaw.split('\n').filter(l => l.trim());
     qData.correct = correct;
   } else if (addQType === 'match') {
     const pairsRaw = document.getElementById('addQPairs').value.trim();
     if (!pairsRaw) { showToast('⚠️ Введи пары сопоставления'); return; }
-    qData.pairs = pairsRaw.split('
-').filter(l => l.includes('|')).map(l => {
+    qData.pairs = pairsRaw.split('\n').filter(l => l.includes('|')).map(l => {
       const [term, definition] = l.split('|');
       return { term: term.trim(), definition: definition.trim() };
     });
@@ -3879,12 +3877,10 @@ function openEditQModal(qid) {
   document.getElementById('editQMatchBlock').style.display = isMatch ? '' : 'none';
 
   if (!isMatch) {
-    document.getElementById('editQOptions').value = (q.options || []).join('
-');
+    document.getElementById('editQOptions').value = (q.options || []).join('\n');
     document.getElementById('editQCorrect').value = q.correct || '';
   } else {
-    document.getElementById('editQPairs').value = (q.pairs || []).map(p => `${p.term}|${p.definition}`).join('
-');
+    document.getElementById('editQPairs').value = (q.pairs || []).map(p => `${p.term}|${p.definition}`).join('\n');
   }
 
   document.getElementById('editQModal').style.display = 'block';
@@ -3913,13 +3909,11 @@ function adminSaveQuestion() {
   };
 
   if (q.type !== 'match') {
-    updated.options = document.getElementById('editQOptions').value.trim().split('
-').filter(l=>l.trim());
+    updated.options = document.getElementById('editQOptions').value.trim().split('\n').filter(l=>l.trim());
     updated.correct = document.getElementById('editQCorrect').value.trim().toUpperCase();
   } else {
     updated.pairs = document.getElementById('editQPairs').value.trim()
-      .split('
-').filter(l=>l.includes('|'))
+      .split('\n').filter(l=>l.includes('|'))
       .map(l => { const [term, definition] = l.split('|'); return { term: term.trim(), definition: definition.trim() }; });
   }
 
