@@ -1719,8 +1719,10 @@ body {
       <div class="admin-form-row">
         <label class="admin-label">Олимпиада</label>
         <select class="admin-select" id="editQOlympiad">
+          <option value="lomonosov">Ломоносов</option>
           <option value="perechen">Перечневые</option>
           <option value="vsosh">ВсОШ</option>
+          <option value="mk">Пробники МК</option>
         </select>
       </div>
       <div class="admin-form-row">
@@ -1827,8 +1829,10 @@ body {
   <div id="quizOlympiadFilter" style="display:none;margin-bottom:12px">
     <div class="quiz-filter-row">
       <button class="quiz-filter-btn active" onclick="setQuizFilter('olympiad','all')">Все</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','lomonosov')">Ломоносов</button>
       <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','perechen')">Перечневые</button>
       <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','vsosh')">ВсОШ</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','mk')">Пробники МК</button>
     </div>
   </div>
 
@@ -3369,7 +3373,7 @@ function quizNext() {
 // ─── Render question ───
 function renderQuestion(q) {
   const area = document.getElementById('quizQuestionArea');
-  const olympiadLabels = { perechen:'Перечневые', vsosh:'ВсОШ' };
+  const olympiadLabels = { lomonosov:'Ломоносов', perechen:'Перечневые', vsosh:'ВсОШ', mk:'МК' };
   const themeIcons = { sociology:'👥', politics:'🏛️', economics:'💰', law:'⚖️', philosophy:'🧠', culturology:'🎨' };
 
   let optionsHTML = '';
@@ -3728,7 +3732,7 @@ function renderAdminQuestionList() {
     CATEGORIES[q.theme]?.name?.toLowerCase().includes(search)
   );
 
-  const olympiadLabels = { perechen:'Перечневые', vsosh:'ВсОШ' };
+  const olympiadLabels = { lomonosov:'Ломоносов', perechen:'Перечневые', vsosh:'ВсОШ', mk:'МК' };
   if (countEl) countEl.textContent = `Найдено: ${filtered.length} из ${quizQuestions.length}`;
 
   if (!filtered.length) {
@@ -3759,7 +3763,7 @@ function openEditQModal(qid) {
 
   document.getElementById('editQTheme').value = q.theme || 'sociology';
   document.getElementById('editQSubtopic').value = q.subtopic || '';
-  document.getElementById('editQOlympiad').value = q.olympiad || 'perechen';
+  document.getElementById('editQOlympiad').value = q.olympiad || 'lomonosov';
   document.getElementById('editQYear').value = q.year || '';
   document.getElementById('editQText').value = q.question || '';
   document.getElementById('editQExplanation').value = q.explanation || '';
