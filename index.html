@@ -2036,132 +2036,7 @@ const CATEGORIES = {
 
 // All tasks distributed across 35 weeks (30 March – 30 November)
 // Week 1 = 30 March – 5 April, etc.
-const ALL_TASKS = [
-  // ── WEEK 1 ──
-  { id:'t1',  week:1, cat:'sociology',    name:'Социология. Введение. Основные понятия',       xp:20, diff:'средняя' },
-  { id:'t2',  week:1, cat:'sociology',    name:'Социальные роли и конфликты',                  xp:20, diff:'средняя' },
-  { id:'t3',  week:1, cat:'sociology',    name:'Социальный институт: семья',                   xp:20, diff:'средняя' },
-  { id:'t4',  week:1, cat:'politics',     name:'Политология. Введение',                        xp:15, diff:'лёгкая'  },
-  // ── WEEK 2 ──
-  { id:'t5',  week:2, cat:'politics',     name:'Власть. Государство. Форма государства',       xp:25, diff:'средняя' },
-  { id:'t6',  week:2, cat:'sociology',    name:'Социальный контроль и девиация. Социализация', xp:20, diff:'средняя' },
-  { id:'t7',  week:2, cat:'culturology',  name:'Введение в культурологию. Части 1 и 2',        xp:20, diff:'средняя' },
-  { id:'t8',  week:2, cat:'law',          name:'Введение в гражданское право. Сделки. Право собственности', xp:25, diff:'средняя' },
-  // ── WEEK 3 ──
-  { id:'t9',  week:3, cat:'politics',     name:'Форма территориального устройства',            xp:20, diff:'средняя' },
-  { id:'t10', week:3, cat:'politics',     name:'Группы, элиты, электорат. Политический режим', xp:25, diff:'средняя' },
-  { id:'t11', week:3, cat:'economics',    name:'Спрос и предложение. Рынок, виды благ',        xp:25, diff:'средняя' },
-  { id:'t12', week:3, cat:'economics',    name:'Факторы производства. Виды издержек',          xp:25, diff:'средняя' },
-  // ── WEEK 4 ──
-  { id:'t13', week:4, cat:'economics',    name:'Конкуренция. Монополия',                       xp:20, diff:'средняя' },
-  { id:'t14', week:4, cat:'law',          name:'Теория государства и права',                   xp:20, diff:'средняя' },
-  { id:'t15', week:4, cat:'sociology',    name:'Классики социологии. Конт, Спенсер',           xp:20, diff:'средняя' },
-  { id:'t16', week:4, cat:'sociology',    name:'Классики социологии. Дюркгейм, Теннис',        xp:20, diff:'средняя' },
-  // ── WEEK 5 ──
-  { id:'t17', week:5, cat:'sociology',    name:'Классики социологии. Вебер',                   xp:20, diff:'средняя' },
-  { id:'t18', week:5, cat:'sociology',    name:'Классики социологии. Маркс',                   xp:20, diff:'средняя' },
-  { id:'t19', week:5, cat:'politics',     name:'Демократия. Политическая культура. Партии и выборы', xp:30, diff:'сложная' },
-  { id:'t20', week:5, cat:'law',          name:'Обязательственное право',                      xp:20, diff:'средняя' },
-  // ── WEEK 6 ──
-  { id:'t21', week:6, cat:'sociology',    name:'Социальная стратификация. Образование. Наука', xp:20, diff:'средняя' },
-  { id:'t22', week:6, cat:'politics',     name:'Политическая идеология',                       xp:20, diff:'средняя' },
-  { id:'t23', week:6, cat:'crossdiscipline','name':'Литература и социальные науки. Почему одни страны богатые?', xp:25, diff:'средняя' },
-  // ── WEEK 7 ──
-  { id:'t24', week:7, cat:'sociology',    name:'Социология города. Культура',                  xp:20, diff:'средняя' },
-  { id:'t25', week:7, cat:'sociology',    name:'Теория обмена. Символический интеракционизм',  xp:25, diff:'средняя' },
-  { id:'t26', week:7, cat:'sociology',    name:'Этнометодология',                              xp:20, diff:'средняя' },
-  // ── WEEK 8 ──
-  { id:'t27', week:8, cat:'politics',     name:'Международные отношения',                      xp:25, diff:'средняя' },
-  { id:'t28', week:8, cat:'politics',     name:'Современная политика',                         xp:20, diff:'средняя' },
-  { id:'t29', week:8, cat:'politics',     name:'Основные идеологические течения. Лекция 1',    xp:25, diff:'средняя' },
-  { id:'t30', week:8, cat:'politics',     name:'Основные идеологические течения. Лекция 2',    xp:25, diff:'средняя' },
-  // ── WEEK 9 ──
-  { id:'t31', week:9, cat:'politics',     name:'Модернизация и политическое участие',          xp:25, diff:'средняя' },
-  { id:'t32', week:9, cat:'culturology',  name:'История западноевропейской скульптуры',        xp:20, diff:'средняя' },
-  { id:'t33', week:9, cat:'culturology',  name:'Основные вехи истории западноевропейской музыки до XIX века', xp:20, diff:'средняя' },
-  // ── WEEK 10 ──
-  { id:'t34', week:10, cat:'economics',   name:'Инфляция. Центральный банк',                   xp:25, diff:'средняя' },
-  { id:'t35', week:10, cat:'economics',   name:'Основные макроэкономические показатели',       xp:25, diff:'средняя' },
-  { id:'t36', week:10, cat:'economics',   name:'ВВП. Экономический рост',                      xp:25, diff:'средняя' },
-  // ── WEEK 11 ──
-  { id:'t37', week:11, cat:'economics',   name:'Издержки фирмы. Безработица',                  xp:25, diff:'средняя' },
-  { id:'t38', week:11, cat:'economics',   name:'Основные экономические теории',                xp:30, diff:'сложная' },
-  { id:'t39', week:11, cat:'law',         name:'Уголовное право. Общая часть 1 и 2',           xp:30, diff:'сложная' },
-  // ── WEEK 12 ──
-  { id:'t40', week:12, cat:'law',         name:'Уголовное право. Особенная часть',             xp:30, diff:'сложная' },
-  { id:'t41', week:12, cat:'law',         name:'Семейное право. Лекции 1 и 2',                 xp:25, diff:'средняя' },
-  { id:'t42', week:12, cat:'law',         name:'Конституционное право',                        xp:25, diff:'средняя' },
-  // ── WEEK 13 ──
-  { id:'t43', week:13, cat:'law',         name:'Трудовое право. Лекции 1 и 2',                 xp:25, diff:'средняя' },
-  { id:'t44', week:13, cat:'philosophy',  name:'Зарождение философии. Платон',                 xp:25, diff:'средняя' },
-  { id:'t45', week:13, cat:'philosophy',  name:'Аристотель. Эллинизм',                         xp:25, diff:'средняя' },
-  // ── WEEK 14 ──
-  { id:'t46', week:14, cat:'philosophy',  name:'Средние века. Возрождение',                    xp:20, diff:'средняя' },
-  { id:'t47', week:14, cat:'philosophy',  name:'Новое время',                                  xp:20, diff:'средняя' },
-  // ── WEEK 15 ──
-  { id:'t48', week:15, cat:'sociology',   name:'Повторение: Классики социологии — итоговый блок', xp:30, diff:'сложная' },
-  { id:'t49', week:15, cat:'politics',    name:'Повторение: Государство и политические режимы', xp:30, diff:'сложная' },
-  // ── WEEK 16 ──
-  { id:'t50', week:16, cat:'economics',   name:'Повторение: Микроэкономика — рынок и цены',    xp:30, diff:'сложная' },
-  { id:'t51', week:16, cat:'law',         name:'Повторение: Гражданское и уголовное право',    xp:30, diff:'сложная' },
-  // ── WEEK 17 ──
-  { id:'t52', week:17, cat:'philosophy',  name:'Повторение: Античная и средневековая философия', xp:25, diff:'средняя' },
-  { id:'t53', week:17, cat:'culturology', name:'Повторение: Культурология — обобщение',        xp:25, diff:'средняя' },
-  // ── WEEK 18 ──
-  { id:'t54', week:18, cat:'sociology',   name:'Практика: пробный тест по социологии',        xp:35, diff:'сложная' },
-  { id:'t55', week:18, cat:'politics',    name:'Практика: пробный тест по политологии',       xp:35, diff:'сложная' },
-  // ── WEEK 19 ──
-  { id:'t56', week:19, cat:'economics',   name:'Практика: пробный тест по экономике',         xp:35, diff:'сложная' },
-  { id:'t57', week:19, cat:'law',         name:'Практика: пробный тест по праву',             xp:35, diff:'сложная' },
-  // ── WEEK 20 ──
-  { id:'t58', week:20, cat:'philosophy',  name:'Практика: пробный тест по философии',         xp:35, diff:'сложная' },
-  { id:'t59', week:20, cat:'sociology',   name:'Работа над ошибками — социология',            xp:25, diff:'средняя' },
-  // ── WEEK 21 ──
-  { id:'t60', week:21, cat:'politics',    name:'Работа над ошибками — политология',           xp:25, diff:'средняя' },
-  { id:'t61', week:21, cat:'economics',   name:'Работа над ошибками — экономика',             xp:25, diff:'средняя' },
-  // ── WEEK 22 ──
-  { id:'t62', week:22, cat:'law',         name:'Работа над ошибками — право',                 xp:25, diff:'средняя' },
-  { id:'t63', week:22, cat:'crossdiscipline','name':'Межпредметные связи: общество и экономика', xp:30, diff:'сложная' },
-  // ── WEEK 23 ──
-  { id:'t64', week:23, cat:'sociology',   name:'Углублённое повторение: социальная стратификация', xp:30, diff:'сложная' },
-  { id:'t65', week:23, cat:'politics',    name:'Углублённое повторение: избирательные системы', xp:30, diff:'сложная' },
-  // ── WEEK 24 ──
-  { id:'t66', week:24, cat:'economics',   name:'Углублённое повторение: макроэкономика',      xp:30, diff:'сложная' },
-  { id:'t67', week:24, cat:'law',         name:'Углублённое повторение: конституционные права', xp:30, diff:'сложная' },
-  // ── WEEK 25 ──
-  { id:'t68', week:25, cat:'philosophy',  name:'Углублённое повторение: философия Нового времени', xp:30, diff:'сложная' },
-  { id:'t69', week:25, cat:'culturology', name:'Углублённое повторение: культура и цивилизация', xp:25, diff:'средняя' },
-  // ── WEEK 26 ──
-  { id:'t70', week:26, cat:'sociology',   name:'Финальный прогон: социология — все темы',     xp:40, diff:'сложная' },
-  { id:'t71', week:26, cat:'politics',    name:'Финальный прогон: политология — все темы',    xp:40, diff:'сложная' },
-  // ── WEEK 27 ──
-  { id:'t72', week:27, cat:'economics',   name:'Финальный прогон: экономика — все темы',      xp:40, diff:'сложная' },
-  { id:'t73', week:27, cat:'law',         name:'Финальный прогон: право — все темы',          xp:40, diff:'сложная' },
-  // ── WEEK 28 ──
-  { id:'t74', week:28, cat:'philosophy',  name:'Финальный прогон: философия — все темы',      xp:35, diff:'сложная' },
-  { id:'t75', week:28, cat:'culturology', name:'Финальный прогон: культурология — все темы',  xp:35, diff:'сложная' },
-  // ── WEEK 29 ──
-  { id:'t76', week:29, cat:'sociology',   name:'Симуляция перечневой олимпиады — обществ. ч.1', xp:50, diff:'сложная' },
-  { id:'t77', week:29, cat:'politics',    name:'Разбор олимпиадных задач: политология',       xp:40, diff:'сложная' },
-  // ── WEEK 30 ──
-  { id:'t78', week:30, cat:'economics',   name:'Разбор олимпиадных задач: экономика',         xp:40, diff:'сложная' },
-  { id:'t79', week:30, cat:'law',         name:'Разбор олимпиадных задач: право',             xp:40, diff:'сложная' },
-  // ── WEEK 31 ──
-  { id:'t80', week:31, cat:'sociology',   name:'Симуляция перечневой олимпиады — обществ. ч.2', xp:50, diff:'сложная' },
-  { id:'t81', week:31, cat:'philosophy',  name:'Разбор олимпиадных задач: философия',         xp:35, diff:'сложная' },
-  // ── WEEK 32 ──
-  { id:'t82', week:32, cat:'sociology',   name:'Тотальное повторение: блок 1 (соц + полит)',  xp:45, diff:'сложная' },
-  { id:'t83', week:32, cat:'economics',   name:'Тотальное повторение: блок 2 (эк + право)',   xp:45, diff:'сложная' },
-  // ── WEEK 33 ──
-  { id:'t84', week:33, cat:'philosophy',  name:'Тотальное повторение: блок 3 (фил + культ)',  xp:40, diff:'сложная' },
-  { id:'t85', week:33, cat:'sociology',   name:'Практика: финальный пробный тест (полный)',   xp:50, diff:'сложная' },
-  // ── WEEK 34 ──
-  { id:'t86', week:34, cat:'sociology',   name:'Финальная работа над ошибками',               xp:35, diff:'сложная' },
-  { id:'t87', week:34, cat:'crossdiscipline','name':'Повторение межпредметных связей',         xp:30, diff:'сложная' },
-  // ── WEEK 35 ──
-  { id:'t88', week:35, cat:'sociology',   name:'Последний прогон перед олимпиадой',           xp:50, diff:'сложная' },
-  { id:'t89', week:35, cat:'politics',    name:'Финальное закрепление: политология',          xp:40, diff:'сложная' },
-];
+const ALL_TASKS = [];
 
 const REWARDS = [
   { id:'r1', icon:'🛌', name:'День полного безделья',          cond:'Закрой первую неделю (все задачи)',  target:4,  type:'week1' },
@@ -2235,7 +2110,7 @@ function loadState() {
 //  COMPUTED
 // ═══════════════════════════════════════════════════
 function getDoneCount() { return Object.keys(state.done).filter(k => state.done[k]).length; }
-function getTotalXP() { return ALL_TASKS.filter(t => state.done[t.id]).reduce((s,t)=>s+t.xp,0); }
+function getTotalXP() { return getAllTasks().filter(t => state.done[t.id]).reduce((s,t)=>s+t.xp,0); }
 function normalizeDate(d) {
   const x = new Date(d);
   x.setHours(0,0,0,0);
@@ -2436,7 +2311,7 @@ function checkAchievements() {
 //  TASK TOGGLE
 // ═══════════════════════════════════════════════════
 function toggleTask(taskId, el) {
-  const task = ALL_TASKS.find(t => t.id === taskId);
+  const task = getAllTasks().find(t => t.id === taskId);
   if (!task) return;
 
   const wasDone = !!state.done[taskId];
@@ -2529,7 +2404,7 @@ function renderCurrentWeekPreview() {
   }
 
   const cw = getCurrentWeekNum();
-  const wTasks = ALL_TASKS.filter(t => t.week === cw);
+  const wTasks = getAllTasks().filter(t => t.week === cw);
   const wDone = wTasks.filter(t => state.done[t.id]).length;
   if (!wTasks.length) { el.innerHTML = '<div class="empty-state"><div class="e-icon">✅</div>Задач на эту неделю нет</div>'; return; }
   el.innerHTML = `
@@ -2681,7 +2556,7 @@ function renderProgress() {
 
 function renderRewards() {
   const done = getDoneCount();
-  const week1Tasks = ALL_TASKS.filter(t => t.week === 1);
+  const week1Tasks = getAllTasks().filter(t => t.week === 1);
   const week1Done = week1Tasks.filter(t => state.done[t.id]).length;
   const total = getAllTasks().length;
 
@@ -3316,33 +3191,7 @@ function taskEditorDelete(taskId) {
 }
 
 
-function seedDefaultTasksToFirebase() {
-  if (!db) { showToast('⚠️ Firebase не подключён'); return; }
-  if ((firebaseTasks || []).length) {
-    showToast('ℹ️ В tasks/ уже есть задачи');
-    return;
-  }
-  if (!confirm('Загрузить базовые задачи курса в Firebase path tasks/?')) return;
-
-  const updates = {};
-  ALL_TASKS.forEach(task => {
-    const id = task.id || ('task_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7));
-    updates[id] = {
-      id,
-      week: task.week,
-      cat: task.cat,
-      name: task.name,
-      xp: task.xp,
-      diff: task.diff || (task.xp <= 15 ? 'лёгкая' : task.xp <= 25 ? 'средняя' : task.xp <= 35 ? 'сложная' : 'очень сложная'),
-      createdAt: Date.now(),
-      importedFromBase: true,
-    };
-  });
-
-  db.ref('tasks').update(updates)
-    .then(() => showToast('✅ Базовые задачи загружены в tasks/'))
-    .catch(() => showToast('❌ Не удалось загрузить задачи в tasks/'));
-}
+function seedDefaultTasksToFirebase() { showToast('ℹ️ Встроенные задачи удалены из файла'); }
 
 function renderTaskEditorList() {
   const listEl = document.getElementById('taskEditorList');
@@ -3369,7 +3218,7 @@ function renderTaskEditorList() {
           В Firebase по пути <b>tasks/</b> пока нет задач<br>
           <span style="font-size:12px;color:var(--text3);font-weight:700">Поэтому раздел «Существующие задачи» пуст.</span>
           <div style="margin-top:12px">
-            <button class="admin-btn blue" style="margin-top:0" onclick="seedDefaultTasksToFirebase()">⬇️ Загрузить базовые задачи в tasks/</button>
+            
           </div>
         </div>`;
     } else {
