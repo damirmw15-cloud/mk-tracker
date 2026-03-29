@@ -38,12 +38,13 @@ body {
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
 }
 
 /* ─── HEADER ─── */
 .header {
   background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 100%);
-  padding: 20px 16px 0;
+  padding: calc(12px + env(safe-area-inset-top)) 16px 0;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -82,119 +83,6 @@ body {
   color: white;
 }
 .streak-label { font-size: 11px; color: rgba(255,255,255,0.85); font-weight: 600; }
-
-.course-pill {
-  background: rgba(255,255,255,0.18);
-  border-radius: 18px;
-  padding: 6px 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid rgba(255,255,255,0.28);
-  max-width: 170px;
-}
-.course-pill:active { transform: scale(0.97); }
-.course-pill-icon { font-size: 16px; }
-.course-pill-text {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-.course-pill-title {
-  font-size: 11px;
-  color: white;
-  font-weight: 800;
-  line-height: 1.15;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.course-pill-sub {
-  font-size: 10px;
-  color: rgba(255,255,255,0.78);
-  font-weight: 700;
-}
-.course-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(24, 37, 54, 0.55);
-  backdrop-filter: blur(4px);
-  z-index: 1300;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-}
-.course-modal.show { display: flex; }
-.course-modal-card {
-  width: 100%;
-  max-width: 380px;
-  background: linear-gradient(180deg, #FFFFFF 0%, #F8FBFF 100%);
-  border: 1.5px solid var(--border);
-  border-radius: 22px;
-  box-shadow: 0 18px 40px rgba(24,86,126,0.18);
-  padding: 18px;
-}
-.course-modal-title {
-  font-family: 'Unbounded', sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--text);
-  margin-bottom: 6px;
-}
-.course-modal-sub {
-  font-size: 12px;
-  color: var(--text3);
-  font-weight: 700;
-  margin-bottom: 14px;
-}
-.course-option {
-  border: 1.5px solid var(--border);
-  background: white;
-  border-radius: 16px;
-  padding: 14px 14px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.course-option.active {
-  border-color: var(--c1);
-  background: var(--c5);
-  box-shadow: 0 6px 18px rgba(100,175,220,0.12);
-}
-.course-option-title {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-.course-option-sub {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--text3);
-}
-.course-option-empty {
-  margin-top: 6px;
-  font-size: 11px;
-  color: var(--c1);
-  font-weight: 800;
-}
-.course-modal-close {
-  width: 100%;
-  margin-top: 6px;
-  border: none;
-  border-radius: 14px;
-  padding: 13px;
-  background: linear-gradient(135deg, var(--c1), var(--c2));
-  color: white;
-  font-family: 'Unbounded', sans-serif;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
 
 /* ─── NAV TABS ─── */
 .nav-tabs {
@@ -896,28 +784,98 @@ body {
 .quiz-option.wrong { border-color: #FF6B6B; background: #FFF0F0; color: #C0392B; }
 
 /* Match question */
-.quiz-match-pairs { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-.quiz-match-row { display: flex; gap: 8px; align-items: center; }
+.quiz-match-pairs { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+.quiz-match-row { display: flex; gap: 12px; align-items: stretch; }
 .quiz-match-term {
   flex: 1;
-  padding: 10px 12px;
+  min-width: 0;
+  padding: 14px 16px;
   background: var(--c4);
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 700;
+  border-radius: 16px;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 800;
   color: var(--text);
 }
 .quiz-match-select {
   flex: 1;
-  padding: 10px 12px;
+  min-width: 0;
+  width: 100%;
+  padding: 14px 16px;
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: 16px;
   font-family: 'Nunito', sans-serif;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 800;
   color: var(--text);
   background: white;
   outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+
+@media (max-width: 700px) {
+  .header {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .header-top {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .header-title {
+    font-size: 15px;
+    line-height: 1.15;
+  }
+  .streak-pill {
+    padding: 6px 10px;
+    border-radius: 16px;
+  }
+  .streak-count {
+    font-size: 12px;
+  }
+  .streak-label {
+    font-size: 10px;
+  }
+  .nav-tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .nav-tab {
+    flex: 0 0 auto;
+    min-width: 74px;
+    padding: 10px 8px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .main {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .quiz-question-card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+  .quiz-question-text {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  .quiz-match-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .quiz-match-term,
+  .quiz-match-select {
+    width: 100%;
+  }
 }
 
 /* Answer feedback */
@@ -940,17 +898,48 @@ body {
 .quiz-feedback.wrong-fb .quiz-feedback-title { color: #C0392B; }
 .quiz-feedback-text { font-size: 12px; font-weight: 600; color: var(--text2); line-height: 1.5; }
 .quiz-ai-analysis {
-  margin-top: 10px;
-  padding: 10px;
-  background: rgba(100,175,220,0.1);
-  border-radius: 10px;
-  font-size: 12px;
+  margin-top: 14px;
+  padding: 14px 14px 12px;
+  background: linear-gradient(180deg, #F5FAFF 0%, #EEF6FF 100%);
+  border: 1.5px solid #D7E8FB;
+  border-radius: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text2);
-  line-height: 1.5;
+  line-height: 1.55;
   display: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
 }
 .quiz-ai-analysis.show { display: block; }
+.quiz-ai-analysis.loading {
+  color: #6B87A8;
+}
+.quiz-ai-analysis-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4A78A8;
+  margin-bottom: 8px;
+}
+.quiz-ai-analysis-body {
+  color: var(--text2);
+}
+.quiz-ai-analysis.soft {
+  background: linear-gradient(180deg, #F8FAFC 0%, #F2F5F9 100%);
+  border-color: #E4EAF2;
+}
+.quiz-ai-analysis.error {
+  background: linear-gradient(180deg, #FFF7F7 0%, #FFF1F1 100%);
+  border-color: #F5CACA;
+}
+.quiz-ai-analysis-tip {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #7A8AA0;
+}
 
 .quiz-action-row {
   display: flex;
@@ -1034,25 +1023,6 @@ body {
   transition: all 0.2s;
 }
 .quiz-type-tab.active { background: white; color: var(--c1); box-shadow: 0 2px 6px var(--shadow); }
-
-/* ─── ADMIN COLLAPSIBLE ─── */
-.admin-collapsible {
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  user-select: none;
-}
-.admin-collapsible:active { opacity: 0.7; }
-.admin-toggle-icon {
-  font-size: 11px;
-  color: var(--text3);
-  transition: transform 0.25s;
-  flex-shrink: 0;
-}
-.admin-section-body {
-  overflow: hidden;
-}
 
 /* ─── ADMIN MODAL ─── */
 .admin-modal-overlay {
@@ -1360,7 +1330,7 @@ body {
       style="width:100%;padding:12px 16px;border-radius:12px;border:none;font-family:Nunito,sans-serif;font-size:14px;font-weight:700;outline:none;margin-bottom:10px;text-align:center"
       onkeydown="if(event.key==='Enter')adminLoginSubmit()">
     <div id="adminKeyError" style="color:#FF6B6B;font-size:12px;font-weight:700;margin-bottom:10px;min-height:16px"></div>
-    <button class="levelup-close" id="adminSubmitBtn" type="button" style="margin-bottom:10px;width:100%" onclick="adminLoginSubmit()">Войти 🔑</button>
+    <button class="levelup-close" style="margin-bottom:10px;width:100%" onclick="adminLoginSubmit()">Войти 🔑</button>
     <button onclick="closeAdminModal()" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:13px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif">Отмена</button>
   </div>
 </div>
@@ -1388,7 +1358,7 @@ body {
         <input class="auth-input" type="password" id="loginPassword" placeholder="Твой пароль" autocomplete="current-password"
           onkeydown="if(event.key==='Enter')authLogin()">
       </div>
-      <button class="auth-btn-main" id="loginBtn" type="button" onclick="authLogin()">Войти →</button>
+      <button class="auth-btn-main" id="loginBtn" onclick="authLogin()">Войти →</button>
       <div class="auth-forgot">
         <button onclick="authResetPassword()">Забыл пароль?</button>
       </div>
@@ -1409,14 +1379,14 @@ body {
         <input class="auth-input" type="password" id="regPassword" placeholder="Минимум 6 символов" autocomplete="new-password"
           onkeydown="if(event.key==='Enter')authRegister()">
       </div>
-      <button class="auth-btn-main" id="registerBtn" type="button" onclick="authRegister()">Создать аккаунт →</button>
+      <button class="auth-btn-main" id="registerBtn" onclick="authRegister()">Создать аккаунт →</button>
     </div>
 
     <div class="auth-error" id="authError"></div>
     <div class="auth-hint">Прогресс сохраняется на всех устройствах<br>и в любом мессенджере 🌍</div>
   </div>
 
-  <button id="adminLoginOpenBtn" type="button" onclick="openAdminModal()" style="margin-top:16px;background:none;border:none;font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:rgba(100,175,220,0.7);cursor:pointer;padding:8px 16px;border-radius:10px;transition:all 0.2s" onmouseover="this.style.color='var(--c1)'" onmouseout="this.style.color='rgba(100,175,220,0.7)'">
+  <button onclick="openAdminModal()" style="margin-top:16px;background:none;border:none;font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:rgba(100,175,220,0.7);cursor:pointer;padding:8px 16px;border-radius:10px;transition:all 0.2s" onmouseover="this.style.color='var(--c1)'" onmouseout="this.style.color='rgba(100,175,220,0.7)'">
     👑 Войти как администратор
   </button>
 </div>
@@ -1432,14 +1402,7 @@ body {
       </button>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
-      <div class="course-pill" onclick="openCourseModal()">
-        <div class="course-pill-icon">🎓</div>
-        <div class="course-pill-text">
-          <div class="course-pill-title" id="courseSwitchTitle">Обществознание</div>
-          <div class="course-pill-sub" id="courseSwitchSub">Поток 1</div>
-        </div>
-      </div>
-      <div class="streak-pill" onclick="openCheckinInfo()">
+      <div class="streak-pill" onclick="clickStreak()">
         <span>🔥</span>
         <div>
           <div class="streak-count" id="streakCount">0</div>
@@ -1569,188 +1532,168 @@ body {
 
   <!-- Add event -->
   <div class="admin-section">
-    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
-      <span>📅 Добавить событие / дедлайн</span><span class="admin-toggle-icon">▼</span>
+    <div class="admin-section-title">📅 Добавить событие / дедлайн</div>
+    <div class="admin-form-row">
+      <label class="admin-label">Тип</label>
+      <select class="admin-select" id="adminEventType">
+        <option value="event">📌 Событие</option>
+        <option value="deadline">⏰ Дедлайн</option>
+      </select>
     </div>
-    <div class="admin-section-body" style="display:none">
-      <div class="admin-form-row">
-        <label class="admin-label">Тип</label>
-        <select class="admin-select" id="adminEventType">
-          <option value="event">📌 Событие</option>
-          <option value="deadline">⏰ Дедлайн</option>
-        </select>
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Дата</label>
-        <input type="date" class="admin-input" id="adminEventDate">
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Название</label>
-        <input type="text" class="admin-input" id="adminEventTitle" placeholder="Например: Пробник по обществу">
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Описание (необязательно)</label>
-        <textarea class="admin-textarea" id="adminEventDesc" placeholder="Дополнительная информация..."></textarea>
-      </div>
-      <button class="admin-btn" onclick="adminAddEvent()">➕ Добавить в календарь</button>
+    <div class="admin-form-row">
+      <label class="admin-label">Дата</label>
+      <input type="date" class="admin-input" id="adminEventDate">
     </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Название</label>
+      <input type="text" class="admin-input" id="adminEventTitle" placeholder="Например: Пробник по обществу">
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Описание (необязательно)</label>
+      <textarea class="admin-textarea" id="adminEventDesc" placeholder="Дополнительная информация..."></textarea>
+    </div>
+    <button class="admin-btn" onclick="adminAddEvent()">➕ Добавить в календарь</button>
   </div>
 
   <!-- Add task -->
   <div class="admin-section">
-    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
-      <span>📝 Добавить задачу ученикам</span><span class="admin-toggle-icon">▼</span>
+    <div class="admin-section-title">📝 Добавить задачу ученикам</div>
+    <div class="admin-form-row">
+      <label class="admin-label">Неделя (1–35)</label>
+      <input type="number" class="admin-input" id="adminTaskWeek" min="1" max="35" placeholder="1">
     </div>
-    <div class="admin-section-body" style="display:none">
-      <div class="admin-form-row">
-        <label class="admin-label">Неделя (1–35)</label>
-        <input type="number" class="admin-input" id="adminTaskWeek" min="1" max="35" placeholder="1">
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Предмет</label>
-        <select class="admin-select" id="adminTaskCat">
-          <option value="sociology">👥 Социология</option>
-          <option value="politics">🏛️ Политология</option>
-          <option value="economics">💰 Экономика</option>
-          <option value="law">⚖️ Право</option>
-          <option value="philosophy">🧠 Философия</option>
-          <option value="culturology">🎨 Культурология</option>
-          <option value="crossdiscipline">🔗 Кросс</option>
-        </select>
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Название задачи</label>
-        <input type="text" class="admin-input" id="adminTaskName" placeholder="Название темы">
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">XP за выполнение</label>
-        <select class="admin-select" id="adminTaskXP">
-          <option value="10">10 XP — очень лёгкая</option>
-          <option value="15">15 XP — лёгкая</option>
-          <option value="20" selected>20 XP — средняя</option>
-          <option value="30">30 XP — сложная</option>
-          <option value="50">50 XP — очень сложная</option>
-        </select>
-      </div>
-      <button class="admin-btn blue" onclick="adminAddTask()">➕ Добавить задачу</button>
+    <div class="admin-form-row">
+      <label class="admin-label">Предмет</label>
+      <select class="admin-select" id="adminTaskCat">
+        <option value="sociology">👥 Социология</option>
+        <option value="politics">🏛️ Политология</option>
+        <option value="economics">💰 Экономика</option>
+        <option value="law">⚖️ Право</option>
+        <option value="philosophy">🧠 Философия</option>
+        <option value="culturology">🎨 Культурология</option>
+        <option value="crossdiscipline">🔗 Кросс</option>
+      </select>
     </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Название задачи</label>
+      <input type="text" class="admin-input" id="adminTaskName" placeholder="Название темы">
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">XP за выполнение</label>
+      <select class="admin-select" id="adminTaskXP">
+        <option value="10">10 XP — очень лёгкая</option>
+        <option value="15">15 XP — лёгкая</option>
+        <option value="20" selected>20 XP — средняя</option>
+        <option value="30">30 XP — сложная</option>
+        <option value="50">50 XP — очень сложная</option>
+      </select>
+    </div>
+    <button class="admin-btn blue" onclick="adminAddTask()">➕ Добавить задачу</button>
   </div>
 
   <!-- Students progress -->
   <div class="admin-section">
-    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
-      <span>👥 Прогресс учеников</span><span class="admin-toggle-icon">▼</span>
+    <div class="admin-section-title">👥 Прогресс учеников</div>
+    <div id="adminStudentsList">
+      <div class="empty-state"><div class="e-icon">📊</div>Данные загружаются...</div>
     </div>
-    <div class="admin-section-body" style="display:none">
-      <div id="adminStudentsList">
-        <div class="empty-state"><div class="e-icon">📊</div>Данные загружаются...</div>
-      </div>
-      <button class="admin-btn blue" style="margin-top:8px" onclick="adminLoadStudents()">🔄 Обновить</button>
-    </div>
+    <button class="admin-btn blue" style="margin-top:8px" onclick="adminLoadStudents()">🔄 Обновить</button>
   </div>
 
   <!-- Manage events -->
   <div class="admin-section">
-    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
-      <span>🗑️ Управление событиями</span><span class="admin-toggle-icon">▼</span>
-    </div>
-    <div class="admin-section-body" style="display:none">
-      <div id="adminEventsList"></div>
-    </div>
+    <div class="admin-section-title">🗑️ Управление событиями</div>
+    <div id="adminEventsList"></div>
   </div>
 
   <!-- Add question -->
   <div class="admin-section">
-    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
-      <span>🧪 Добавить вопрос в базу тестов</span><span class="admin-toggle-icon">▼</span>
+    <div class="admin-section-title">🧪 Добавить вопрос в базу тестов</div>
+
+    <div class="quiz-type-tabs">
+      <button class="quiz-type-tab active" id="addTypeBtn_single" onclick="setAddQType('single')">Один ответ</button>
+      <button class="quiz-type-tab" id="addTypeBtn_multi" onclick="setAddQType('multi')">Несколько</button>
+      <button class="quiz-type-tab" id="addTypeBtn_match" onclick="setAddQType('match')">Сопоставление</button>
     </div>
-    <div class="admin-section-body" style="display:none">
-      <div class="quiz-type-tabs">
-        <button class="quiz-type-tab active" id="addTypeBtn_single" onclick="setAddQType('single')">Один ответ</button>
-        <button class="quiz-type-tab" id="addTypeBtn_multi" onclick="setAddQType('multi')">Несколько</button>
-        <button class="quiz-type-tab" id="addTypeBtn_match" onclick="setAddQType('match')">Сопоставление</button>
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Тема</label>
-        <select class="admin-select" id="addQTheme">
-          <option value="sociology">👥 Социология</option>
-          <option value="politics">🏛️ Политология</option>
-          <option value="economics">💰 Экономика</option>
-          <option value="law">⚖️ Право</option>
-          <option value="philosophy">🧠 Философия</option>
-          <option value="culturology">🎨 Культурология</option>
-        </select>
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Подтема (например: Классики социологии)</label>
-        <input type="text" class="admin-input" id="addQSubtopic" placeholder="Уточни тему">
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Олимпиада</label>
-        <select class="admin-select" id="addQOlympiad">
-          <option value="lomonosov">Ломоносов</option>
-          <option value="perechen">Перечневые</option>
-          <option value="vsosh">ВсОШ</option>
-          <option value="mk">Пробники МК</option>
-        </select>
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Год</label>
-        <input type="number" class="admin-input" id="addQYear" placeholder="2024" min="2010" max="2030">
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Текст вопроса</label>
-        <textarea class="admin-textarea" id="addQText" placeholder="Введи вопрос..." style="min-height:80px"></textarea>
-      </div>
-      <div id="addQOptionsBlock">
-        <div class="admin-form-row">
-          <label class="admin-label">Варианты ответов (по одному в строку)</label>
-          <textarea class="admin-textarea" id="addQOptions" placeholder="А) Первый вариант&#10;Б) Второй вариант&#10;В) Третий вариант&#10;Г) Четвёртый вариант"></textarea>
-        </div>
-        <div class="admin-form-row">
-          <label class="admin-label">Правильный ответ (например: В или А,В для нескольких)</label>
-          <input type="text" class="admin-input" id="addQCorrect" placeholder="В">
-        </div>
-      </div>
-      <div id="addQMatchBlock" style="display:none">
-        <div class="admin-form-row">
-          <label class="admin-label">Пары сопоставления (термин|определение, каждая с новой строки)</label>
-          <textarea class="admin-textarea" id="addQPairs" placeholder="Социализация|Процесс усвоения норм&#10;Девиация|Отклонение от нормы&#10;Стратификация|Социальное расслоение" style="min-height:100px"></textarea>
-        </div>
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Объяснение правильного ответа</label>
-        <textarea class="admin-textarea" id="addQExplanation" placeholder="Почему именно этот ответ верный..."></textarea>
-      </div>
-      <button class="admin-btn blue" onclick="adminAddQuestion()">➕ Добавить вопрос</button>
+
+    <div class="admin-form-row">
+      <label class="admin-label">Тема</label>
+      <select class="admin-select" id="addQTheme">
+        <option value="sociology">👥 Социология</option>
+        <option value="politics">🏛️ Политология</option>
+        <option value="economics">💰 Экономика</option>
+        <option value="law">⚖️ Право</option>
+        <option value="philosophy">🧠 Философия</option>
+        <option value="culturology">🎨 Культурология</option>
+      </select>
     </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Подтема (например: Классики социологии)</label>
+      <input type="text" class="admin-input" id="addQSubtopic" placeholder="Уточни тему">
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Олимпиада</label>
+      <select class="admin-select" id="addQOlympiad">
+        <option value="lomonosov">Ломоносов</option>
+        <option value="perechen">Перечневые</option>
+        <option value="vsosh">ВсОШ</option>
+        <option value="mk">Пробники МК</option>
+      </select>
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Год</label>
+      <input type="number" class="admin-input" id="addQYear" placeholder="2024" min="2010" max="2030">
+    </div>
+    <div class="admin-form-row">
+      <label class="admin-label">Текст вопроса</label>
+      <textarea class="admin-textarea" id="addQText" placeholder="Введи вопрос..." style="min-height:80px"></textarea>
+    </div>
+
+    <!-- Single/Multi options -->
+    <div id="addQOptionsBlock">
+      <div class="admin-form-row">
+        <label class="admin-label">Варианты ответов (по одному в строку)</label>
+        <textarea class="admin-textarea" id="addQOptions" placeholder="А) Первый вариант&#10;Б) Второй вариант&#10;В) Третий вариант&#10;Г) Четвёртый вариант"></textarea>
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Правильный ответ (например: В или А,В для нескольких)</label>
+        <input type="text" class="admin-input" id="addQCorrect" placeholder="В">
+      </div>
+    </div>
+
+    <!-- Match pairs -->
+    <div id="addQMatchBlock" style="display:none">
+      <div class="admin-form-row">
+        <label class="admin-label">Пары сопоставления (термин|определение, каждая с новой строки)</label>
+        <textarea class="admin-textarea" id="addQPairs" placeholder="Социализация|Процесс усвоения норм&#10;Девиация|Отклонение от нормы&#10;Стратификация|Социальное расслоение" style="min-height:100px"></textarea>
+      </div>
+    </div>
+
+    <div class="admin-form-row">
+      <label class="admin-label">Объяснение правильного ответа</label>
+      <textarea class="admin-textarea" id="addQExplanation" placeholder="Почему именно этот ответ верный..."></textarea>
+    </div>
+
+    <button class="admin-btn blue" onclick="adminAddQuestion()">➕ Добавить вопрос</button>
   </div>
 
   <!-- Quiz stats for admin -->
   <div class="admin-section">
-    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
-      <span>📊 Статистика тестов учеников</span><span class="admin-toggle-icon">▼</span>
+    <div class="admin-section-title">📊 Статистика тестов учеников</div>
+    <div id="adminQuizStats">
+      <div style="font-size:12px;color:var(--text3);font-weight:600">Загрузка...</div>
     </div>
-    <div class="admin-section-body" style="display:none">
-      <div id="adminQuizStats">
-        <div style="font-size:12px;color:var(--text3);font-weight:600">Загрузка...</div>
-      </div>
-      <button class="admin-btn blue" style="margin-top:8px" onclick="adminLoadQuizStats()">🔄 Обновить</button>
-    </div>
+    <button class="admin-btn blue" style="margin-top:8px" onclick="adminLoadQuizStats()">🔄 Обновить</button>
   </div>
 
   <!-- Question list editor -->
   <div class="admin-section">
-    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
-      <span>📝 Все вопросы в базе</span><span class="admin-toggle-icon">▼</span>
+    <div class="admin-section-title">📝 Все вопросы в базе</div>
+    <div class="admin-form-row">
+      <input type="text" class="admin-input" id="qSearchInput" placeholder="🔍 Поиск по тексту или теме..." oninput="renderAdminQuestionList()">
     </div>
-    <div class="admin-section-body" style="display:none" data-onopen="renderAdminQuestionList()">
-      <div class="admin-form-row" style="margin-top:10px">
-        <input type="text" class="admin-input" id="qSearchInput" placeholder="🔍 Поиск по тексту или теме..." oninput="renderAdminQuestionList()">
-      </div>
-      <div style="font-size:11px;color:var(--text3);font-weight:700;margin-bottom:8px" id="qListCount"></div>
-      <div id="adminQuestionList"></div>
-    </div>
+    <div style="font-size:11px;color:var(--text3);font-weight:700;margin-bottom:8px" id="qListCount"></div>
+    <div id="adminQuestionList"></div>
   </div>
 
   <!-- Edit question modal -->
@@ -1776,10 +1719,8 @@ body {
       <div class="admin-form-row">
         <label class="admin-label">Олимпиада</label>
         <select class="admin-select" id="editQOlympiad">
-          <option value="lomonosov">Ломоносов</option>
           <option value="perechen">Перечневые</option>
           <option value="vsosh">ВсОШ</option>
-          <option value="mk">Пробники МК</option>
         </select>
       </div>
       <div class="admin-form-row">
@@ -1814,115 +1755,6 @@ body {
       <div style="display:flex;gap:10px;margin-top:4px">
         <button class="admin-btn blue" style="flex:2" onclick="adminSaveQuestion()">💾 Сохранить</button>
         <button class="admin-btn" style="flex:1;background:var(--c5);color:var(--c1)" onclick="closeEditQModal()">Отмена</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Course task editor -->
-  <div class="admin-section">
-    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
-      <span>📋 Редактор задач курса</span><span class="admin-toggle-icon">▼</span>
-    </div>
-    <div class="admin-section-body" style="display:none" data-onopen="adminLoadCourseTasks()">
-
-      <!-- Add new task form -->
-      <div style="background:var(--c5);border-radius:12px;padding:12px;margin-bottom:12px;margin-top:10px">
-        <div style="font-size:11px;font-weight:800;color:var(--c1);margin-bottom:8px">➕ Новая задача</div>
-        <div class="admin-form-row">
-          <label class="admin-label">Неделя (1–35)</label>
-          <input type="number" class="admin-input" id="ctWeek" min="1" max="35" placeholder="1">
-        </div>
-        <div class="admin-form-row">
-          <label class="admin-label">Предмет</label>
-          <select class="admin-select" id="ctCat">
-            <option value="sociology">👥 Социология</option>
-            <option value="politics">🏛️ Политология</option>
-            <option value="economics">💰 Экономика</option>
-            <option value="law">⚖️ Право</option>
-            <option value="philosophy">🧠 Философия</option>
-            <option value="culturology">🎨 Культурология</option>
-            <option value="crossdiscipline">🔗 Кросс</option>
-          </select>
-        </div>
-        <div class="admin-form-row">
-          <label class="admin-label">Название задачи</label>
-          <input type="text" class="admin-input" id="ctName" placeholder="Например: Социология. Введение">
-        </div>
-        <div class="admin-form-row">
-          <label class="admin-label">XP и сложность</label>
-          <div style="display:flex;gap:8px">
-            <select class="admin-select" id="ctXP" style="flex:1">
-              <option value="10">10 XP — очень лёгкая</option>
-              <option value="15">15 XP — лёгкая</option>
-              <option value="20" selected>20 XP — средняя</option>
-              <option value="25">25 XP — выше среднего</option>
-              <option value="30">30 XP — сложная</option>
-              <option value="40">40 XP — очень сложная</option>
-              <option value="50">50 XP — финальная</option>
-            </select>
-          </div>
-        </div>
-        <button class="admin-btn blue" onclick="adminAddCourseTask()">➕ Добавить задачу</button>
-      </div>
-
-      <!-- Filter by week -->
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
-        <span style="font-size:11px;font-weight:800;color:var(--text2)">Неделя:</span>
-        <select class="admin-select" id="ctWeekFilter" style="flex:1;max-width:120px" onchange="adminRenderCourseTasks()">
-          <option value="all">Все</option>
-        </select>
-        <span style="font-size:11px;color:var(--text3);font-weight:700" id="ctTaskCount"></span>
-      </div>
-
-      <!-- Task list -->
-      <div id="adminCourseTasksList"></div>
-
-      <!-- Upload all from hardcode -->
-      <button class="admin-btn" style="margin-top:8px;background:var(--c5);color:var(--text2);font-size:11px" onclick="adminUploadHardcodeTasks()">
-        ⬆️ Загрузить все задачи из кода в Firebase (один раз)
-      </button>
-    </div>
-  </div>
-
-  <!-- Edit task modal -->
-  <div id="editTaskModal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.5);overflow-y:auto;padding:20px">
-    <div style="background:white;border-radius:20px;padding:20px;max-width:460px;margin:0 auto">
-      <div style="font-family:Unbounded,sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px">✏️ Редактировать задачу</div>
-      <div class="admin-form-row">
-        <label class="admin-label">Неделя (1–35)</label>
-        <input type="number" class="admin-input" id="etWeek" min="1" max="35">
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Предмет</label>
-        <select class="admin-select" id="etCat">
-          <option value="sociology">👥 Социология</option>
-          <option value="politics">🏛️ Политология</option>
-          <option value="economics">💰 Экономика</option>
-          <option value="law">⚖️ Право</option>
-          <option value="philosophy">🧠 Философия</option>
-          <option value="culturology">🎨 Культурология</option>
-          <option value="crossdiscipline">🔗 Кросс</option>
-        </select>
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">Название</label>
-        <input type="text" class="admin-input" id="etName">
-      </div>
-      <div class="admin-form-row">
-        <label class="admin-label">XP</label>
-        <select class="admin-select" id="etXP">
-          <option value="10">10 XP — очень лёгкая</option>
-          <option value="15">15 XP — лёгкая</option>
-          <option value="20">20 XP — средняя</option>
-          <option value="25">25 XP — выше среднего</option>
-          <option value="30">30 XP — сложная</option>
-          <option value="40">40 XP — очень сложная</option>
-          <option value="50">50 XP — финальная</option>
-        </select>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:4px">
-        <button class="admin-btn blue" style="flex:2" onclick="adminSaveCourseTask()">💾 Сохранить</button>
-        <button class="admin-btn" style="flex:1;background:var(--c5);color:var(--c1)" onclick="document.getElementById('editTaskModal').style.display='none'">Отмена</button>
       </div>
     </div>
   </div>
@@ -1995,10 +1827,8 @@ body {
   <div id="quizOlympiadFilter" style="display:none;margin-bottom:12px">
     <div class="quiz-filter-row">
       <button class="quiz-filter-btn active" onclick="setQuizFilter('olympiad','all')">Все</button>
-      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','lomonosov')">Ломоносов</button>
       <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','perechen')">Перечневые</button>
       <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','vsosh')">ВсОШ</button>
-      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','mk')">Пробники МК</button>
     </div>
   </div>
 
@@ -2035,7 +1865,7 @@ body {
 // ═══════════════════════════════════════════════════
 const SERVER_URL = 'https://functions.yandexcloud.net/d4evsqthteafbgu33s0b';
 
-const SPRINT_START = new Date('2025-03-30');
+const SPRINT_START = new Date('2026-03-30');
 const SPRINT_END   = new Date('2025-11-30');
 
 const CATEGORIES = {
@@ -2046,16 +1876,6 @@ const CATEGORIES = {
   philosophy:   { name: 'Философия',     color: '#A0C4D8', dot: '#A0C4D8', icon: '🧠' },
   culturology:  { name: 'Культурология', color: '#6BBFCE', dot: '#6BBFCE', icon: '🎨' },
   crossdiscipline:{ name: 'Кросс',       color: '#90CADC', dot: '#90CADC', icon: '🔗' },
-};
-
-const HISTORY_CATEGORIES = {
-  ancient:      { name: 'Древняя Русь',            color: '#B38BD4', dot: '#B38BD4', icon: '🏺' },
-  medieval:     { name: 'Средневековье',           color: '#9C8AE6', dot: '#9C8AE6', icon: '🏰' },
-  earlymodern:  { name: 'XVI–XVII века',           color: '#A69BE8', dot: '#A69BE8', icon: '📜' },
-  empire:       { name: 'XVIII–XIX века',          color: '#8FAAD8', dot: '#8FAAD8', icon: '👑' },
-  modern:       { name: 'XX век',                  color: '#7CB8D8', dot: '#7CB8D8', icon: '🕰️' },
-  war:          { name: 'Великая Отечественная',   color: '#7DAE9E', dot: '#7DAE9E', icon: '⭐' },
-  soviet:       { name: 'Вторая половина XX века', color: '#88B7C8', dot: '#88B7C8', icon: '🚩' },
 };
 
 // All tasks distributed across 35 weeks (30 March – 30 November)
@@ -2187,62 +2007,6 @@ const ALL_TASKS = [
   { id:'t89', week:35, cat:'politics',    name:'Финальное закрепление: политология',          xp:40, diff:'сложная' },
 ];
 
-const HISTORY_TASKS = [];
-
-const COURSES = {
-  society_stream1: {
-    id: 'society_stream1',
-    title: 'Обществознание',
-    shortTitle: 'Общество',
-    streamLabel: 'Поток 1',
-    fullTitle: 'Обществознание · Поток 1',
-    start: new Date('2025-03-30'),
-    end: new Date('2025-11-30'),
-    categories: CATEGORIES,
-    getTasks: () => firebaseCourseTasks || ALL_TASKS
-  },
-  history_stream1: {
-    id: 'history_stream1',
-    title: 'История',
-    shortTitle: 'История',
-    streamLabel: 'Поток 1',
-    fullTitle: 'История · Поток 1',
-    start: new Date('2025-03-30'),
-    end: new Date('2025-11-30'),
-    categories: HISTORY_CATEGORIES,
-    getTasks: () => HISTORY_TASKS
-  }
-};
-
-function getCurrentCourse() {
-  return COURSES[state.currentCourseId] || COURSES.society_stream1;
-}
-function getCurrentCourseTasks() {
-  return getCurrentCourse().getTasks();
-}
-function getCurrentCourseCategories() {
-  return getCurrentCourse().categories || {};
-}
-function getCurrentCourseStart() {
-  return getCurrentCourse().start;
-}
-function getCurrentCourseEnd() {
-  return getCurrentCourse().end;
-}
-function getCurrentCourseWeekLimit() {
-  const start = getCurrentCourseStart();
-  const end = getCurrentCourseEnd();
-  return Math.max(1, Math.ceil((end - start + 24*3600*1000) / (7*24*3600*1000)));
-}
-function getCurrentCourseTasksWithAdmin() {
-  const base = [...getCurrentCourseTasks()];
-  if (state.currentCourseId === 'society_stream1') {
-    return [...base, ...(firebaseAdminTasks || [])];
-  }
-  return base;
-}
-
-
 const REWARDS = [
   { id:'r1', icon:'🛌', name:'День полного безделья',          cond:'Закрой первую неделю (все задачи)',  target:4,  type:'week1' },
   { id:'r2', icon:'📖', name:'Книга по социологии',            cond:'Выполни 25% задач',                 target:22, type:'done' },
@@ -2284,8 +2048,6 @@ let state = {
   charStage: 0,
   unlockedAchievements: {},
   todayDone: 0,
-  currentCourseId: 'society_stream1',
-  courseWeeks: {},
   currentWeek: 1,
 };
 
@@ -2298,7 +2060,6 @@ const TG = window.Telegram?.WebApp;
 
 function saveState() {
   const data = JSON.stringify(state);
-  localStorage.setItem('mk_last_course', state.currentCourseId || 'society_stream1');
   // localStorage — быстрый локальный кэш
   localStorage.setItem('mk_tracker_v2', data);
   // Firebase — основное облачное хранилище
@@ -2311,28 +2072,39 @@ function loadState() {
   // Грузим из localStorage как быстрый кэш пока Firebase не ответил
   const s = localStorage.getItem('mk_tracker_v2');
   if (s) { try { state = { ...state, ...JSON.parse(s) }; } catch(e){} }
-  const savedCourse = localStorage.getItem('mk_last_course');
-  if (!state.currentCourseId && savedCourse) state.currentCourseId = savedCourse;
-  if (!COURSES[state.currentCourseId]) state.currentCourseId = 'society_stream1';
-  state.courseWeeks = state.courseWeeks || {};
   // Основная загрузка — из Firebase, вызывается в onUserLoggedIn
 }
 
 // ═══════════════════════════════════════════════════
 //  COMPUTED
 // ═══════════════════════════════════════════════════
-function getDoneCount() { return getCurrentCourseTasks().filter(t => state.done[t.id]).length; }
-function getTotalXP() { return getCurrentCourseTasks().filter(t => state.done[t.id]).reduce((s,t)=>s+t.xp,0) + (state.bonusXP || 0); }
+function getDoneCount() { return Object.keys(state.done).filter(k => state.done[k]).length; }
+function getTotalXP() { return ALL_TASKS.filter(t => state.done[t.id]).reduce((s,t)=>s+t.xp,0); }
+function normalizeDate(d) {
+  const x = new Date(d);
+  x.setHours(0,0,0,0);
+  return x;
+}
+function isCourseStarted() {
+  return normalizeDate(new Date()) >= normalizeDate(SPRINT_START);
+}
+function getDaysUntilStart() {
+  const now = normalizeDate(new Date());
+  const start = normalizeDate(SPRINT_START);
+  return Math.max(0, Math.ceil((start - now) / (24*3600*1000)));
+}
+function formatStartDate() {
+  return SPRINT_START.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
+}
 function getCurrentWeekNum() {
-  const now = new Date();
-  const start = getCurrentCourseStart();
-  const maxWeeks = getCurrentCourseWeekLimit();
-  if (now < start) return 1;
+  if (!isCourseStarted()) return 0;
+  const now = normalizeDate(new Date());
+  const start = normalizeDate(SPRINT_START);
   const diff = Math.floor((now - start) / (7*24*3600*1000));
-  return Math.min(Math.max(1, diff + 1), maxWeeks);
+  return Math.min(Math.max(1, diff + 1), 35);
 }
 function getWeekDates(w) {
-  const d = new Date(getCurrentCourseStart());
+  const d = new Date(SPRINT_START);
   d.setDate(d.getDate() + (w-1)*7);
   const end = new Date(d); end.setDate(end.getDate()+6);
   const fmt = d => d.toLocaleDateString('ru-RU', {day:'numeric',month:'short'});
@@ -2344,8 +2116,8 @@ function getLevelInfo(xp) {
   }
   return LEVELS[0];
 }
-function getCatDone(cat) { return getCurrentCourseTasks().filter(t=>t.cat===cat && state.done[t.id]).length; }
-function getCatTotal(cat){ return getCurrentCourseTasks().filter(t=>t.cat===cat).length; }
+function getCatDone(cat) { return ALL_TASKS.filter(t=>t.cat===cat && state.done[t.id]).length; }
+function getCatTotal(cat){ return ALL_TASKS.filter(t=>t.cat===cat).length; }
 
 // ═══════════════════════════════════════════════════
 //  CHARACTER SVG STAGES
@@ -2507,7 +2279,7 @@ function checkAchievements() {
 //  TASK TOGGLE
 // ═══════════════════════════════════════════════════
 function toggleTask(taskId, el) {
-  const task = getCurrentCourseTasksWithAdmin().find(t => t.id === taskId);
+  const task = ALL_TASKS.find(t => t.id === taskId);
   if (!task) return;
 
   const wasDone = !!state.done[taskId];
@@ -2576,7 +2348,7 @@ function renderHero() {
     ? `${xp - li.xpMin} / ${li.xpMax - li.xpMin}`
     : 'МАКС';
 
-  const total = getCurrentCourseTasks().length;
+  const total = ALL_TASKS.length;
   const pctDone = Math.round(done/total*100);
   document.getElementById('statDone').textContent = done;
   document.getElementById('statTotal').textContent = total;
@@ -2584,10 +2356,24 @@ function renderHero() {
 }
 
 function renderCurrentWeekPreview() {
-  const cw = getCurrentWeekNum();
-  const wTasks = getCurrentCourseTasksWithAdmin().filter(t => t.week === cw);
-  const wDone = wTasks.filter(t => state.done[t.id]).length;
   const el = document.getElementById('currentWeekPreview');
+
+  if (!isCourseStarted()) {
+    const daysLeft = getDaysUntilStart();
+    el.innerHTML = `
+      <div class="empty-state">
+        <div class="e-icon">⏳</div>
+        Курс ещё не начался<br>
+        <span style="font-size:12px;color:var(--text3);font-weight:700">
+          Старт: ${formatStartDate()}${daysLeft ? ` · осталось ${daysLeft} дн.` : ''}
+        </span>
+      </div>`;
+    return;
+  }
+
+  const cw = getCurrentWeekNum();
+  const wTasks = ALL_TASKS.filter(t => t.week === cw);
+  const wDone = wTasks.filter(t => state.done[t.id]).length;
   if (!wTasks.length) { el.innerHTML = '<div class="empty-state"><div class="e-icon">✅</div>Задач на эту неделю нет</div>'; return; }
   el.innerHTML = `
     <div class="week-nav" style="margin-bottom:8px">
@@ -2638,27 +2424,37 @@ function renderTaskHTML(t) {
 }
 
 function renderTasks() {
+  const el = document.getElementById('tasksList');
+
+  if (!isCourseStarted()) {
+    const daysLeft = getDaysUntilStart();
+    document.getElementById('weekNum').textContent = 'Курс ещё не начался';
+    document.getElementById('weekDates').textContent = `Старт: ${formatStartDate()}`;
+    document.getElementById('weekProg').textContent = daysLeft ? `До старта ${daysLeft} дн.` : '';
+    el.innerHTML = '<div class="empty-state"><div class="e-icon">⏳</div>До старта курса отсчёт недель не идёт</div>';
+    return;
+  }
+
   const w = state.currentWeek;
   document.getElementById('weekNum').textContent = `Неделя ${w}`;
   document.getElementById('weekDates').textContent = getWeekDates(w);
 
   // Combine base tasks + admin-added tasks from Firebase
-  const allTasks = getCurrentCourseTasksWithAdmin();
+  const allTasks = [...ALL_TASKS, ...(firebaseAdminTasks || [])];
   const wTasks = allTasks.filter(t => t.week === w);
   const wDone = wTasks.filter(t => state.done[t.id]).length;
   document.getElementById('weekProg').textContent = `${wDone} из ${wTasks.length} выполнено`;
 
   const cats = [...new Set(wTasks.map(t => t.cat))];
-  const el = document.getElementById('tasksList');
 
   if (!wTasks.length) {
-    el.innerHTML = `<div class="empty-state"><div class="e-icon">📭</div>${getCurrentCourse().getTasks().length ? 'На этой неделе задач нет' : 'Для этого курса пока не добавлены задачи'}</div>`;
+    el.innerHTML = '<div class="empty-state"><div class="e-icon">📭</div>На этой неделе задач нет</div>';
     return;
   }
 
   el.innerHTML = cats.map(cat => {
     const catTasks = wTasks.filter(t => t.cat === cat);
-    const catInfo = getCurrentCourseCategories()[cat];
+    const catInfo = CATEGORIES[cat];
     const catXP = catTasks.reduce((s,t) => s + t.xp, 0);
     return `<div class="category-block">
       <div class="cat-header">
@@ -2678,17 +2474,12 @@ function renderTasks() {
 }
 
 function renderProgress() {
-  const cats = Object.keys(getCurrentCourseCategories());
-  if (!cats.length) {
-    document.getElementById('categoryProgress').innerHTML = '<div class="empty-state"><div class="e-icon">📚</div>Для этого курса блоки прогресса появятся после добавления программы</div>';
-    document.getElementById('achievementsGrid').innerHTML = '';
-    return;
-  }
+  const cats = Object.keys(CATEGORIES);
   document.getElementById('categoryProgress').innerHTML = cats.map(cat => {
     const total = getCatTotal(cat);
     const done = getCatDone(cat);
     const pct = total ? Math.round(done/total*100) : 0;
-    const catInfo = getCurrentCourseCategories()[cat];
+    const catInfo = CATEGORIES[cat];
     return `<div class="cat-progress-card">
       <div class="cat-progress-header">
         <div class="cat-progress-name">
@@ -2733,13 +2524,9 @@ function renderProgress() {
 
 function renderRewards() {
   const done = getDoneCount();
-  if (!getCurrentCourseTasks().length) {
-    document.getElementById('rewardsList').innerHTML = '<div class="empty-state"><div class="e-icon">🎁</div>Награды появятся после добавления задач в этот курс</div>';
-    return;
-  }
-  const week1Tasks = getCurrentCourseTasks().filter(t => t.week === 1);
+  const week1Tasks = ALL_TASKS.filter(t => t.week === 1);
   const week1Done = week1Tasks.filter(t => state.done[t.id]).length;
-  const total = getCurrentCourseTasks().length;
+  const total = ALL_TASKS.length;
 
   document.getElementById('rewardsList').innerHTML = REWARDS.map(r => {
     let prog = 0, progMax = r.target, unlocked = false;
@@ -2762,7 +2549,6 @@ function renderRewards() {
 }
 
 function renderAll() {
-  renderCourseSwitcherLabel();
   renderHero();
   renderCurrentWeekPreview();
   renderRecentBadges();
@@ -2770,49 +2556,6 @@ function renderAll() {
   renderProgress();
   renderRewards();
   updateCharStage();
-}
-
-function renderCourseSwitcherLabel() {
-  const course = getCurrentCourse();
-  const titleEl = document.getElementById('courseSwitchTitle');
-  const subEl = document.getElementById('courseSwitchSub');
-  if (titleEl) titleEl.textContent = course.shortTitle || course.title;
-  if (subEl) subEl.textContent = course.streamLabel || '';
-}
-
-function openCourseModal() {
-  const modal = document.getElementById('courseModal');
-  const list = document.getElementById('courseOptions');
-  if (!modal || !list) return;
-
-  list.innerHTML = Object.values(COURSES).map(course => {
-    const isActive = course.id === state.currentCourseId;
-    const empty = course.getTasks().length === 0;
-    return `<div class="course-option ${isActive ? 'active' : ''}" onclick="selectCourse('${course.id}')">
-      <div class="course-option-title">${course.title} · ${course.streamLabel}</div>
-      <div class="course-option-sub">Откроется последний использованный курс без лишнего выбора при входе.</div>
-      ${empty ? `<div class="course-option-empty">Контент для этого курса можно добавить позже</div>` : ''}
-    </div>`;
-  }).join('');
-
-  modal.classList.add('show');
-}
-
-function closeCourseModal() {
-  const modal = document.getElementById('courseModal');
-  if (modal) modal.classList.remove('show');
-}
-
-function selectCourse(courseId) {
-  if (!COURSES[courseId]) return;
-  state.currentCourseId = courseId;
-  state.courseWeeks = state.courseWeeks || {};
-  state.currentWeek = state.courseWeeks[courseId] || getCurrentWeekNum();
-  localStorage.setItem('mk_last_course', courseId);
-  saveState();
-  closeCourseModal();
-  renderAll();
-  showToast(`📚 Курс переключён: ${COURSES[courseId].title}`);
 }
 
 // ═══════════════════════════════════════════════════
@@ -2826,16 +2569,14 @@ function switchTab(tab) {
   const idx = tabs.indexOf(tab);
   document.querySelectorAll('.nav-tab')[idx]?.classList.add('active');
   if (tab === 'calendar') renderCalendar();
-  if (tab === 'admin') { renderAdminEvents(); adminLoadStudents(); adminLoadQuizStats(); }
+  if (tab === 'admin') { renderAdminEvents(); adminLoadStudents(); adminLoadQuizStats(); renderAdminQuestionList(); }
   if (tab === 'quiz') { renderQuizStats(); if (quizMode === 'weak') renderWeakThemes(); }
   if (tab !== 'tasks') renderAll();
 }
 
 function changeWeek(d) {
-  const maxWeeks = getCurrentCourseWeekLimit();
-  state.currentWeek = Math.max(1, Math.min(maxWeeks, state.currentWeek + d));
-  state.courseWeeks = state.courseWeeks || {};
-  state.courseWeeks[state.currentCourseId] = state.currentWeek;
+  if (!isCourseStarted()) return;
+  state.currentWeek = Math.max(1, Math.min(35, state.currentWeek + d));
   saveState();
   renderTasks();
 }
@@ -2868,7 +2609,6 @@ let isAdmin = false;
 let calYear, calMonth;
 let firebaseEvents = {};
 let firebaseAdminTasks = [];
-let firebaseCourseTasks = null; // null = используем хардкод ALL_TASKS
 
 // ═══════════════════════════════════════════════════
 //  AUTH SCREEN
@@ -3000,9 +2740,7 @@ function onUserLoggedIn(user) {
     if (saved) {
       try { state = { ...state, ...JSON.parse(saved.data) }; } catch(e){}
     }
-    if (!COURSES[state.currentCourseId]) state.currentCourseId = localStorage.getItem('mk_last_course') || 'society_stream1';
-    state.courseWeeks = state.courseWeeks || {};
-    state.currentWeek = state.courseWeeks[state.currentCourseId] || getCurrentWeekNum();
+    state.currentWeek = state.currentWeek || getCurrentWeekNum();
     renderAll();
     hideLoading();
   });
@@ -3036,7 +2774,7 @@ function saveProgressToFirebase() {
   db.ref(`students/${uid}`).set({
     name,
     done: getDoneCount(),
-    total: getCurrentCourseTasksWithAdmin().length,
+    total: ALL_TASKS.length + firebaseAdminTasks.length,
     xp: getTotalXP(),
     rank: getLevelInfo(getTotalXP()).rank,
     streak: state.streak || 0,
@@ -3072,17 +2810,6 @@ function initFirebase() {
     });
     db.ref('admin_tasks').on('value', snap => {
       firebaseAdminTasks = snap.val() ? Object.values(snap.val()) : [];
-      renderTasks();
-    });
-
-    // Загружаем задачи курса из Firebase (если есть — перезаписываем хардкод)
-    db.ref('course_tasks/society_stream1').on('value', snap => {
-      const data = snap.val();
-      if (data && Object.keys(data).length > 0) {
-        firebaseCourseTasks = Object.values(data).sort((a,b) => a.week - b.week || (a.id||'').localeCompare(b.id||''));
-      } else {
-        firebaseCourseTasks = null; // используем хардкод
-      }
       renderTasks();
     });
   } catch(e) { console.warn('Firebase init error:', e); hideLoading(); }
@@ -3225,7 +2952,7 @@ function renderCalendar() {
   // Task deadlines from week structure
   const taskDates = {};
   for (let w = 1; w <= 35; w++) {
-    const wDate = new Date(getCurrentCourseStart());
+    const wDate = new Date(SPRINT_START);
     wDate.setDate(wDate.getDate() + (w-1)*7 + 6); // end of week = Sunday
     const key = wDate.toISOString().slice(0,10);
     if (wDate.getFullYear() === calYear && wDate.getMonth() === calMonth) {
@@ -3283,10 +3010,10 @@ function renderCalendarEvents(filterDate) {
 
   // Week end deadlines
   for (let w = 1; w <= 35; w++) {
-    const wDate = new Date(getCurrentCourseStart());
+    const wDate = new Date(SPRINT_START);
     wDate.setDate(wDate.getDate() + (w-1)*7 + 6);
     if (wDate.getFullYear()===calYear && wDate.getMonth()===calMonth) {
-      const wTasks = getCurrentCourseTasksWithAdmin().filter(t=>t.week===w);
+      const wTasks = [...ALL_TASKS, ...firebaseAdminTasks].filter(t=>t.week===w);
       const wDone  = wTasks.filter(t=>state.done[t.id]).length;
       allEvents.push({
         date: wDate.toISOString().slice(0,10),
@@ -3424,31 +3151,6 @@ function showToast(msg) {
   el._t = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
-function bindAuthButtons() {
-  const loginBtn = document.getElementById('loginBtn');
-  const registerBtn = document.getElementById('registerBtn');
-  const adminOpenBtn = document.getElementById('adminLoginOpenBtn');
-  const adminSubmitBtn = document.getElementById('adminSubmitBtn');
-  const loginPassword = document.getElementById('loginPassword');
-  const regPassword = document.getElementById('regPassword');
-  const adminKeyInput = document.getElementById('adminKeyInput');
-
-  if (loginBtn) loginBtn.onclick = authLogin;
-  if (registerBtn) registerBtn.onclick = authRegister;
-  if (adminOpenBtn) adminOpenBtn.onclick = openAdminModal;
-  if (adminSubmitBtn) adminSubmitBtn.onclick = adminLoginSubmit;
-
-  if (loginPassword) loginPassword.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') authLogin();
-  });
-  if (regPassword) regPassword.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') authRegister();
-  });
-  if (adminKeyInput) adminKeyInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') adminLoginSubmit();
-  });
-}
-
 // ═══════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════
@@ -3460,7 +3162,6 @@ if (TG) {
 }
 
 initCalendar();
-bindAuthButtons();
 
 // Экран загрузки
 document.body.insertAdjacentHTML('afterbegin', `
@@ -3478,12 +3179,7 @@ document.body.insertAdjacentHTML('afterbegin', `
 
 function hideLoading() {
   const el = document.getElementById('loadingScreen');
-  if (el) {
-    el.style.opacity = '0';
-    el.style.transition = 'opacity 0.3s';
-    el.style.pointerEvents = 'none';
-    setTimeout(() => el.remove(), 300);
-  }
+  if (el) { el.style.opacity='0'; el.style.transition='opacity 0.3s'; setTimeout(()=>el.remove(),300); }
 }
 
 // Патчим renderAll чтобы убирать загрузку при первом рендере
@@ -3673,7 +3369,7 @@ function quizNext() {
 // ─── Render question ───
 function renderQuestion(q) {
   const area = document.getElementById('quizQuestionArea');
-  const olympiadLabels = { lomonosov:'Ломоносов', perechen:'Перечневые', vsosh:'ВсОШ', mk:'МК' };
+  const olympiadLabels = { perechen:'Перечневые', vsosh:'ВсОШ' };
   const themeIcons = { sociology:'👥', politics:'🏛️', economics:'💰', law:'⚖️', philosophy:'🧠', culturology:'🎨' };
 
   let optionsHTML = '';
@@ -3708,10 +3404,16 @@ function renderQuestion(q) {
       <div class="quiz-feedback" id="quizFeedback">
         <div class="quiz-feedback-title" id="quizFeedbackTitle"></div>
         <div class="quiz-feedback-text" id="quizFeedbackText"></div>
-        <div class="quiz-ai-analysis" id="quizAiAnalysis">🤖 AI анализирует...</div>
+        <div class="quiz-ai-analysis loading" id="quizAiAnalysis">
+          <div class="quiz-ai-analysis-title">🤖 Совет от ИИ</div>
+          <div class="quiz-ai-analysis-body" id="quizAiAnalysisBody">AI анализирует ответ...</div>
+          <div class="quiz-ai-analysis-tip" id="quizAiAnalysisTip">Это короткая подсказка по ошибке или теме.</div>
+        </div>
       </div>
     </div>
-    ${q.type === 'match' ? `<button class="quiz-btn primary" onclick="quizCheckMatch()" style="width:100%;margin-bottom:10px">Проверить →</button>` : ''}
+    ${(q.type === 'match' || q.type === 'multi')
+      ? `<button class="quiz-btn primary" onclick="${q.type === 'match' ? 'quizCheckMatch()' : 'quizCheckMulti()'}" style="width:100%;margin-bottom:10px">Проверить →</button>`
+      : ''}
   `;
 }
 
@@ -3727,21 +3429,57 @@ function quizSelect(btn, type) {
   }
 }
 
+function parseCorrectOptionIndexes(correctRaw, options = []) {
+  const normalizeToken = (token) => String(token || '').trim().toUpperCase();
+
+  const tokens = Array.isArray(correctRaw)
+    ? correctRaw.map(normalizeToken).filter(Boolean)
+    : String(correctRaw || '')
+        .split(/[;,\s]+/)
+        .map(normalizeToken)
+        .filter(Boolean);
+
+  const ruLetters = ['А','Б','В','Г','Д','Е','Ж','З','И','К','Л','М','Н','О','П'];
+  const enLetters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P'];
+
+  return tokens
+    .map(token => {
+      if (/^\d+$/.test(token)) {
+        const idx = parseInt(token, 10) - 1;
+        return idx >= 0 ? idx : null;
+      }
+
+      const ruIndex = ruLetters.indexOf(token);
+      if (ruIndex !== -1) return ruIndex;
+
+      const enIndex = enLetters.indexOf(token);
+      if (enIndex !== -1) return enIndex;
+
+      const byTextIndex = options.findIndex(opt => String(opt || '').trim().toUpperCase() === token);
+      if (byTextIndex !== -1) return byTextIndex;
+
+      return null;
+    })
+    .filter(v => v !== null)
+    .filter((v, i, arr) => arr.indexOf(v) === i)
+    .sort((a, b) => a - b);
+}
+
 function quizCheckSingle() {
   if (quizAnswered || !currentQuestion) return;
-  quizAnswered = true;
   const selected = document.querySelector('.quiz-option.selected');
   if (!selected) return;
-  const idx = parseInt(selected.dataset.idx);
-  const opts = currentQuestion.options || [];
-  const selectedLetter = opts[idx]?.charAt(0);
-  const correct = currentQuestion.correct?.trim().toUpperCase();
-  const isCorrect = selectedLetter === correct;
 
-  // Color options
+  quizAnswered = true;
+
+  const idx = parseInt(selected.dataset.idx, 10);
+  const opts = currentQuestion.options || [];
+  const correctIndexes = parseCorrectOptionIndexes(currentQuestion.correct, opts);
+  const correctIndex = correctIndexes.length ? correctIndexes[0] : -1;
+  const isCorrect = idx === correctIndex;
+
   document.querySelectorAll('.quiz-option').forEach((b, i) => {
-    const letter = opts[i]?.charAt(0);
-    if (letter === correct) b.classList.add('correct');
+    if (i === correctIndex) b.classList.add('correct');
     else if (b.classList.contains('selected')) b.classList.add('wrong');
   });
 
@@ -3749,6 +3487,38 @@ function quizCheckSingle() {
   saveQuizResult(currentQuestion.id, isCorrect);
   if (isCorrect) getAiExplanation(currentQuestion, true);
   else getAiExplanation(currentQuestion, false);
+}
+
+function quizCheckMulti() {
+  if (quizAnswered || !currentQuestion) return;
+
+  const selectedBtns = [...document.querySelectorAll('.quiz-option.selected')];
+  if (!selectedBtns.length) return;
+
+  quizAnswered = true;
+
+  const opts = currentQuestion.options || [];
+  const selectedIndexes = selectedBtns
+    .map(btn => parseInt(btn.dataset.idx, 10))
+    .filter(i => !Number.isNaN(i))
+    .sort((a, b) => a - b);
+
+  const correctIndexes = parseCorrectOptionIndexes(currentQuestion.correct, opts);
+
+  const isCorrect = selectedIndexes.length === correctIndexes.length &&
+    selectedIndexes.every((v, i) => v === correctIndexes[i]);
+
+  document.querySelectorAll('.quiz-option').forEach((b, i) => {
+    if (correctIndexes.includes(i)) {
+      b.classList.add('correct');
+    } else if (b.classList.contains('selected')) {
+      b.classList.add('wrong');
+    }
+  });
+
+  showFeedback(isCorrect, currentQuestion.explanation || 'Проверь выбранные варианты и сравни их с правильным набором ответов.');
+  saveQuizResult(currentQuestion.id, isCorrect);
+  getAiExplanation(currentQuestion, isCorrect);
 }
 
 function quizCheckMatch() {
@@ -3784,19 +3554,22 @@ function showFeedback(isCorrect, explanation) {
 // ─── AI explanation via Anthropic API ───
 async function getAiExplanation(q, isCorrect) {
   const aiEl = document.getElementById('quizAiAnalysis');
-  if (!aiEl) return;
-  aiEl.classList.add('show');
-  aiEl.textContent = '🤖 AI анализирует...';
+  const aiBody = document.getElementById('quizAiAnalysisBody');
+  const aiTip = document.getElementById('quizAiAnalysisTip');
+  if (!aiEl || !aiBody || !aiTip) return;
+
+  aiEl.className = 'quiz-ai-analysis show loading';
+  aiBody.textContent = 'AI анализирует ответ и подбирает короткую подсказку...';
+  aiTip.textContent = isCorrect ? 'Подсказка поможет закрепить тему.' : 'Подсказка объяснит, что именно перепутано.';
 
   const weak = getWeakThemes().slice(0, 3).map(w => w.subtopic).join(', ');
 
   try {
-    // Вызываем через Яндекс сервер — работает из России!
     const response = await fetch(SERVER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        event: 'ai_analyze',
+        event_name: 'ai_analyze',
         question: q.question,
         correct: q.correct,
         isCorrect,
@@ -3805,10 +3578,30 @@ async function getAiExplanation(q, isCorrect) {
         weakThemes: weak || 'пока нет данных'
       })
     });
+
     const data = await response.json();
-    aiEl.textContent = '🤖 ' + (data.text || 'Продолжай практиковаться!');
+    let text = data?.text || '';
+
+    if (!text && data?.body) {
+      try {
+        const inner = typeof data.body === 'string' ? JSON.parse(data.body) : data.body;
+        text = inner?.text || '';
+      } catch (_) {}
+    }
+
+    aiEl.className = 'quiz-ai-analysis show';
+    aiBody.textContent = text || (isCorrect
+      ? 'Ответ верный. Коротко повтори тему ещё раз, чтобы закрепить её.'
+      : 'Продолжай практиковаться — повторение укрепляет знания.');
+    aiTip.textContent = isCorrect
+      ? 'Совет от ИИ для закрепления правильного ответа.'
+      : 'Совет от ИИ показывает, что повторить перед следующим вопросом.';
   } catch(e) {
-    aiEl.textContent = '🤖 Продолжай практиковаться — повторение укрепляет знания!';
+    aiEl.className = 'quiz-ai-analysis show soft';
+    aiBody.textContent = isCorrect
+      ? 'Ответ засчитан. Для закрепления ещё раз проговори ключевое различие по теме.'
+      : 'Не страшно. Сверь пары ещё раз и попробуй коротко объяснить их своими словами.';
+    aiTip.textContent = 'Если сеть недоступна, приложение показывает локальную подсказку.';
   }
 }
 
@@ -3845,10 +3638,12 @@ function adminAddQuestion() {
 
   if (addQType === 'single' || addQType === 'multi') {
     const optsRaw = document.getElementById('addQOptions').value.trim();
-    const correct = document.getElementById('addQCorrect').value.trim().toUpperCase();
+    const correct = document.getElementById('addQCorrect').value.trim();
     if (!optsRaw || !correct) { showToast('⚠️ Заполни варианты и правильный ответ'); return; }
     qData.options = optsRaw.split('\n').filter(l => l.trim());
-    qData.correct = correct;
+    qData.correct = (addQType === 'multi'
+      ? correct.split(/[;,\s]+/).map(x => x.trim()).filter(Boolean)
+      : correct);
   } else if (addQType === 'match') {
     const pairsRaw = document.getElementById('addQPairs').value.trim();
     if (!pairsRaw) { showToast('⚠️ Введи пары сопоставления'); return; }
@@ -3920,38 +3715,12 @@ function adminLoadQuizStats() {
 
 let editingQId = null;
 
-let adminQuestionGroupsOpen = {};
-
-function toggleAdminQuestionGroup(themeKey) {
-  adminQuestionGroupsOpen[themeKey] = !adminQuestionGroupsOpen[themeKey];
-  renderAdminQuestionList();
-}
-
-function getAdminQuestionTypeLabel(type) {
-  if (type === 'single') return 'Один ответ';
-  if (type === 'multi') return 'Несколько ответов';
-  if (type === 'match') return 'Сопоставление';
-  return type || 'Без типа';
-}
-
-function toggleAdminSection(titleEl) {
-  const body = titleEl.nextElementSibling;
-  const icon = titleEl.querySelector('.admin-toggle-icon');
-  const isOpen = body.style.display !== 'none';
-  body.style.display = isOpen ? 'none' : '';
-  if (icon) icon.style.transform = isOpen ? '' : 'rotate(180deg)';
-  // Выполняем onopen если есть
-  if (!isOpen && body.dataset.onopen) {
-    try { eval(body.dataset.onopen); } catch(e) {}
-  }
-}
-
 function renderAdminQuestionList() {
   const el = document.getElementById('adminQuestionList');
   const countEl = document.getElementById('qListCount');
   if (!el) return;
 
-  const search = (document.getElementById('qSearchInput')?.value || '').toLowerCase().trim();
+  const search = (document.getElementById('qSearchInput')?.value || '').toLowerCase();
   const filtered = quizQuestions.filter(q =>
     !search ||
     q.question?.toLowerCase().includes(search) ||
@@ -3959,7 +3728,7 @@ function renderAdminQuestionList() {
     CATEGORIES[q.theme]?.name?.toLowerCase().includes(search)
   );
 
-  const olympiadLabels = { lomonosov:'Ломоносов', perechen:'Перечневые', vsosh:'ВсОШ', mk:'МК' };
+  const olympiadLabels = { perechen:'Перечневые', vsosh:'ВсОШ' };
   if (countEl) countEl.textContent = `Найдено: ${filtered.length} из ${quizQuestions.length}`;
 
   if (!filtered.length) {
@@ -3967,69 +3736,20 @@ function renderAdminQuestionList() {
     return;
   }
 
-  const order = ['sociology','politics','economics','law','philosophy','culturology','crossdiscipline'];
-  const grouped = {};
-  filtered.forEach(q => {
-    const key = q.theme || 'other';
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(q);
-  });
-
-  const orderedKeys = [
-    ...order.filter(key => grouped[key]?.length),
-    ...Object.keys(grouped).filter(key => !order.includes(key)).sort((a, b) => {
-      const an = CATEGORIES[a]?.name || a;
-      const bn = CATEGORIES[b]?.name || b;
-      return an.localeCompare(bn, 'ru');
-    })
-  ];
-
-  orderedKeys.forEach(key => {
-    if (typeof adminQuestionGroupsOpen[key] === 'undefined') {
-      adminQuestionGroupsOpen[key] = true;
-    }
-  });
-
-  el.innerHTML = orderedKeys.map(themeKey => {
-    const questions = grouped[themeKey] || [];
-    const theme = CATEGORIES[themeKey] || { icon: '📚', name: themeKey, color: '#64AFDC' };
-    const isOpen = !!adminQuestionGroupsOpen[themeKey];
-
-    return `
-      <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:10px 10px 4px;margin-bottom:12px;box-shadow:0 2px 10px var(--shadow)">
-        <button type="button" onclick="toggleAdminQuestionGroup('${themeKey}')" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:${isOpen ? 'var(--c5)' : 'white'};border:1.5px solid ${theme.color}22;border-radius:12px;padding:12px 12px;cursor:pointer">
-          <div style="display:flex;align-items:center;gap:10px;min-width:0;text-align:left">
-            <div style="width:34px;height:34px;border-radius:10px;background:${theme.color}18;display:flex;align-items:center;justify-content:center;font-size:17px">${theme.icon}</div>
-            <div style="min-width:0">
-              <div style="font-size:13px;font-weight:800;color:var(--text);line-height:1.2">${theme.name}</div>
-              <div style="font-size:11px;font-weight:700;color:var(--text3)">${questions.length} вопросов</div>
-            </div>
-          </div>
-          <div style="font-size:16px;color:var(--text3);font-weight:900;flex-shrink:0">${isOpen ? '▾' : '▸'}</div>
-        </button>
-
-        ${isOpen ? `
-          <div style="padding-top:10px">
-            ${questions.map(q => `
-              <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px">
-                <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
-                  <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:var(--c4);color:var(--c1)">${theme.icon} ${theme.name}</span>
-                  <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:#FFF3CD;color:var(--gold)">${olympiadLabels[q.olympiad]||q.olympiad||'—'} ${q.year||''}</span>
-                  <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--c5);color:var(--text3)">${getAdminQuestionTypeLabel(q.type)}</span>
-                  ${q.subtopic ? `<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:white;color:var(--text3);border:1px solid var(--border)">${q.subtopic}</span>` : ''}
-                </div>
-                <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.45">${q.question?.slice(0,140)}${q.question?.length>140?'...':''}</div>
-                <div style="display:flex;gap:8px">
-                  <button type="button" onclick="openEditQModal('${q.id}')" style="flex:1;padding:7px;background:var(--c4);border:none;border-radius:8px;font-family:Nunito,sans-serif;font-size:11px;font-weight:800;color:var(--c1);cursor:pointer">✏️ Редактировать</button>
-                  <button type="button" onclick="adminDeleteQuestion('${q.id}')" style="padding:7px 12px;background:#FFF0F0;border:none;border-radius:8px;font-family:Nunito,sans-serif;font-size:11px;font-weight:800;color:#FF6B6B;cursor:pointer">🗑️</button>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        ` : ''}
+  el.innerHTML = filtered.slice(0, 50).map(q => `
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px">
+      <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+        <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:var(--c4);color:var(--c1)">${CATEGORIES[q.theme]?.icon||''} ${CATEGORIES[q.theme]?.name||q.theme}</span>
+        <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:#FFF3CD;color:var(--gold)">${olympiadLabels[q.olympiad]||q.olympiad} ${q.year||''}</span>
+        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--c5);color:var(--text3)">${q.type==='single'?'Один':'q.type'==='multi'?'Несколько':'Сопоставление'}</span>
       </div>
-    `;
-  }).join('');
+      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.4">${q.question?.slice(0,120)}${q.question?.length>120?'...':''}</div>
+      <div style="display:flex;gap:8px">
+        <button onclick="openEditQModal('${q.id}')" style="flex:1;padding:7px;background:var(--c4);border:none;border-radius:8px;font-family:Nunito,sans-serif;font-size:11px;font-weight:800;color:var(--c1);cursor:pointer">✏️ Редактировать</button>
+        <button onclick="adminDeleteQuestion('${q.id}')" style="padding:7px 12px;background:#FFF0F0;border:none;border-radius:8px;font-family:Nunito,sans-serif;font-size:11px;font-weight:800;color:#FF6B6B;cursor:pointer">🗑️</button>
+      </div>
+    </div>
+  `).join('') + (filtered.length > 50 ? `<div style="text-align:center;font-size:12px;color:var(--text3);font-weight:700;padding:8px">Показаны первые 50. Используй поиск для фильтрации.</div>` : '');
 }
 
 function openEditQModal(qid) {
@@ -4039,7 +3759,7 @@ function openEditQModal(qid) {
 
   document.getElementById('editQTheme').value = q.theme || 'sociology';
   document.getElementById('editQSubtopic').value = q.subtopic || '';
-  document.getElementById('editQOlympiad').value = q.olympiad || 'lomonosov';
+  document.getElementById('editQOlympiad').value = q.olympiad || 'perechen';
   document.getElementById('editQYear').value = q.year || '';
   document.getElementById('editQText').value = q.question || '';
   document.getElementById('editQExplanation').value = q.explanation || '';
@@ -4050,7 +3770,7 @@ function openEditQModal(qid) {
 
   if (!isMatch) {
     document.getElementById('editQOptions').value = (q.options || []).join('\n');
-    document.getElementById('editQCorrect').value = q.correct || '';
+    document.getElementById('editQCorrect').value = Array.isArray(q.correct) ? q.correct.join(', ') : (q.correct || '');
   } else {
     document.getElementById('editQPairs').value = (q.pairs || []).map(p => `${p.term}|${p.definition}`).join('\n');
   }
@@ -4082,7 +3802,9 @@ function adminSaveQuestion() {
 
   if (q.type !== 'match') {
     updated.options = document.getElementById('editQOptions').value.trim().split('\n').filter(l=>l.trim());
-    updated.correct = document.getElementById('editQCorrect').value.trim().toUpperCase();
+    updated.correct = (q.type === 'multi'
+      ? document.getElementById('editQCorrect').value.trim().split(/[;,\s]+/).map(x => x.trim()).filter(Boolean)
+      : document.getElementById('editQCorrect').value.trim());
   } else {
     updated.pairs = document.getElementById('editQPairs').value.trim()
       .split('\n').filter(l=>l.includes('|'))
@@ -4104,148 +3826,6 @@ function adminDeleteQuestion(qid) {
     .then(() => showToast('🗑️ Вопрос удалён'))
     .catch(() => showToast('❌ Ошибка'));
 }
-
-// ═══════════════════════════════════════════════════
-//  ADMIN COURSE TASK EDITOR
-// ═══════════════════════════════════════════════════
-
-let editingTaskId = null;
-
-function adminLoadCourseTasks() {
-  adminRenderCourseTasks();
-  // Populate week filter
-  const sel = document.getElementById('ctWeekFilter');
-  if (sel && sel.options.length === 1) {
-    for (let w = 1; w <= 35; w++) {
-      const o = document.createElement('option');
-      o.value = w; o.textContent = `Неделя ${w}`;
-      sel.appendChild(o);
-    }
-  }
-}
-
-function adminRenderCourseTasks() {
-  const el = document.getElementById('adminCourseTasksList');
-  const countEl = document.getElementById('ctTaskCount');
-  if (!el) return;
-
-  const tasks = firebaseCourseTasks || ALL_TASKS;
-  const filterWeek = document.getElementById('ctWeekFilter')?.value || 'all';
-  const filtered = filterWeek === 'all' ? tasks : tasks.filter(t => String(t.week) === String(filterWeek));
-
-  if (countEl) countEl.textContent = `${filtered.length} задач`;
-
-  const DIFF_COLORS = { 'лёгкая':'#34C77B', 'средняя':'#64AFDC', 'сложная':'#FF6B6B', 'очень лёгкая':'#34C77B', 'очень сложная':'#FF6B6B' };
-  const catIcons = { sociology:'👥', politics:'🏛️', economics:'💰', law:'⚖️', philosophy:'🧠', culturology:'🎨', crossdiscipline:'🔗' };
-
-  if (!filtered.length) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--text3);font-weight:600;padding:8px">Нет задач</div>';
-    return;
-  }
-
-  // Group by week
-  const byWeek = {};
-  filtered.forEach(t => {
-    if (!byWeek[t.week]) byWeek[t.week] = [];
-    byWeek[t.week].push(t);
-  });
-
-  el.innerHTML = Object.keys(byWeek).sort((a,b)=>+a-+b).map(w => `
-    <div style="margin-bottom:12px">
-      <div style="font-family:Unbounded,sans-serif;font-size:11px;font-weight:700;color:var(--c1);margin-bottom:6px">Неделя ${w}</div>
-      ${byWeek[w].map(t => `
-        <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:8px">
-          <span style="font-size:16px">${catIcons[t.cat]||'📌'}</span>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.name}</div>
-            <div style="font-size:10px;color:var(--text3);font-weight:600;margin-top:2px">
-              <span style="color:${DIFF_COLORS[t.diff]||'var(--c1)'}">+${t.xp} XP</span>
-              · ${t.diff||'средняя'}
-            </div>
-          </div>
-          <button onclick="adminEditCourseTask('${t.id}')" style="padding:5px 8px;background:var(--c4);border:none;border-radius:7px;font-size:11px;font-weight:800;color:var(--c1);cursor:pointer;flex-shrink:0">✏️</button>
-          <button onclick="adminDeleteCourseTask('${t.id}')" style="padding:5px 8px;background:#FFF0F0;border:none;border-radius:7px;font-size:11px;font-weight:800;color:#FF6B6B;cursor:pointer;flex-shrink:0">🗑️</button>
-        </div>`).join('')}
-    </div>`).join('');
-}
-
-function adminAddCourseTask() {
-  if (!db) { showToast('⚠️ Firebase не подключён'); return; }
-  const week = parseInt(document.getElementById('ctWeek').value);
-  const cat  = document.getElementById('ctCat').value;
-  const name = document.getElementById('ctName').value.trim();
-  const xp   = parseInt(document.getElementById('ctXP').value);
-
-  if (!week || !name) { showToast('⚠️ Заполни неделю и название'); return; }
-
-  const diffMap = {10:'очень лёгкая',15:'лёгкая',20:'средняя',25:'средняя',30:'сложная',40:'очень сложная',50:'сложная'};
-  const ref = db.ref('course_tasks/society_stream1').push();
-  ref.set({ id: ref.key, week, cat, name, xp, diff: diffMap[xp]||'средняя', createdAt: Date.now() })
-    .then(() => {
-      document.getElementById('ctName').value = '';
-      showToast('✅ Задача добавлена!');
-    })
-    .catch(() => showToast('❌ Ошибка сохранения'));
-}
-
-function adminEditCourseTask(taskId) {
-  const tasks = firebaseCourseTasks || ALL_TASKS;
-  const t = tasks.find(t => t.id === taskId);
-  if (!t) return;
-  editingTaskId = taskId;
-  document.getElementById('etWeek').value = t.week;
-  document.getElementById('etCat').value  = t.cat;
-  document.getElementById('etName').value = t.name;
-  document.getElementById('etXP').value   = t.xp;
-  document.getElementById('editTaskModal').style.display = 'block';
-}
-
-function adminSaveCourseTask() {
-  if (!editingTaskId || !db) return;
-  const week = parseInt(document.getElementById('etWeek').value);
-  const cat  = document.getElementById('etCat').value;
-  const name = document.getElementById('etName').value.trim();
-  const xp   = parseInt(document.getElementById('etXP').value);
-  if (!week || !name) { showToast('⚠️ Заполни все поля'); return; }
-
-  const diffMap = {10:'очень лёгкая',15:'лёгкая',20:'средняя',25:'средняя',30:'сложная',40:'очень сложная',50:'сложная'};
-  const updated = { id: editingTaskId, week, cat, name, xp, diff: diffMap[xp]||'средняя', updatedAt: Date.now() };
-
-  db.ref(`course_tasks/society_stream1/${editingTaskId}`).set(updated)
-    .then(() => {
-      document.getElementById('editTaskModal').style.display = 'none';
-      editingTaskId = null;
-      showToast('✅ Задача обновлена!');
-    })
-    .catch(() => showToast('❌ Ошибка сохранения'));
-}
-
-function adminDeleteCourseTask(taskId) {
-  if (!confirm('Удалить эту задачу?')) return;
-  if (!db) return;
-
-  // Если задача из хардкода — нужно сначала загрузить все в Firebase
-  const isFirebase = !!firebaseCourseTasks;
-  if (!isFirebase) {
-    showToast('⚠️ Сначала загрузи задачи в Firebase кнопкой ниже');
-    return;
-  }
-  db.ref(`course_tasks/society_stream1/${taskId}`).remove()
-    .then(() => showToast('🗑️ Задача удалена'))
-    .catch(() => showToast('❌ Ошибка удаления'));
-}
-
-function adminUploadHardcodeTasks() {
-  if (!db) { showToast('⚠️ Firebase не подключён'); return; }
-  if (!confirm(`Загрузить все ${ALL_TASKS.length} задач из кода в Firebase? Это заменит текущие задачи.`)) return;
-
-  const updates = {};
-  ALL_TASKS.forEach(t => { updates[t.id] = t; });
-  db.ref('course_tasks/society_stream1').set(updates)
-    .then(() => showToast(`✅ Загружено ${ALL_TASKS.length} задач в Firebase!`))
-    .catch(() => showToast('❌ Ошибка загрузки'));
-}
-
 </script>
 </body>
 </html>
