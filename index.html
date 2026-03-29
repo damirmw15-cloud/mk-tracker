@@ -3315,6 +3315,35 @@ function taskEditorDelete(taskId) {
     .catch(() => showToast('❌ Ошибка удаления'));
 }
 
+
+function seedDefaultTasksToFirebase() {
+  if (!db) { showToast('⚠️ Firebase не подключён'); return; }
+  if ((firebaseTasks || []).length) {
+    showToast('ℹ️ В tasks/ уже есть задачи');
+    return;
+  }
+  if (!confirm('Загрузить базовые задачи курса в Firebase path tasks/?')) return;
+
+  const updates = {};
+  ALL_TASKS.forEach(task => {
+    const id = task.id || ('task_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7));
+    updates[id] = {
+      id,
+      week: task.week,
+      cat: task.cat,
+      name: task.name,
+      xp: task.xp,
+      diff: task.diff || (task.xp <= 15 ? 'лёгкая' : task.xp <= 25 ? 'средняя' : task.xp <= 35 ? 'сложная' : 'очень сложная'),
+      createdAt: Date.now(),
+      importedFromBase: true,
+    };
+  });
+
+  db.ref('tasks').update(updates)
+    .then(() => showToast('✅ Базовые задачи загружены в tasks/'))
+    .catch(() => showToast('❌ Не удалось загрузить задачи в tasks/'));
+}
+
 function renderTaskEditorList() {
   const listEl = document.getElementById('taskEditorList');
   const countEl = document.getElementById('taskEditorCount');
@@ -3333,7 +3362,19 @@ function renderTaskEditorList() {
   countEl.textContent = `Найдено: ${filtered.length} из ${(firebaseTasks || []).length}`;
 
   if (!filtered.length) {
-    listEl.innerHTML = '<div class="empty-state"><div class="e-icon">📭</div>По этим фильтрам задач нет</div>';
+    if (!(firebaseTasks || []).length) {
+      listEl.innerHTML = `
+        <div class="empty-state">
+          <div class="e-icon">📭</div>
+          В Firebase по пути <b>tasks/</b> пока нет задач<br>
+          <span style="font-size:12px;color:var(--text3);font-weight:700">Поэтому раздел «Существующие задачи» пуст.</span>
+          <div style="margin-top:12px">
+            <button class="admin-btn blue" style="margin-top:0" onclick="seedDefaultTasksToFirebase()">⬇️ Загрузить базовые задачи в tasks/</button>
+          </div>
+        </div>`;
+    } else {
+      listEl.innerHTML = '<div class="empty-state"><div class="e-icon">📭</div>По этим фильтрам задач нет</div>';
+    }
     return;
   }
 
