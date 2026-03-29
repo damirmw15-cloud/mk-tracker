@@ -3762,12 +3762,26 @@ function adminLoadQuizStats() {
 
 let editingQId = null;
 
+let adminQuestionGroupsOpen = {};
+
+function toggleAdminQuestionGroup(themeKey) {
+  adminQuestionGroupsOpen[themeKey] = !adminQuestionGroupsOpen[themeKey];
+  renderAdminQuestionList();
+}
+
+function getAdminQuestionTypeLabel(type) {
+  if (type === 'single') return 'Один ответ';
+  if (type === 'multi') return 'Несколько ответов';
+  if (type === 'match') return 'Сопоставление';
+  return type || 'Без типа';
+}
+
 function renderAdminQuestionList() {
   const el = document.getElementById('adminQuestionList');
   const countEl = document.getElementById('qListCount');
   if (!el) return;
 
-  const search = (document.getElementById('qSearchInput')?.value || '').toLowerCase();
+  const search = (document.getElementById('qSearchInput')?.value || '').toLowerCase().trim();
   const filtered = quizQuestions.filter(q =>
     !search ||
     q.question?.toLowerCase().includes(search) ||
@@ -3783,20 +3797,69 @@ function renderAdminQuestionList() {
     return;
   }
 
-  el.innerHTML = filtered.slice(0, 50).map(q => `
-    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px">
-      <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
-        <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:var(--c4);color:var(--c1)">${CATEGORIES[q.theme]?.icon||''} ${CATEGORIES[q.theme]?.name||q.theme}</span>
-        <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:#FFF3CD;color:var(--gold)">${olympiadLabels[q.olympiad]||q.olympiad} ${q.year||''}</span>
-        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--c5);color:var(--text3)">${q.type==='single'?'Один':'q.type'==='multi'?'Несколько':'Сопоставление'}</span>
+  const order = ['sociology','politics','economics','law','philosophy','culturology','crossdiscipline'];
+  const grouped = {};
+  filtered.forEach(q => {
+    const key = q.theme || 'other';
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(q);
+  });
+
+  const orderedKeys = [
+    ...order.filter(key => grouped[key]?.length),
+    ...Object.keys(grouped).filter(key => !order.includes(key)).sort((a, b) => {
+      const an = CATEGORIES[a]?.name || a;
+      const bn = CATEGORIES[b]?.name || b;
+      return an.localeCompare(bn, 'ru');
+    })
+  ];
+
+  orderedKeys.forEach(key => {
+    if (typeof adminQuestionGroupsOpen[key] === 'undefined') {
+      adminQuestionGroupsOpen[key] = true;
+    }
+  });
+
+  el.innerHTML = orderedKeys.map(themeKey => {
+    const questions = grouped[themeKey] || [];
+    const theme = CATEGORIES[themeKey] || { icon: '📚', name: themeKey, color: '#64AFDC' };
+    const isOpen = !!adminQuestionGroupsOpen[themeKey];
+
+    return `
+      <div style="background:white;border:1.5px solid var(--border);border-radius:16px;padding:10px 10px 4px;margin-bottom:12px;box-shadow:0 2px 10px var(--shadow)">
+        <button type="button" onclick="toggleAdminQuestionGroup('${themeKey}')" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:${isOpen ? 'var(--c5)' : 'white'};border:1.5px solid ${theme.color}22;border-radius:12px;padding:12px 12px;cursor:pointer">
+          <div style="display:flex;align-items:center;gap:10px;min-width:0;text-align:left">
+            <div style="width:34px;height:34px;border-radius:10px;background:${theme.color}18;display:flex;align-items:center;justify-content:center;font-size:17px">${theme.icon}</div>
+            <div style="min-width:0">
+              <div style="font-size:13px;font-weight:800;color:var(--text);line-height:1.2">${theme.name}</div>
+              <div style="font-size:11px;font-weight:700;color:var(--text3)">${questions.length} вопросов</div>
+            </div>
+          </div>
+          <div style="font-size:16px;color:var(--text3);font-weight:900;flex-shrink:0">${isOpen ? '▾' : '▸'}</div>
+        </button>
+
+        ${isOpen ? `
+          <div style="padding-top:10px">
+            ${questions.map(q => `
+              <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px">
+                <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+                  <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:var(--c4);color:var(--c1)">${theme.icon} ${theme.name}</span>
+                  <span style="font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:#FFF3CD;color:var(--gold)">${olympiadLabels[q.olympiad]||q.olympiad||'—'} ${q.year||''}</span>
+                  <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--c5);color:var(--text3)">${getAdminQuestionTypeLabel(q.type)}</span>
+                  ${q.subtopic ? `<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;background:white;color:var(--text3);border:1px solid var(--border)">${q.subtopic}</span>` : ''}
+                </div>
+                <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.45">${q.question?.slice(0,140)}${q.question?.length>140?'...':''}</div>
+                <div style="display:flex;gap:8px">
+                  <button type="button" onclick="openEditQModal('${q.id}')" style="flex:1;padding:7px;background:var(--c4);border:none;border-radius:8px;font-family:Nunito,sans-serif;font-size:11px;font-weight:800;color:var(--c1);cursor:pointer">✏️ Редактировать</button>
+                  <button type="button" onclick="adminDeleteQuestion('${q.id}')" style="padding:7px 12px;background:#FFF0F0;border:none;border-radius:8px;font-family:Nunito,sans-serif;font-size:11px;font-weight:800;color:#FF6B6B;cursor:pointer">🗑️</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
       </div>
-      <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.4">${q.question?.slice(0,120)}${q.question?.length>120?'...':''}</div>
-      <div style="display:flex;gap:8px">
-        <button onclick="openEditQModal('${q.id}')" style="flex:1;padding:7px;background:var(--c4);border:none;border-radius:8px;font-family:Nunito,sans-serif;font-size:11px;font-weight:800;color:var(--c1);cursor:pointer">✏️ Редактировать</button>
-        <button onclick="adminDeleteQuestion('${q.id}')" style="padding:7px 12px;background:#FFF0F0;border:none;border-radius:8px;font-family:Nunito,sans-serif;font-size:11px;font-weight:800;color:#FF6B6B;cursor:pointer">🗑️</button>
-      </div>
-    </div>
-  `).join('') + (filtered.length > 50 ? `<div style="text-align:center;font-size:12px;color:var(--text3);font-weight:700;padding:8px">Показаны первые 50. Используй поиск для фильтрации.</div>` : '');
+    `;
+  }).join('');
 }
 
 function openEditQModal(qid) {
