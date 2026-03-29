@@ -1706,12 +1706,17 @@ body {
 
   <!-- Question list editor -->
   <div class="admin-section">
-    <div class="admin-section-title">📝 Все вопросы в базе</div>
-    <div class="admin-form-row">
-      <input type="text" class="admin-input" id="qSearchInput" placeholder="🔍 Поиск по тексту или теме..." oninput="renderAdminQuestionList()">
+    <div class="admin-section-title" onclick="toggleQuestionList()" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center">
+      <span>📝 Все вопросы в базе</span>
+      <span id="qListToggleIcon" style="font-size:12px;color:var(--text3);transition:transform 0.3s">▼</span>
     </div>
-    <div style="font-size:11px;color:var(--text3);font-weight:700;margin-bottom:8px" id="qListCount"></div>
-    <div id="adminQuestionList"></div>
+    <div id="qListBody" style="display:none">
+      <div class="admin-form-row" style="margin-top:10px">
+        <input type="text" class="admin-input" id="qSearchInput" placeholder="🔍 Поиск по тексту или теме..." oninput="renderAdminQuestionList()">
+      </div>
+      <div style="font-size:11px;color:var(--text3);font-weight:700;margin-bottom:8px" id="qListCount"></div>
+      <div id="adminQuestionList"></div>
+    </div>
   </div>
 
   <!-- Edit question modal -->
@@ -2678,7 +2683,7 @@ function switchTab(tab) {
   const idx = tabs.indexOf(tab);
   document.querySelectorAll('.nav-tab')[idx]?.classList.add('active');
   if (tab === 'calendar') renderCalendar();
-  if (tab === 'admin') { renderAdminEvents(); adminLoadStudents(); adminLoadQuizStats(); renderAdminQuestionList(); }
+  if (tab === 'admin') { renderAdminEvents(); adminLoadStudents(); adminLoadQuizStats(); }
   if (tab === 'quiz') { renderQuizStats(); if (quizMode === 'weak') renderWeakThemes(); }
   if (tab !== 'tasks') renderAll();
 }
@@ -3772,6 +3777,15 @@ function getAdminQuestionTypeLabel(type) {
   if (type === 'multi') return 'Несколько ответов';
   if (type === 'match') return 'Сопоставление';
   return type || 'Без типа';
+}
+
+function toggleQuestionList() {
+  const body = document.getElementById('qListBody');
+  const icon = document.getElementById('qListToggleIcon');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : '';
+  icon.style.transform = isOpen ? '' : 'rotate(180deg)';
+  if (!isOpen) renderAdminQuestionList();
 }
 
 function renderAdminQuestionList() {
