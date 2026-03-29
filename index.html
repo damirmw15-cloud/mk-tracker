@@ -1341,7 +1341,7 @@ body {
       style="width:100%;padding:12px 16px;border-radius:12px;border:none;font-family:Nunito,sans-serif;font-size:14px;font-weight:700;outline:none;margin-bottom:10px;text-align:center"
       onkeydown="if(event.key==='Enter')adminLoginSubmit()">
     <div id="adminKeyError" style="color:#FF6B6B;font-size:12px;font-weight:700;margin-bottom:10px;min-height:16px"></div>
-    <button class="levelup-close" style="margin-bottom:10px;width:100%" onclick="adminLoginSubmit()">Войти 🔑</button>
+    <button class="levelup-close" id="adminSubmitBtn" type="button" style="margin-bottom:10px;width:100%" onclick="adminLoginSubmit()">Войти 🔑</button>
     <button onclick="closeAdminModal()" style="background:none;border:none;color:rgba(255,255,255,0.7);font-size:13px;font-weight:700;cursor:pointer;font-family:Nunito,sans-serif">Отмена</button>
   </div>
 </div>
@@ -1369,7 +1369,7 @@ body {
         <input class="auth-input" type="password" id="loginPassword" placeholder="Твой пароль" autocomplete="current-password"
           onkeydown="if(event.key==='Enter')authLogin()">
       </div>
-      <button class="auth-btn-main" id="loginBtn" onclick="authLogin()">Войти →</button>
+      <button class="auth-btn-main" id="loginBtn" type="button" onclick="authLogin()">Войти →</button>
       <div class="auth-forgot">
         <button onclick="authResetPassword()">Забыл пароль?</button>
       </div>
@@ -1390,14 +1390,14 @@ body {
         <input class="auth-input" type="password" id="regPassword" placeholder="Минимум 6 символов" autocomplete="new-password"
           onkeydown="if(event.key==='Enter')authRegister()">
       </div>
-      <button class="auth-btn-main" id="registerBtn" onclick="authRegister()">Создать аккаунт →</button>
+      <button class="auth-btn-main" id="registerBtn" type="button" onclick="authRegister()">Создать аккаунт →</button>
     </div>
 
     <div class="auth-error" id="authError"></div>
     <div class="auth-hint">Прогресс сохраняется на всех устройствах<br>и в любом мессенджере 🌍</div>
   </div>
 
-  <button onclick="openAdminModal()" style="margin-top:16px;background:none;border:none;font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:rgba(100,175,220,0.7);cursor:pointer;padding:8px 16px;border-radius:10px;transition:all 0.2s" onmouseover="this.style.color='var(--c1)'" onmouseout="this.style.color='rgba(100,175,220,0.7)'">
+  <button id="adminLoginOpenBtn" type="button" onclick="openAdminModal()" style="margin-top:16px;background:none;border:none;font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:rgba(100,175,220,0.7);cursor:pointer;padding:8px 16px;border-radius:10px;transition:all 0.2s" onmouseover="this.style.color='var(--c1)'" onmouseout="this.style.color='rgba(100,175,220,0.7)'">
     👑 Войти как администратор
   </button>
 </div>
@@ -3264,6 +3264,31 @@ function showToast(msg) {
   el._t = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
+function bindAuthButtons() {
+  const loginBtn = document.getElementById('loginBtn');
+  const registerBtn = document.getElementById('registerBtn');
+  const adminOpenBtn = document.getElementById('adminLoginOpenBtn');
+  const adminSubmitBtn = document.getElementById('adminSubmitBtn');
+  const loginPassword = document.getElementById('loginPassword');
+  const regPassword = document.getElementById('regPassword');
+  const adminKeyInput = document.getElementById('adminKeyInput');
+
+  if (loginBtn) loginBtn.onclick = authLogin;
+  if (registerBtn) registerBtn.onclick = authRegister;
+  if (adminOpenBtn) adminOpenBtn.onclick = openAdminModal;
+  if (adminSubmitBtn) adminSubmitBtn.onclick = adminLoginSubmit;
+
+  if (loginPassword) loginPassword.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') authLogin();
+  });
+  if (regPassword) regPassword.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') authRegister();
+  });
+  if (adminKeyInput) adminKeyInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') adminLoginSubmit();
+  });
+}
+
 // ═══════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════
@@ -3275,6 +3300,7 @@ if (TG) {
 }
 
 initCalendar();
+bindAuthButtons();
 
 // Экран загрузки
 document.body.insertAdjacentHTML('afterbegin', `
@@ -3292,7 +3318,12 @@ document.body.insertAdjacentHTML('afterbegin', `
 
 function hideLoading() {
   const el = document.getElementById('loadingScreen');
-  if (el) { el.style.opacity='0'; el.style.transition='opacity 0.3s'; setTimeout(()=>el.remove(),300); }
+  if (el) {
+    el.style.opacity = '0';
+    el.style.transition = 'opacity 0.3s';
+    el.style.pointerEvents = 'none';
+    setTimeout(() => el.remove(), 300);
+  }
 }
 
 // Патчим renderAll чтобы убирать загрузку при первом рендере
@@ -3656,12 +3687,14 @@ function adminAddQuestion() {
     const optsRaw = document.getElementById('addQOptions').value.trim();
     const correct = document.getElementById('addQCorrect').value.trim().toUpperCase();
     if (!optsRaw || !correct) { showToast('⚠️ Заполни варианты и правильный ответ'); return; }
-    qData.options = optsRaw.split('\\n').filter(l => l.trim());
+    qData.options = optsRaw.split('
+').filter(l => l.trim());
     qData.correct = correct;
   } else if (addQType === 'match') {
     const pairsRaw = document.getElementById('addQPairs').value.trim();
     if (!pairsRaw) { showToast('⚠️ Введи пары сопоставления'); return; }
-    qData.pairs = pairsRaw.split('\\n').filter(l => l.includes('|')).map(l => {
+    qData.pairs = pairsRaw.split('
+').filter(l => l.includes('|')).map(l => {
       const [term, definition] = l.split('|');
       return { term: term.trim(), definition: definition.trim() };
     });
@@ -3783,10 +3816,12 @@ function openEditQModal(qid) {
   document.getElementById('editQMatchBlock').style.display = isMatch ? '' : 'none';
 
   if (!isMatch) {
-    document.getElementById('editQOptions').value = (q.options || []).join('\\n');
+    document.getElementById('editQOptions').value = (q.options || []).join('
+');
     document.getElementById('editQCorrect').value = q.correct || '';
   } else {
-    document.getElementById('editQPairs').value = (q.pairs || []).map(p => `${p.term}|${p.definition}`).join('\\n');
+    document.getElementById('editQPairs').value = (q.pairs || []).map(p => `${p.term}|${p.definition}`).join('
+');
   }
 
   document.getElementById('editQModal').style.display = 'block';
@@ -3815,11 +3850,13 @@ function adminSaveQuestion() {
   };
 
   if (q.type !== 'match') {
-    updated.options = document.getElementById('editQOptions').value.trim().split('\\n').filter(l=>l.trim());
+    updated.options = document.getElementById('editQOptions').value.trim().split('
+').filter(l=>l.trim());
     updated.correct = document.getElementById('editQCorrect').value.trim().toUpperCase();
   } else {
     updated.pairs = document.getElementById('editQPairs').value.trim()
-      .split('\\n').filter(l=>l.includes('|'))
+      .split('
+').filter(l=>l.includes('|'))
       .map(l => { const [term, definition] = l.split('|'); return { term: term.trim(), definition: definition.trim() }; });
   }
 
