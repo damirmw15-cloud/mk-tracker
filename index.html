@@ -1035,6 +1035,25 @@ body {
 }
 .quiz-type-tab.active { background: white; color: var(--c1); box-shadow: 0 2px 6px var(--shadow); }
 
+/* ─── ADMIN COLLAPSIBLE ─── */
+.admin-collapsible {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+.admin-collapsible:active { opacity: 0.7; }
+.admin-toggle-icon {
+  font-size: 11px;
+  color: var(--text3);
+  transition: transform 0.25s;
+  flex-shrink: 0;
+}
+.admin-section-body {
+  overflow: hidden;
+}
+
 /* ─── ADMIN MODAL ─── */
 .admin-modal-overlay {
   position: fixed;
@@ -1550,167 +1569,182 @@ body {
 
   <!-- Add event -->
   <div class="admin-section">
-    <div class="admin-section-title">📅 Добавить событие / дедлайн</div>
-    <div class="admin-form-row">
-      <label class="admin-label">Тип</label>
-      <select class="admin-select" id="adminEventType">
-        <option value="event">📌 Событие</option>
-        <option value="deadline">⏰ Дедлайн</option>
-      </select>
+    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
+      <span>📅 Добавить событие / дедлайн</span><span class="admin-toggle-icon">▼</span>
     </div>
-    <div class="admin-form-row">
-      <label class="admin-label">Дата</label>
-      <input type="date" class="admin-input" id="adminEventDate">
+    <div class="admin-section-body" style="display:none">
+      <div class="admin-form-row">
+        <label class="admin-label">Тип</label>
+        <select class="admin-select" id="adminEventType">
+          <option value="event">📌 Событие</option>
+          <option value="deadline">⏰ Дедлайн</option>
+        </select>
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Дата</label>
+        <input type="date" class="admin-input" id="adminEventDate">
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Название</label>
+        <input type="text" class="admin-input" id="adminEventTitle" placeholder="Например: Пробник по обществу">
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Описание (необязательно)</label>
+        <textarea class="admin-textarea" id="adminEventDesc" placeholder="Дополнительная информация..."></textarea>
+      </div>
+      <button class="admin-btn" onclick="adminAddEvent()">➕ Добавить в календарь</button>
     </div>
-    <div class="admin-form-row">
-      <label class="admin-label">Название</label>
-      <input type="text" class="admin-input" id="adminEventTitle" placeholder="Например: Пробник по обществу">
-    </div>
-    <div class="admin-form-row">
-      <label class="admin-label">Описание (необязательно)</label>
-      <textarea class="admin-textarea" id="adminEventDesc" placeholder="Дополнительная информация..."></textarea>
-    </div>
-    <button class="admin-btn" onclick="adminAddEvent()">➕ Добавить в календарь</button>
   </div>
 
   <!-- Add task -->
   <div class="admin-section">
-    <div class="admin-section-title">📝 Добавить задачу ученикам</div>
-    <div class="admin-form-row">
-      <label class="admin-label">Неделя (1–35)</label>
-      <input type="number" class="admin-input" id="adminTaskWeek" min="1" max="35" placeholder="1">
+    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
+      <span>📝 Добавить задачу ученикам</span><span class="admin-toggle-icon">▼</span>
     </div>
-    <div class="admin-form-row">
-      <label class="admin-label">Предмет</label>
-      <select class="admin-select" id="adminTaskCat">
-        <option value="sociology">👥 Социология</option>
-        <option value="politics">🏛️ Политология</option>
-        <option value="economics">💰 Экономика</option>
-        <option value="law">⚖️ Право</option>
-        <option value="philosophy">🧠 Философия</option>
-        <option value="culturology">🎨 Культурология</option>
-        <option value="crossdiscipline">🔗 Кросс</option>
-      </select>
+    <div class="admin-section-body" style="display:none">
+      <div class="admin-form-row">
+        <label class="admin-label">Неделя (1–35)</label>
+        <input type="number" class="admin-input" id="adminTaskWeek" min="1" max="35" placeholder="1">
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Предмет</label>
+        <select class="admin-select" id="adminTaskCat">
+          <option value="sociology">👥 Социология</option>
+          <option value="politics">🏛️ Политология</option>
+          <option value="economics">💰 Экономика</option>
+          <option value="law">⚖️ Право</option>
+          <option value="philosophy">🧠 Философия</option>
+          <option value="culturology">🎨 Культурология</option>
+          <option value="crossdiscipline">🔗 Кросс</option>
+        </select>
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Название задачи</label>
+        <input type="text" class="admin-input" id="adminTaskName" placeholder="Название темы">
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">XP за выполнение</label>
+        <select class="admin-select" id="adminTaskXP">
+          <option value="10">10 XP — очень лёгкая</option>
+          <option value="15">15 XP — лёгкая</option>
+          <option value="20" selected>20 XP — средняя</option>
+          <option value="30">30 XP — сложная</option>
+          <option value="50">50 XP — очень сложная</option>
+        </select>
+      </div>
+      <button class="admin-btn blue" onclick="adminAddTask()">➕ Добавить задачу</button>
     </div>
-    <div class="admin-form-row">
-      <label class="admin-label">Название задачи</label>
-      <input type="text" class="admin-input" id="adminTaskName" placeholder="Название темы">
-    </div>
-    <div class="admin-form-row">
-      <label class="admin-label">XP за выполнение</label>
-      <select class="admin-select" id="adminTaskXP">
-        <option value="10">10 XP — очень лёгкая</option>
-        <option value="15">15 XP — лёгкая</option>
-        <option value="20" selected>20 XP — средняя</option>
-        <option value="30">30 XP — сложная</option>
-        <option value="50">50 XP — очень сложная</option>
-      </select>
-    </div>
-    <button class="admin-btn blue" onclick="adminAddTask()">➕ Добавить задачу</button>
   </div>
 
   <!-- Students progress -->
   <div class="admin-section">
-    <div class="admin-section-title">👥 Прогресс учеников</div>
-    <div id="adminStudentsList">
-      <div class="empty-state"><div class="e-icon">📊</div>Данные загружаются...</div>
+    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
+      <span>👥 Прогресс учеников</span><span class="admin-toggle-icon">▼</span>
     </div>
-    <button class="admin-btn blue" style="margin-top:8px" onclick="adminLoadStudents()">🔄 Обновить</button>
+    <div class="admin-section-body" style="display:none">
+      <div id="adminStudentsList">
+        <div class="empty-state"><div class="e-icon">📊</div>Данные загружаются...</div>
+      </div>
+      <button class="admin-btn blue" style="margin-top:8px" onclick="adminLoadStudents()">🔄 Обновить</button>
+    </div>
   </div>
 
   <!-- Manage events -->
   <div class="admin-section">
-    <div class="admin-section-title">🗑️ Управление событиями</div>
-    <div id="adminEventsList"></div>
+    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
+      <span>🗑️ Управление событиями</span><span class="admin-toggle-icon">▼</span>
+    </div>
+    <div class="admin-section-body" style="display:none">
+      <div id="adminEventsList"></div>
+    </div>
   </div>
 
   <!-- Add question -->
   <div class="admin-section">
-    <div class="admin-section-title">🧪 Добавить вопрос в базу тестов</div>
-
-    <div class="quiz-type-tabs">
-      <button class="quiz-type-tab active" id="addTypeBtn_single" onclick="setAddQType('single')">Один ответ</button>
-      <button class="quiz-type-tab" id="addTypeBtn_multi" onclick="setAddQType('multi')">Несколько</button>
-      <button class="quiz-type-tab" id="addTypeBtn_match" onclick="setAddQType('match')">Сопоставление</button>
+    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
+      <span>🧪 Добавить вопрос в базу тестов</span><span class="admin-toggle-icon">▼</span>
     </div>
-
-    <div class="admin-form-row">
-      <label class="admin-label">Тема</label>
-      <select class="admin-select" id="addQTheme">
-        <option value="sociology">👥 Социология</option>
-        <option value="politics">🏛️ Политология</option>
-        <option value="economics">💰 Экономика</option>
-        <option value="law">⚖️ Право</option>
-        <option value="philosophy">🧠 Философия</option>
-        <option value="culturology">🎨 Культурология</option>
-      </select>
-    </div>
-    <div class="admin-form-row">
-      <label class="admin-label">Подтема (например: Классики социологии)</label>
-      <input type="text" class="admin-input" id="addQSubtopic" placeholder="Уточни тему">
-    </div>
-    <div class="admin-form-row">
-      <label class="admin-label">Олимпиада</label>
-      <select class="admin-select" id="addQOlympiad">
-        <option value="lomonosov">Ломоносов</option>
-        <option value="perechen">Перечневые</option>
-        <option value="vsosh">ВсОШ</option>
-        <option value="mk">Пробники МК</option>
-      </select>
-    </div>
-    <div class="admin-form-row">
-      <label class="admin-label">Год</label>
-      <input type="number" class="admin-input" id="addQYear" placeholder="2024" min="2010" max="2030">
-    </div>
-    <div class="admin-form-row">
-      <label class="admin-label">Текст вопроса</label>
-      <textarea class="admin-textarea" id="addQText" placeholder="Введи вопрос..." style="min-height:80px"></textarea>
-    </div>
-
-    <!-- Single/Multi options -->
-    <div id="addQOptionsBlock">
-      <div class="admin-form-row">
-        <label class="admin-label">Варианты ответов (по одному в строку)</label>
-        <textarea class="admin-textarea" id="addQOptions" placeholder="А) Первый вариант&#10;Б) Второй вариант&#10;В) Третий вариант&#10;Г) Четвёртый вариант"></textarea>
+    <div class="admin-section-body" style="display:none">
+      <div class="quiz-type-tabs">
+        <button class="quiz-type-tab active" id="addTypeBtn_single" onclick="setAddQType('single')">Один ответ</button>
+        <button class="quiz-type-tab" id="addTypeBtn_multi" onclick="setAddQType('multi')">Несколько</button>
+        <button class="quiz-type-tab" id="addTypeBtn_match" onclick="setAddQType('match')">Сопоставление</button>
       </div>
       <div class="admin-form-row">
-        <label class="admin-label">Правильный ответ (например: В или А,В для нескольких)</label>
-        <input type="text" class="admin-input" id="addQCorrect" placeholder="В">
+        <label class="admin-label">Тема</label>
+        <select class="admin-select" id="addQTheme">
+          <option value="sociology">👥 Социология</option>
+          <option value="politics">🏛️ Политология</option>
+          <option value="economics">💰 Экономика</option>
+          <option value="law">⚖️ Право</option>
+          <option value="philosophy">🧠 Философия</option>
+          <option value="culturology">🎨 Культурология</option>
+        </select>
       </div>
-    </div>
-
-    <!-- Match pairs -->
-    <div id="addQMatchBlock" style="display:none">
       <div class="admin-form-row">
-        <label class="admin-label">Пары сопоставления (термин|определение, каждая с новой строки)</label>
-        <textarea class="admin-textarea" id="addQPairs" placeholder="Социализация|Процесс усвоения норм&#10;Девиация|Отклонение от нормы&#10;Стратификация|Социальное расслоение" style="min-height:100px"></textarea>
+        <label class="admin-label">Подтема (например: Классики социологии)</label>
+        <input type="text" class="admin-input" id="addQSubtopic" placeholder="Уточни тему">
       </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Олимпиада</label>
+        <select class="admin-select" id="addQOlympiad">
+          <option value="lomonosov">Ломоносов</option>
+          <option value="perechen">Перечневые</option>
+          <option value="vsosh">ВсОШ</option>
+          <option value="mk">Пробники МК</option>
+        </select>
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Год</label>
+        <input type="number" class="admin-input" id="addQYear" placeholder="2024" min="2010" max="2030">
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Текст вопроса</label>
+        <textarea class="admin-textarea" id="addQText" placeholder="Введи вопрос..." style="min-height:80px"></textarea>
+      </div>
+      <div id="addQOptionsBlock">
+        <div class="admin-form-row">
+          <label class="admin-label">Варианты ответов (по одному в строку)</label>
+          <textarea class="admin-textarea" id="addQOptions" placeholder="А) Первый вариант&#10;Б) Второй вариант&#10;В) Третий вариант&#10;Г) Четвёртый вариант"></textarea>
+        </div>
+        <div class="admin-form-row">
+          <label class="admin-label">Правильный ответ (например: В или А,В для нескольких)</label>
+          <input type="text" class="admin-input" id="addQCorrect" placeholder="В">
+        </div>
+      </div>
+      <div id="addQMatchBlock" style="display:none">
+        <div class="admin-form-row">
+          <label class="admin-label">Пары сопоставления (термин|определение, каждая с новой строки)</label>
+          <textarea class="admin-textarea" id="addQPairs" placeholder="Социализация|Процесс усвоения норм&#10;Девиация|Отклонение от нормы&#10;Стратификация|Социальное расслоение" style="min-height:100px"></textarea>
+        </div>
+      </div>
+      <div class="admin-form-row">
+        <label class="admin-label">Объяснение правильного ответа</label>
+        <textarea class="admin-textarea" id="addQExplanation" placeholder="Почему именно этот ответ верный..."></textarea>
+      </div>
+      <button class="admin-btn blue" onclick="adminAddQuestion()">➕ Добавить вопрос</button>
     </div>
-
-    <div class="admin-form-row">
-      <label class="admin-label">Объяснение правильного ответа</label>
-      <textarea class="admin-textarea" id="addQExplanation" placeholder="Почему именно этот ответ верный..."></textarea>
-    </div>
-
-    <button class="admin-btn blue" onclick="adminAddQuestion()">➕ Добавить вопрос</button>
   </div>
 
   <!-- Quiz stats for admin -->
   <div class="admin-section">
-    <div class="admin-section-title">📊 Статистика тестов учеников</div>
-    <div id="adminQuizStats">
-      <div style="font-size:12px;color:var(--text3);font-weight:600">Загрузка...</div>
+    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
+      <span>📊 Статистика тестов учеников</span><span class="admin-toggle-icon">▼</span>
     </div>
-    <button class="admin-btn blue" style="margin-top:8px" onclick="adminLoadQuizStats()">🔄 Обновить</button>
+    <div class="admin-section-body" style="display:none">
+      <div id="adminQuizStats">
+        <div style="font-size:12px;color:var(--text3);font-weight:600">Загрузка...</div>
+      </div>
+      <button class="admin-btn blue" style="margin-top:8px" onclick="adminLoadQuizStats()">🔄 Обновить</button>
+    </div>
   </div>
 
   <!-- Question list editor -->
   <div class="admin-section">
-    <div class="admin-section-title" onclick="toggleQuestionList()" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center">
-      <span>📝 Все вопросы в базе</span>
-      <span id="qListToggleIcon" style="font-size:12px;color:var(--text3);transition:transform 0.3s">▼</span>
+    <div class="admin-section-title admin-collapsible" onclick="toggleAdminSection(this)">
+      <span>📝 Все вопросы в базе</span><span class="admin-toggle-icon">▼</span>
     </div>
-    <div id="qListBody" style="display:none">
+    <div class="admin-section-body" style="display:none" data-onopen="renderAdminQuestionList()">
       <div class="admin-form-row" style="margin-top:10px">
         <input type="text" class="admin-input" id="qSearchInput" placeholder="🔍 Поиск по тексту или теме..." oninput="renderAdminQuestionList()">
       </div>
@@ -3779,13 +3813,16 @@ function getAdminQuestionTypeLabel(type) {
   return type || 'Без типа';
 }
 
-function toggleQuestionList() {
-  const body = document.getElementById('qListBody');
-  const icon = document.getElementById('qListToggleIcon');
+function toggleAdminSection(titleEl) {
+  const body = titleEl.nextElementSibling;
+  const icon = titleEl.querySelector('.admin-toggle-icon');
   const isOpen = body.style.display !== 'none';
   body.style.display = isOpen ? 'none' : '';
-  icon.style.transform = isOpen ? '' : 'rotate(180deg)';
-  if (!isOpen) renderAdminQuestionList();
+  if (icon) icon.style.transform = isOpen ? '' : 'rotate(180deg)';
+  // Выполняем onopen если есть
+  if (!isOpen && body.dataset.onopen) {
+    try { eval(body.dataset.onopen); } catch(e) {}
+  }
 }
 
 function renderAdminQuestionList() {
