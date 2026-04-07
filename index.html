@@ -1797,10 +1797,11 @@ body {
       <div class="admin-form-row">
         <label class="admin-label">Олимпиада</label>
         <select class="admin-select" id="addQOlympiad">
-          <option value="lomonosov">Ломоносов</option>
-          <option value="perechen">Перечневые</option>
           <option value="vsosh">ВсОШ</option>
-          <option value="mk">Пробники МК</option>
+          <option value="vp_obsh" selected>ВП (Общество)</option>
+          <option value="lomonosov">Ломоносов</option>
+          <option value="vp_soc">ВП (Социология)</option>
+          <option value="izumrud">Изумруд</option>
         </select>
       </div>
       <div class="admin-form-row">
@@ -1888,10 +1889,11 @@ body {
       <div class="admin-form-row">
         <label class="admin-label">Олимпиада</label>
         <select class="admin-select" id="editQOlympiad">
-          <option value="lomonosov">Ломоносов</option>
-          <option value="perechen">Перечневые</option>
           <option value="vsosh">ВсОШ</option>
-          <option value="mk">Пробники МК</option>
+          <option value="vp_obsh">ВП (Общество)</option>
+          <option value="lomonosov">Ломоносов</option>
+          <option value="vp_soc">ВП (Социология)</option>
+          <option value="izumrud">Изумруд</option>
         </select>
       </div>
       <div class="admin-form-row">
@@ -1997,10 +1999,11 @@ body {
   <div id="quizOlympiadFilter" style="display:none;margin-bottom:12px">
     <div class="quiz-filter-row">
       <button class="quiz-filter-btn active" onclick="setQuizFilter('olympiad','all')">Все</button>
-      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','lomonosov')">Ломоносов</button>
-      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','perechen')">Перечневые</button>
       <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','vsosh')">ВсОШ</button>
-      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','mk')">Пробники МК</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','vp_obsh')">ВП (Общество)</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','lomonosov')">Ломоносов</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','vp_soc')">ВП (Социология)</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('olympiad','izumrud')">Изумруд</button>
     </div>
   </div>
 
@@ -3411,11 +3414,17 @@ let quizAnswered = false;
 let addQType = 'single';
 let quizSession = { correct: 0, total: 0 }; // session stats
 
+function normalizeOlympiadValue(value) {
+  const normalized = String(value || '').trim();
+  const allowed = ['vsosh', 'vp_obsh', 'lomonosov', 'vp_soc', 'izumrud'];
+  return allowed.includes(normalized) ? normalized : 'vp_obsh';
+}
+
 // ─── Load questions from Firebase ───
 function loadQuizQuestions() {
   if (!db) return;
   db.ref('questions').on('value', snap => {
-    quizQuestions = snap.val() ? Object.values(snap.val()) : [];
+    quizQuestions = snap.val() ? Object.values(snap.val()).map(q => ({ ...q, olympiad: normalizeOlympiadValue(q.olympiad) })) : [];
     console.log(`📚 Загружено вопросов: ${quizQuestions.length}`);
   });
 }
@@ -3560,7 +3569,7 @@ function quizNext() {
 // ─── Render question ───
 function renderQuestion(q) {
   const area = document.getElementById('quizQuestionArea');
-  const olympiadLabels = { lomonosov:'Ломоносов', perechen:'Перечневые', vsosh:'ВсОШ', mk:'МК' };
+  const olympiadLabels = { vsosh:'ВсОШ', vp_obsh:'ВП (Общество)', lomonosov:'Ломоносов', vp_soc:'ВП (Социология)', izumrud:'Изумруд' };
   const themeIcons = { sociology:'👥', politics:'🏛️', economics:'💰', law:'⚖️', philosophy:'🧠', culturology:'🎨' };
 
   let optionsHTML = '';
@@ -3919,7 +3928,7 @@ function renderAdminQuestionList() {
     CATEGORIES[q.theme]?.name?.toLowerCase().includes(search)
   );
 
-  const olympiadLabels = { lomonosov:'Ломоносов', perechen:'Перечневые', vsosh:'ВсОШ', mk:'МК' };
+  const olympiadLabels = { vsosh:'ВсОШ', vp_obsh:'ВП (Общество)', lomonosov:'Ломоносов', vp_soc:'ВП (Социология)', izumrud:'Изумруд' };
   if (countEl) countEl.textContent = `Найдено: ${filtered.length} из ${quizQuestions.length}`;
 
   if (!filtered.length) {
@@ -3950,7 +3959,7 @@ function openEditQModal(qid) {
 
   document.getElementById('editQTheme').value = q.theme || 'sociology';
   document.getElementById('editQSubtopic').value = q.subtopic || '';
-  document.getElementById('editQOlympiad').value = q.olympiad || 'lomonosov';
+  document.getElementById('editQOlympiad').value = normalizeOlympiadValue(q.olympiad);
   document.getElementById('editQYear').value = q.year || '';
   document.getElementById('editQText').value = q.question || '';
   document.getElementById('editQExplanation').value = q.explanation || '';
@@ -3984,7 +3993,7 @@ function adminSaveQuestion() {
     ...q,
     theme:      document.getElementById('editQTheme').value,
     subtopic:   document.getElementById('editQSubtopic').value.trim(),
-    olympiad:   document.getElementById('editQOlympiad').value,
+    olympiad:   normalizeOlympiadValue(document.getElementById('editQOlympiad').value),
     year:       parseInt(document.getElementById('editQYear').value) || null,
     question:   document.getElementById('editQText').value.trim(),
     explanation:document.getElementById('editQExplanation').value.trim(),
