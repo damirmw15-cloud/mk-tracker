@@ -63,6 +63,149 @@ body {
   color: white;
   letter-spacing: -0.5px;
 }
+.header-account-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.header-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 8px;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+.course-switch-chip {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  max-width: 190px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,0.28);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.course-switch-chip.visible {
+  display: inline-flex;
+}
+.course-switch-chip:active {
+  transform: scale(0.98);
+}
+.course-switch-icon {
+  font-size: 12px;
+  opacity: 0.95;
+}
+.course-switch-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.course-switch-arrow {
+  font-size: 10px;
+  opacity: 0.8;
+}
+.course-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(17, 30, 48, 0.34);
+  padding: 16px;
+}
+.course-sheet {
+  width: 100%;
+  max-width: 460px;
+  background: white;
+  border-radius: 22px 22px 18px 18px;
+  box-shadow: 0 16px 48px rgba(25, 53, 83, 0.18);
+  border: 1px solid rgba(208,232,247,0.9);
+  padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
+}
+.course-sheet-handle {
+  width: 42px;
+  height: 4px;
+  margin: 0 auto 12px;
+  border-radius: 999px;
+  background: var(--border);
+}
+.course-sheet-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.course-sheet-subtitle {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.course-sheet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.course-option {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  border-radius: 14px;
+  padding: 12px 14px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.course-option.active {
+  border-color: var(--c1);
+  background: var(--c5);
+  box-shadow: 0 6px 18px rgba(100,175,220,0.12);
+}
+.course-option-main {
+  min-width: 0;
+}
+.course-option-name {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 800;
+  margin-bottom: 3px;
+}
+.course-option-meta {
+  font-size: 11px;
+  color: var(--text3);
+  font-weight: 700;
+}
+.course-option-check {
+  flex-shrink: 0;
+  font-size: 16px;
+  color: var(--c1);
+  font-weight: 900;
+}
+.admin-course-note {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--c5);
+  border: 1.5px solid var(--border);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text2);
+}
 .streak-pill {
   background: rgba(255,255,255,0.25);
   border-radius: 20px;
@@ -1502,11 +1645,16 @@ body {
 <!-- HEADER -->
 <div class="header">
   <div class="header-top">
-    <div>
+    <div class="header-account-zone">
       <div class="header-title">МК ТРЕКЕР</div>
-      <button onclick="showAccountMenu()" style="display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:8px;padding:3px 8px;margin-top:2px;cursor:pointer">
+      <button class="header-user-btn" onclick="showAccountMenu()">
         <div id="headerUserName" style="font-size:10px;color:rgba(255,255,255,0.9);font-weight:700;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
         <span style="font-size:10px;color:rgba(255,255,255,0.7)">⇄</span>
+      </button>
+      <button id="courseSwitcherBtn" class="course-switch-chip" onclick="openCourseSwitcher()" aria-label="Сменить курс">
+        <span class="course-switch-icon">🎓</span>
+        <span class="course-switch-text" id="courseSwitcherLabel">Курс</span>
+        <span class="course-switch-arrow">▾</span>
       </button>
     </div>
     <div style="display:flex;align-items:center;gap:8px">
@@ -1637,6 +1785,7 @@ body {
 
 <!-- ══════════════════════════════════ ADMIN TAB ══════════════════════════════════ -->
 <div class="tab-content" id="tab-admin">
+  <div class="admin-course-note" id="adminCourseNote">Курс: —</div>
 
   <div class="admin-section" id="adminSectionEventsAdd">
     <button class="admin-section-header" onclick="toggleAdminSection('adminSectionEventsAdd')">
@@ -2042,6 +2191,13 @@ const SERVER_URL = 'https://functions.yandexcloud.net/d4evsqthteafbgu33s0b';
 
 const SPRINT_START = new Date('2026-03-30');
 const SPRINT_END   = new Date('2026-11-30');
+const DEFAULT_COURSE_ID = 'course_default';
+const COURSE_META_PATH = 'courses';
+const COURSE_DATA_ROOT = 'course_data';
+const USER_SETTINGS_ROOT = 'users';
+const LEGACY_CACHE_KEY = 'mk_tracker_v2';
+const COURSE_CACHE_PREFIX = 'mk_tracker_v2::';
+const COURSE_PREFS_KEY = 'mk_selected_course';
 
 const CATEGORIES = {
   sociology:    { name: 'Социология',    color: '#64AFDC', dot: '#64AFDC', icon: '👥' },
@@ -2104,18 +2260,146 @@ const ACHIEVEMENTS = [
 // ═══════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════
-let state = {
-  done: {},          // taskId -> true
-  streak: 0,
-  lastStreakDate: null,
-  totalXP: 0,
-  level: 1,
-  rank: 'Новичок',
-  charStage: 0,
-  unlockedAchievements: {},
-  todayDone: 0,
-  currentWeek: 1,
-};
+function createDefaultState() {
+  return {
+    done: {},
+    doneTimestamps: {},
+    streak: 0,
+    lastStreakDate: null,
+    totalXP: 0,
+    level: 1,
+    rank: 'Новичок',
+    charStage: 0,
+    unlockedAchievements: {},
+    todayDone: 0,
+    currentWeek: 1,
+  };
+}
+
+let state = createDefaultState();
+let courseCatalog = {};
+let availableCourses = [];
+let currentCourse = null;
+let selectedCourseId = DEFAULT_COURSE_ID;
+let courseSubscriptions = [];
+let courseCatalogReadyResolver = null;
+let courseContextReady = false;
+const courseCatalogReady = new Promise(resolve => { courseCatalogReadyResolver = resolve; });
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getDefaultCourse() {
+  return {
+    id: DEFAULT_COURSE_ID,
+    name: 'Основной курс',
+    shortName: 'Основной курс',
+    description: 'Текущий основной поток',
+    sortOrder: 0,
+    active: true,
+    legacyCompat: true,
+    startDate: SPRINT_START.toISOString().slice(0, 10),
+    endDate: SPRINT_END.toISOString().slice(0, 10),
+  };
+}
+
+function normalizeCourse(courseId, raw = {}) {
+  const fallback = getDefaultCourse();
+  return {
+    ...fallback,
+    ...raw,
+    id: courseId || raw.id || fallback.id,
+    name: raw.name || fallback.name,
+    shortName: raw.shortName || raw.name || fallback.shortName,
+    description: raw.description || '',
+    active: raw.active !== false,
+    legacyCompat: raw.legacyCompat === true || courseId === DEFAULT_COURSE_ID,
+    sortOrder: Number.isFinite(raw.sortOrder) ? raw.sortOrder : fallback.sortOrder,
+    startDate: raw.startDate || fallback.startDate,
+    endDate: raw.endDate || fallback.endDate,
+  };
+}
+
+function getSortedCourses(list = Object.values(courseCatalog)) {
+  return [...list].sort((a, b) => {
+    const byOrder = (a.sortOrder || 0) - (b.sortOrder || 0);
+    if (byOrder !== 0) return byOrder;
+    return String(a.name || '').localeCompare(String(b.name || ''), 'ru');
+  });
+}
+
+function getCourseById(courseId = selectedCourseId) {
+  return courseCatalog[courseId] || normalizeCourse(courseId || DEFAULT_COURSE_ID, {});
+}
+
+function getCurrentCourseLabel() {
+  return getCourseById(selectedCourseId)?.shortName || 'Курс';
+}
+
+function getCourseStartDate() {
+  const value = getCourseById(selectedCourseId)?.startDate;
+  return value ? new Date(value) : new Date(SPRINT_START);
+}
+
+function getCourseEndDate() {
+  const value = getCourseById(selectedCourseId)?.endDate;
+  return value ? new Date(value) : new Date(SPRINT_END);
+}
+
+function isLegacyCompatCourse(courseId = selectedCourseId) {
+  return !!getCourseById(courseId)?.legacyCompat;
+}
+
+function getProgressCacheKey(courseId = selectedCourseId) {
+  return `${COURSE_CACHE_PREFIX}${courseId}`;
+}
+
+function getCourseCollectionPath(collection, courseId = selectedCourseId) {
+  return `${COURSE_DATA_ROOT}/${courseId}/${collection}`;
+}
+
+function getProgressPath(uid, courseId = selectedCourseId) {
+  return `progress/${courseId}/${uid}`;
+}
+
+function getLegacyProgressPath(uid) {
+  return `progress/${uid}`;
+}
+
+function getQuizResultsPath(uid, courseId = selectedCourseId) {
+  return `quiz_results/${courseId}/${uid}`;
+}
+
+function getLegacyQuizResultsPath(uid) {
+  return `quiz_results/${uid}`;
+}
+
+function getStudentsPath(courseId = selectedCourseId) {
+  return `students/${courseId}`;
+}
+
+function getLegacyStudentsPath() {
+  return 'students';
+}
+
+function getUserSettingsPath(uid) {
+  return `${USER_SETTINGS_ROOT}/${uid}`;
+}
+
+function renderCourseControls() {
+  const btn = document.getElementById('courseSwitcherBtn');
+  const label = document.getElementById('courseSwitcherLabel');
+  const adminNote = document.getElementById('adminCourseNote');
+  if (label) label.textContent = getCurrentCourseLabel();
+  if (btn) btn.classList.toggle('visible', !!currentUser && availableCourses.length > 1);
+  if (adminNote) adminNote.textContent = `Курс: ${getCourseById(selectedCourseId).name}`;
+}
 
 // ═══════════════════════════════════════════════════
 //  STORAGE — Firebase (основное) + localStorage (кэш)
@@ -2126,19 +2410,21 @@ const TG = window.Telegram?.WebApp;
 
 function saveState() {
   const data = JSON.stringify(state);
-  // localStorage — быстрый локальный кэш
-  localStorage.setItem('mk_tracker_v2', data);
-  // Firebase — основное облачное хранилище
+  localStorage.setItem(getProgressCacheKey(), data);
   if (db && currentUser) {
     saveProgressToFirebase();
   }
 }
 
-function loadState() {
-  // Грузим из localStorage как быстрый кэш пока Firebase не ответил
-  const s = localStorage.getItem('mk_tracker_v2');
-  if (s) { try { state = { ...state, ...JSON.parse(s) }; } catch(e){} }
-  // Основная загрузка — из Firebase, вызывается в onUserLoggedIn
+function loadStateFromCache(courseId = selectedCourseId) {
+  const scoped = localStorage.getItem(getProgressCacheKey(courseId));
+  const legacy = isLegacyCompatCourse(courseId) ? localStorage.getItem(LEGACY_CACHE_KEY) : null;
+  const raw = scoped || legacy;
+  state = createDefaultState();
+  if (raw) {
+    try { state = { ...state, ...JSON.parse(raw) }; } catch (e) {}
+  }
+  state.currentWeek = state.currentWeek || getCurrentWeekNum();
 }
 
 // ═══════════════════════════════════════════════════
@@ -2152,25 +2438,25 @@ function normalizeDate(d) {
   return x;
 }
 function isCourseStarted() {
-  return normalizeDate(new Date()) >= normalizeDate(SPRINT_START);
+  return normalizeDate(new Date()) >= normalizeDate(getCourseStartDate());
 }
 function getDaysUntilStart() {
   const now = normalizeDate(new Date());
-  const start = normalizeDate(SPRINT_START);
+  const start = normalizeDate(getCourseStartDate());
   return Math.max(0, Math.ceil((start - now) / (24*3600*1000)));
 }
 function formatStartDate() {
-  return SPRINT_START.toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
+  return getCourseStartDate().toLocaleDateString('ru-RU', { day:'numeric', month:'long' });
 }
 function getCurrentWeekNum() {
   if (!isCourseStarted()) return 0;
   const now = normalizeDate(new Date());
-  const start = normalizeDate(SPRINT_START);
+  const start = normalizeDate(getCourseStartDate());
   const diff = Math.floor((now - start) / (7*24*3600*1000));
   return Math.min(Math.max(1, diff + 1), 35);
 }
 function getWeekDates(w) {
-  const d = new Date(SPRINT_START);
+  const d = new Date(getCourseStartDate());
   d.setDate(d.getDate() + (w-1)*7);
   const end = new Date(d); end.setDate(end.getDate()+6);
   const fmt = d => d.toLocaleDateString('ru-RU', {day:'numeric',month:'short'});
@@ -2185,6 +2471,249 @@ function getLevelInfo(xp) {
 function getAllTasks() { return [...ALL_TASKS, ...(firebaseTasks || [])]; }
 function getCatDone(cat) { return getAllTasks().filter(t=>t.cat===cat && state.done[t.id]).length; }
 function getCatTotal(cat){ return getAllTasks().filter(t=>t.cat===cat).length; }
+
+function cleanupCourseSubscriptions() {
+  courseSubscriptions.forEach(unsub => {
+    try { unsub(); } catch (e) {}
+  });
+  courseSubscriptions = [];
+}
+
+function subscribeCourseAwareValue(scopedPath, legacyPath, onValue) {
+  if (!db) return () => {};
+  let scopedHasData = false;
+  const scopedRef = db.ref(scopedPath);
+  const scopedHandler = snap => {
+    scopedHasData = snap.exists();
+    if (scopedHasData || !legacyPath) onValue(snap.val(), false);
+  };
+  scopedRef.on('value', scopedHandler);
+
+  let legacyRef = null;
+  let legacyHandler = null;
+  if (legacyPath) {
+    legacyRef = db.ref(legacyPath);
+    legacyHandler = snap => {
+      if (!scopedHasData) onValue(snap.val(), true);
+    };
+    legacyRef.on('value', legacyHandler);
+  }
+
+  return () => {
+    scopedRef.off('value', scopedHandler);
+    if (legacyRef && legacyHandler) legacyRef.off('value', legacyHandler);
+  };
+}
+
+function readCourseAwareOnce(scopedPath, legacyPath) {
+  if (!db) return Promise.resolve({ value: null, usedLegacy: false });
+  return db.ref(scopedPath).once('value').then(snap => {
+    if (snap.exists() || !legacyPath) {
+      return { value: snap.val(), usedLegacy: false };
+    }
+    return db.ref(legacyPath).once('value').then(legacySnap => ({
+      value: legacySnap.val(),
+      usedLegacy: legacySnap.exists(),
+    }));
+  });
+}
+
+function getAvailableCoursesForUser(userSettings = {}) {
+  const allCourses = getSortedCourses();
+  if (isAdmin) return allCourses;
+
+  const rawAllowed = userSettings.courses || userSettings.availableCourses || null;
+  const allowedIds = Array.isArray(rawAllowed)
+    ? rawAllowed
+    : rawAllowed && typeof rawAllowed === 'object'
+      ? Object.keys(rawAllowed).filter(id => rawAllowed[id])
+      : [];
+
+  const filtered = allowedIds.length
+    ? allCourses.filter(course => allowedIds.includes(course.id))
+    : allCourses.filter(course => course.active !== false);
+
+  return filtered.length ? filtered : [getDefaultCourse()];
+}
+
+async function persistSelectedCourse(courseId) {
+  if (!db || !currentUser) return;
+  const path = getUserSettingsPath(currentUser.uid);
+  const updates = {
+    selectedCourseId: courseId,
+    currentCourseId: courseId,
+    updatedAt: Date.now(),
+  };
+  await db.ref(path).update(updates);
+  localStorage.setItem(COURSE_PREFS_KEY, courseId);
+}
+
+function updateCourseDependentViews() {
+  renderCourseControls();
+  renderAll();
+  renderCalendar();
+  renderQuizStats();
+  renderWeakThemes();
+  if (document.getElementById('tab-admin').classList.contains('active')) {
+    renderAdminEvents();
+    adminLoadStudents();
+    adminLoadQuizStats();
+    renderAdminQuestionList();
+    renderTaskEditorWeekOptions();
+    renderTaskEditorList();
+  }
+}
+
+async function loadCourseProgress(courseId = selectedCourseId) {
+  loadStateFromCache(courseId);
+  if (!db || !currentUser) {
+    updateCourseDependentViews();
+    return;
+  }
+
+  const scopedPath = getProgressPath(currentUser.uid, courseId);
+  const legacyPath = isLegacyCompatCourse(courseId) ? getLegacyProgressPath(currentUser.uid) : null;
+  const { value } = await readCourseAwareOnce(scopedPath, legacyPath);
+
+  if (value?.data) {
+    try {
+      state = { ...createDefaultState(), ...JSON.parse(value.data) };
+    } catch (e) {
+      state = { ...createDefaultState(), ...state };
+    }
+  }
+
+  state.currentWeek = state.currentWeek || getCurrentWeekNum();
+  localStorage.setItem(getProgressCacheKey(courseId), JSON.stringify(state));
+  if (isLegacyCompatCourse(courseId)) localStorage.setItem(LEGACY_CACHE_KEY, JSON.stringify(state));
+  updateCourseDependentViews();
+}
+
+function subscribeCourseCollections(courseId = selectedCourseId) {
+  cleanupCourseSubscriptions();
+
+  courseSubscriptions.push(
+    subscribeCourseAwareValue(
+      getCourseCollectionPath('calendar_events', courseId),
+      isLegacyCompatCourse(courseId) ? 'calendar_events' : null,
+      value => {
+        firebaseEvents = value || {};
+        if (document.getElementById('tab-calendar').classList.contains('active')) renderCalendar();
+        if (isAdmin && document.getElementById('tab-admin').classList.contains('active')) renderAdminEvents();
+      }
+    )
+  );
+
+  courseSubscriptions.push(
+    subscribeCourseAwareValue(
+      getCourseCollectionPath('tasks', courseId),
+      isLegacyCompatCourse(courseId) ? 'tasks' : null,
+      value => {
+        firebaseTasks = value ? Object.entries(value).map(([key, item]) => ({ ...item, id: item.id || key })) : [];
+        renderTasks();
+        renderTaskEditorWeekOptions();
+        renderTaskEditorList();
+      }
+    )
+  );
+
+  courseSubscriptions.push(
+    subscribeCourseAwareValue(
+      getCourseCollectionPath('questions', courseId),
+      isLegacyCompatCourse(courseId) ? 'questions' : null,
+      value => {
+        quizQuestions = value ? Object.values(value).map(q => ({ ...q, olympiad: normalizeOlympiadValue(q.olympiad) })) : [];
+        renderAdminQuestionList();
+      }
+    )
+  );
+
+  if (currentUser) {
+    courseSubscriptions.push(
+      subscribeCourseAwareValue(
+        getQuizResultsPath(currentUser.uid, courseId),
+        isLegacyCompatCourse(courseId) ? getLegacyQuizResultsPath(currentUser.uid) : null,
+        value => {
+          quizResults = value || {};
+          renderQuizStats();
+          if (quizMode === 'weak') renderWeakThemes();
+        }
+      )
+    );
+  }
+}
+
+async function switchCourse(courseId, options = {}) {
+  const nextCourseId = courseId || DEFAULT_COURSE_ID;
+  const isSameCourse = nextCourseId === selectedCourseId && courseContextReady;
+  if (isSameCourse) {
+    renderCourseControls();
+    return;
+  }
+
+  if (currentUser && courseContextReady) saveProgressToFirebase();
+
+  selectedCourseId = nextCourseId;
+  currentCourse = getCourseById(nextCourseId);
+  courseContextReady = true;
+  firebaseTasks = [];
+  firebaseEvents = {};
+  quizQuestions = [];
+  quizResults = {};
+  currentQuestion = null;
+  quizAnswered = false;
+
+  renderCourseControls();
+  subscribeCourseCollections(nextCourseId);
+  await loadCourseProgress(nextCourseId);
+
+  if (options.persist !== false) await persistSelectedCourse(nextCourseId);
+  if (!options.silent) showToast(`🎓 Курс: ${getCourseById(nextCourseId).shortName}`);
+}
+
+function renderCourseSheet() {
+  const items = availableCourses.map(course => `
+    <button class="course-option ${course.id === selectedCourseId ? 'active' : ''}" onclick="handleCourseOptionClick('${course.id}')">
+      <div class="course-option-main">
+        <div class="course-option-name">${escapeHtml(course.name)}</div>
+        <div class="course-option-meta">${escapeHtml(course.description || 'Курс доступен в профиле')}</div>
+      </div>
+      <div class="course-option-check">${course.id === selectedCourseId ? '✓' : ''}</div>
+    </button>
+  `).join('');
+
+  return `
+    <div class="course-sheet">
+      <div class="course-sheet-handle"></div>
+      <div class="course-sheet-title">Выбор курса</div>
+      <div class="course-sheet-subtitle">Интерфейс обновится автоматически после переключения.</div>
+      <div class="course-sheet-list">${items}</div>
+    </div>
+  `;
+}
+
+function openCourseSwitcher() {
+  if (!currentUser || availableCourses.length <= 1) return;
+  closeCourseSwitcher();
+  const overlay = document.createElement('div');
+  overlay.id = 'courseSwitcherOverlay';
+  overlay.className = 'course-sheet-overlay';
+  overlay.innerHTML = renderCourseSheet();
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeCourseSwitcher();
+  });
+  document.body.appendChild(overlay);
+}
+
+function closeCourseSwitcher() {
+  const overlay = document.getElementById('courseSwitcherOverlay');
+  if (overlay) overlay.remove();
+}
+
+async function handleCourseOptionClick(courseId) {
+  closeCourseSwitcher();
+  await switchCourse(courseId);
+}
 
 // ═══════════════════════════════════════════════════
 //  CHARACTER SVG STAGES
@@ -2416,7 +2945,7 @@ function renderHero() {
     : 'МАКС';
 
   const total = getAllTasks().length;
-  const pctDone = Math.round(done/total*100);
+  const pctDone = total ? Math.round(done/total*100) : 0;
   document.getElementById('statDone').textContent = done;
   document.getElementById('statTotal').textContent = total;
   document.getElementById('statPct').textContent = pctDone + '%';
@@ -2598,7 +3127,7 @@ function renderRewards() {
   document.getElementById('rewardsList').innerHTML = REWARDS.map(r => {
     let prog = 0, progMax = r.target, unlocked = false;
     if (r.type === 'done') { prog = Math.min(done, r.target); unlocked = done >= r.target; }
-    if (r.type === 'week1') { prog = week1Done; progMax = week1Tasks.length; unlocked = week1Done >= week1Tasks.length; }
+    if (r.type === 'week1') { prog = week1Done; progMax = week1Tasks.length; unlocked = week1Tasks.length > 0 && week1Done >= week1Tasks.length; }
     const pct = progMax ? Math.round(prog/progMax*100) : 0;
     return `<div class="reward-card ${unlocked?'unlocked':''}">
       <div class="reward-header">
@@ -2650,17 +3179,33 @@ function changeWeek(d) {
 
 // ═══════════════════════════════════════════════════
 //  FIREBASE CONFIG
-//  ⚠️ Замени на свои данные из Firebase Console
+//  dev / prod переключение без ручной правки всего файла
 // ═══════════════════════════════════════════════════
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDkalispfWTVINy6U1dGJ6hGPuelq9mg1k",
-  authDomain: "meinkurs-tracker.firebaseapp.com",
-  databaseURL: "https://meinkurs-tracker-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "meinkurs-tracker",
-  storageBucket: "meinkurs-tracker.firebasestorage.app",
-  messagingSenderId: "859829593991",
-  appId: "1:859829593991:web:2b3b5f4ff4019ec7cd5522"
+const ENV = 'dev'; // 'dev' или 'prod'
+
+const FIREBASE_CONFIGS = {
+  dev: {
+    apiKey: "AIzaSyBIS14IVwTVsSfO64tuwRpUjVi_sXqEZK0",
+    authDomain: "dev1-668a8.firebaseapp.com",
+    databaseURL: "https://dev1-668a8-default-rtdb.firebaseio.com",
+    projectId: "dev1-668a8",
+    storageBucket: "dev1-668a8.firebasestorage.app",
+    messagingSenderId: "709334043230",
+    appId: "1:709334043230:web:5deda064c7de0cf07b42cf",
+    measurementId: "G-1GMXBF9J3D"
+  },
+  prod: {
+    apiKey: "AIzaSyDkalispfWTVINy6U1dGJ6hGPuelq9mg1k",
+    authDomain: "meinkurs-tracker.firebaseapp.com",
+    databaseURL: "https://meinkurs-tracker-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "meinkurs-tracker",
+    storageBucket: "meinkurs-tracker.firebasestorage.app",
+    messagingSenderId: "859829593991",
+    appId: "1:859829593991:web:2b3b5f4ff4019ec7cd5522"
+  }
 };
+
+const FIREBASE_CONFIG = FIREBASE_CONFIGS[ENV];
 
 // ═══════════════════════════════════════════════════
 //  ADMIN CONFIG
@@ -2754,17 +3299,21 @@ function authResetPassword() {
 }
 
 function authLogout() {
-  saveProgressToFirebase(); // save before logout
-  localStorage.removeItem('mk_tracker_v2');
-  state = { done:{}, streak:0, lastStreakDate:null, totalXP:0, level:1, rank:'Новичок',
-            charStage:0, unlockedAchievements:{}, todayDone:0, currentWeek:getCurrentWeekNum() };
+  saveProgressToFirebase();
+  cleanupCourseSubscriptions();
+  localStorage.removeItem(LEGACY_CACHE_KEY);
+  localStorage.removeItem(COURSE_PREFS_KEY);
+  state = createDefaultState();
+  availableCourses = [];
+  currentCourse = getDefaultCourse();
+  selectedCourseId = DEFAULT_COURSE_ID;
+  renderCourseControls();
   if (auth) auth.signOut();
 }
 
 // Account menu — показывается по кнопке ⇄ в шапке
 function showAccountMenu() {
   const user = currentUser;
-  const name = user ? (user.displayName || user.email) : 'Не вошёл';
   const menu = document.createElement('div');
   menu.id = 'accountMenuOverlay';
   menu.style.cssText = `position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.5);display:flex;align-items:flex-start;justify-content:flex-start;padding:70px 16px 0`;
@@ -2773,6 +3322,9 @@ function showAccountMenu() {
       <div style="font-family:Unbounded,sans-serif;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:12px">👤 Аккаунт</div>
       <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">${user?.displayName || '—'}</div>
       <div style="font-size:11px;color:var(--text3);font-weight:600;margin-bottom:16px">${user?.email || '—'}</div>
+      <button onclick="closeAccountMenu();openCourseSwitcher()" style="width:100%;padding:12px;background:white;border:1.5px solid var(--border);border-radius:12px;font-family:Nunito,sans-serif;font-size:13px;font-weight:800;color:var(--text);cursor:pointer;margin-bottom:8px">
+        🎓 Курс: ${escapeHtml(getCurrentCourseLabel())}
+      </button>
       <button onclick="closeAccountMenu();authLogout()" style="width:100%;padding:12px;background:var(--c5);border:1.5px solid var(--border);border-radius:12px;font-family:Nunito,sans-serif;font-size:13px;font-weight:800;color:var(--c1);cursor:pointer;margin-bottom:8px">
         🔄 Сменить аккаунт
       </button>
@@ -2803,35 +3355,41 @@ function hideAuthScreen() {
 function onUserLoggedIn(user) {
   currentUser = user;
   hideAuthScreen();
-  // Load progress from Firebase
-  db.ref(`progress/${user.uid}`).once('value', snap => {
-    const saved = snap.val();
-    if (saved) {
-      try { state = { ...state, ...JSON.parse(saved.data) }; } catch(e){}
-    }
-    state.currentWeek = state.currentWeek || getCurrentWeekNum();
-    renderAll();
-    hideLoading();
-  });
-  // Auto-save every 30s
   if (progressSaveInterval) clearInterval(progressSaveInterval);
   progressSaveInterval = setInterval(() => saveProgressToFirebase(), 30000);
-  // Update header user info
   updateHeaderUser(user);
-  // Load quiz data
-  loadQuizQuestions();
-  loadQuizResults();
+  courseCatalogReady.then(async () => {
+    const settingsSnap = await db.ref(getUserSettingsPath(user.uid)).once('value');
+    const settings = settingsSnap.val() || {};
+    availableCourses = getAvailableCoursesForUser(settings);
+    const preferredCourseId =
+      settings.selectedCourseId ||
+      settings.currentCourseId ||
+      localStorage.getItem(COURSE_PREFS_KEY) ||
+      availableCourses[0]?.id ||
+      DEFAULT_COURSE_ID;
+    renderCourseControls();
+    await switchCourse(preferredCourseId, { persist: false, silent: true });
+    hideLoading();
+  });
 }
 
 function onUserLoggedOut() {
   currentUser = null;
+  cleanupCourseSubscriptions();
+  quizResults = {};
+  quizQuestions = [];
+  firebaseTasks = [];
+  firebaseEvents = {};
   showAuthScreen();
+  renderCourseControls();
   hideLoading();
 }
 
 function updateHeaderUser(user) {
   const el = document.getElementById('headerUserName');
   if (el) el.textContent = user.displayName || user.email;
+  renderCourseControls();
 }
 
 function saveProgressToFirebase() {
@@ -2839,17 +3397,36 @@ function saveProgressToFirebase() {
   const uid = currentUser.uid;
   const name = currentUser.displayName || currentUser.email.split('@')[0];
   const data = JSON.stringify(state);
-  db.ref(`progress/${uid}`).set({ data, updatedAt: Date.now() });
-  // Also update leaderboard
-  db.ref(`students/${uid}`).set({
+  const payload = {
+    data,
+    updatedAt: Date.now(),
+    courseId: selectedCourseId,
+  };
+  const studentPayload = {
     name,
     done: getDoneCount(),
     total: getAllTasks().length,
     xp: getTotalXP(),
     rank: getLevelInfo(getTotalXP()).rank,
     streak: state.streak || 0,
-    updated: Date.now()
-  });
+    updated: Date.now(),
+    courseId: selectedCourseId,
+    courseName: getCourseById(selectedCourseId).name,
+  };
+
+  const writes = [
+    db.ref(getProgressPath(uid, selectedCourseId)).set(payload),
+    db.ref(`${getStudentsPath(selectedCourseId)}/${uid}`).set(studentPayload),
+  ];
+
+  if (isLegacyCompatCourse()) {
+    writes.push(db.ref(getLegacyProgressPath(uid)).set(payload));
+    writes.push(db.ref(`${getLegacyStudentsPath()}/${uid}`).set(studentPayload));
+    localStorage.setItem(LEGACY_CACHE_KEY, data);
+  }
+
+  localStorage.setItem(getProgressCacheKey(selectedCourseId), data);
+  Promise.all(writes).catch(err => console.warn('saveProgressToFirebase error', err));
 }
 
 function initFirebase() {
@@ -2872,17 +3449,28 @@ function initFirebase() {
       }
     });
 
-    // Listen to shared data (calendar, admin tasks) — no auth needed
-    db.ref('calendar_events').on('value', snap => {
-      firebaseEvents = snap.val() || {};
-      if (document.getElementById('tab-calendar').classList.contains('active')) renderCalendar();
-      if (isAdmin && document.getElementById('tab-admin').classList.contains('active')) renderAdminEvents();
-    });
-    db.ref('tasks').on('value', snap => {
-      firebaseTasks = snap.val() ? Object.entries(snap.val()).map(([key, value]) => ({ ...value, id: value.id || key })) : [];
-      renderTasks();
-      renderTaskEditorWeekOptions();
-      renderTaskEditorList();
+    db.ref(COURSE_META_PATH).on('value', snap => {
+      const data = snap.val() || {};
+      const normalized = Object.entries(data).reduce((acc, [courseId, value]) => {
+        acc[courseId] = normalizeCourse(courseId, value || {});
+        return acc;
+      }, {});
+      if (!normalized[DEFAULT_COURSE_ID]) normalized[DEFAULT_COURSE_ID] = getDefaultCourse();
+      courseCatalog = normalized;
+      if (courseCatalogReadyResolver) {
+        courseCatalogReadyResolver();
+        courseCatalogReadyResolver = null;
+      }
+      if (currentUser) {
+        db.ref(getUserSettingsPath(currentUser.uid)).once('value').then(settingsSnap => {
+          availableCourses = getAvailableCoursesForUser(settingsSnap.val() || {});
+          if (!availableCourses.some(course => course.id === selectedCourseId)) {
+            switchCourse(availableCourses[0]?.id || DEFAULT_COURSE_ID, { persist: false, silent: true });
+          } else {
+            renderCourseControls();
+          }
+        });
+      }
     });
   } catch(e) { console.warn('Firebase init error:', e); hideLoading(); }
 }
@@ -2893,7 +3481,8 @@ function checkAdmin() {
   // ?logout=1 — быстрый сброс аккаунта через URL
   if (params.get('logout') === '1') {
     localStorage.removeItem('mk_is_admin');
-    localStorage.removeItem('mk_tracker_v2');
+    localStorage.removeItem(LEGACY_CACHE_KEY);
+    localStorage.removeItem(COURSE_PREFS_KEY);
     if (auth) auth.signOut();
     window.history.replaceState({}, '', window.location.pathname);
   }
@@ -2953,6 +3542,8 @@ function adminLoginSubmit() {
   if (key === ADMIN_SECRET_KEY) {
     isAdmin = true;
     localStorage.setItem('mk_is_admin', '1');
+    availableCourses = getAvailableCoursesForUser({});
+    renderCourseControls();
     closeAdminModal();
     showAdminTab();
     showToast('👑 Режим админа активирован!');
@@ -2972,6 +3563,12 @@ function adminLogout() {
   document.getElementById('adminTabBtn').style.display = 'none';
   const lb = document.getElementById('adminLoginBtn');
   if (lb) lb.style.display = '';
+  if (currentUser && db) {
+    db.ref(getUserSettingsPath(currentUser.uid)).once('value').then(settingsSnap => {
+      availableCourses = getAvailableCoursesForUser(settingsSnap.val() || {});
+      renderCourseControls();
+    });
+  }
   switchTab('home');
   showToast('👋 Вышли из режима админа');
 }
@@ -3024,7 +3621,7 @@ function renderCalendar() {
   // Task deadlines from week structure
   const taskDates = {};
   for (let w = 1; w <= 35; w++) {
-    const wDate = new Date(SPRINT_START);
+    const wDate = new Date(getCourseStartDate());
     wDate.setDate(wDate.getDate() + (w-1)*7 + 6); // end of week = Sunday
     const key = wDate.toISOString().slice(0,10);
     if (wDate.getFullYear() === calYear && wDate.getMonth() === calMonth) {
@@ -3082,7 +3679,7 @@ function renderCalendarEvents(filterDate) {
 
   // Week end deadlines
   for (let w = 1; w <= 35; w++) {
-    const wDate = new Date(SPRINT_START);
+    const wDate = new Date(getCourseStartDate());
     wDate.setDate(wDate.getDate() + (w-1)*7 + 6);
     if (wDate.getFullYear()===calYear && wDate.getMonth()===calMonth) {
       const wTasks = getAllTasks().filter(t=>t.week===w);
@@ -3137,8 +3734,15 @@ function adminAddEvent() {
 
   if (!date || !title) { showToast('⚠️ Заполни дату и название'); return; }
 
-  const ref = db.ref('calendar_events').push();
-  ref.set({ type, date, title, desc, createdAt: Date.now() })
+  const ref = db.ref(getCourseCollectionPath('calendar_events')).push();
+  const payload = { type, date, title, desc, createdAt: Date.now(), courseId: selectedCourseId };
+  const writes = [ref.set(payload)];
+  if (isLegacyCompatCourse()) {
+    const legacyRef = db.ref('calendar_events').child(ref.key);
+    writes.push(legacyRef.set(payload));
+  }
+
+  Promise.all(writes)
     .then(() => {
       document.getElementById('adminEventTitle').value = '';
       document.getElementById('adminEventDesc').value = '';
@@ -3196,7 +3800,7 @@ function taskEditorSave() {
     return;
   }
 
-  const refId = taskEditorEditingId || db.ref('tasks').push().key;
+  const refId = taskEditorEditingId || db.ref(getCourseCollectionPath('tasks')).push().key;
 
   const payload = {
     id: refId,
@@ -3206,9 +3810,12 @@ function taskEditorSave() {
     xp,
     diff: xp <= 15 ? 'лёгкая' : xp <= 25 ? 'средняя' : xp <= 35 ? 'сложная' : 'очень сложная',
     updatedAt: Date.now(),
+    courseId: selectedCourseId,
   };
   if (!taskEditorEditingId) payload.createdAt = Date.now();
-  db.ref(`tasks/${refId}`).set(payload)
+  const writes = [db.ref(`${getCourseCollectionPath('tasks')}/${refId}`).set(payload)];
+  if (isLegacyCompatCourse()) writes.push(db.ref(`tasks/${refId}`).set(payload));
+  Promise.all(writes)
     .then(() => {
       showToast(taskEditorEditingId ? '✅ Задача обновлена' : '✅ Задача добавлена');
       taskEditorReset();
@@ -3219,7 +3826,9 @@ function taskEditorSave() {
 function taskEditorDelete(taskId) {
   if (!db) return;
   if (!confirm('Удалить эту задачу?')) return;
-  db.ref(`tasks/${taskId}`).remove()
+  const writes = [db.ref(`${getCourseCollectionPath('tasks')}/${taskId}`).remove()];
+  if (isLegacyCompatCourse()) writes.push(db.ref(`tasks/${taskId}`).remove());
+  Promise.all(writes)
     .then(() => {
       if (taskEditorEditingId === taskId) taskEditorReset();
       showToast('🗑️ Задача удалена');
@@ -3252,7 +3861,7 @@ function renderTaskEditorList() {
       listEl.innerHTML = `
         <div class="empty-state">
           <div class="e-icon">📭</div>
-          В Firebase по пути <b>tasks/</b> пока нет задач<br>
+          В Firebase по пути <b>${getCourseCollectionPath('tasks')}</b> пока нет задач<br>
           <span style="font-size:12px;color:var(--text3);font-weight:700">Поэтому раздел «Существующие задачи» пуст.</span>
           <div style="margin-top:12px">
             
@@ -3287,8 +3896,8 @@ function renderTaskEditorList() {
 
 function adminLoadStudents() {
   if (!db) { showToast('⚠️ Firebase не подключён'); return; }
-  db.ref('students').once('value', snap => {
-    const students = snap.val();
+  readCourseAwareOnce(getStudentsPath(), isLegacyCompatCourse() ? getLegacyStudentsPath() : null).then(({ value }) => {
+    const students = value;
     const el = document.getElementById('adminStudentsList');
     if (!students) {
       el.innerHTML = '<div class="empty-state"><div class="e-icon">👤</div>Ученики ещё не заходили</div>';
@@ -3325,7 +3934,9 @@ function renderAdminEvents() {
 function adminDeleteEvent(id) {
   if (!db) return;
   if (!confirm('Удалить это событие?')) return;
-  db.ref(`calendar_events/${id}`).remove()
+  const writes = [db.ref(`${getCourseCollectionPath('calendar_events')}/${id}`).remove()];
+  if (isLegacyCompatCourse()) writes.push(db.ref(`calendar_events/${id}`).remove());
+  Promise.all(writes)
     .then(() => showToast('🗑️ Удалено'))
     .catch(() => showToast('❌ Ошибка'));
 }
@@ -3391,9 +4002,12 @@ initFirebase();
 // Fallback: if Firebase not configured, load from localStorage directly
 setTimeout(() => {
   if (!auth) {
-    const s = localStorage.getItem('mk_tracker_v2');
-    if (s) { try { state = { ...state, ...JSON.parse(s) }; } catch(e){} }
+    currentCourse = getDefaultCourse();
+    selectedCourseId = DEFAULT_COURSE_ID;
+    availableCourses = [getDefaultCourse()];
+    loadStateFromCache(DEFAULT_COURSE_ID);
     state.currentWeek = state.currentWeek || getCurrentWeekNum();
+    renderCourseControls();
     renderAll();
     hideLoading();
     document.getElementById('authScreen').style.display = 'none';
@@ -3422,20 +4036,12 @@ function normalizeOlympiadValue(value) {
 
 // ─── Load questions from Firebase ───
 function loadQuizQuestions() {
-  if (!db) return;
-  db.ref('questions').on('value', snap => {
-    quizQuestions = snap.val() ? Object.values(snap.val()).map(q => ({ ...q, olympiad: normalizeOlympiadValue(q.olympiad) })) : [];
-    console.log(`📚 Загружено вопросов: ${quizQuestions.length}`);
-  });
+  return;
 }
 
 // ─── Load user results from Firebase ───
 function loadQuizResults() {
-  if (!db || !currentUser) return;
-  db.ref(`quiz_results/${currentUser.uid}`).on('value', snap => {
-    quizResults = snap.val() || {};
-    renderQuizStats();
-  });
+  return;
 }
 
 // ─── Save result ───
@@ -3452,7 +4058,9 @@ function saveQuizResult(qid, correct) {
     subtopic: currentQuestion?.subtopic || '',
   };
   quizResults[qid] = updated;
-  db.ref(`quiz_results/${currentUser.uid}/${qid}`).set(updated);
+  const writes = [db.ref(`${getQuizResultsPath(currentUser.uid)}/${qid}`).set(updated)];
+  if (isLegacyCompatCourse()) writes.push(db.ref(`${getLegacyQuizResultsPath(currentUser.uid)}/${qid}`).set(updated));
+  Promise.all(writes).catch(err => console.warn('saveQuizResult error', err));
   // Give XP for correct answer
   if (correct) {
     state.totalXP = (state.totalXP || 0);
@@ -3854,9 +4462,12 @@ function adminAddQuestion() {
     if (!qData.pairs.length) { showToast('⚠️ Формат: термин|определение'); return; }
   }
 
-  const ref = db.ref('questions').push();
+  const ref = db.ref(getCourseCollectionPath('questions')).push();
   qData.id = ref.key;
-  ref.set(qData)
+  qData.courseId = selectedCourseId;
+  const writes = [ref.set(qData)];
+  if (isLegacyCompatCourse()) writes.push(db.ref(`questions/${ref.key}`).set(qData));
+  Promise.all(writes)
     .then(() => {
       // Clear form
       document.getElementById('addQText').value = '';
@@ -3873,8 +4484,8 @@ function adminAddQuestion() {
 // ─── Admin: quiz stats ───
 function adminLoadQuizStats() {
   if (!db) return;
-  db.ref('quiz_results').once('value', snap => {
-    const all = snap.val() || {};
+  readCourseAwareOnce(`quiz_results/${selectedCourseId}`, isLegacyCompatCourse() ? 'quiz_results' : null).then(({ value }) => {
+    const all = value || {};
     const students = Object.keys(all).length;
     let totalAnswers = 0, totalCorrect = 0;
     const themeErrors = {};
@@ -4011,7 +4622,10 @@ function adminSaveQuestion() {
       .map(l => { const [term, definition] = l.split('|'); return { term: term.trim(), definition: definition.trim() }; });
   }
 
-  db.ref(`questions/${editingQId}`).set(updated)
+  updated.courseId = selectedCourseId;
+  const writes = [db.ref(`${getCourseCollectionPath('questions')}/${editingQId}`).set(updated)];
+  if (isLegacyCompatCourse()) writes.push(db.ref(`questions/${editingQId}`).set(updated));
+  Promise.all(writes)
     .then(() => {
       closeEditQModal();
       showToast('✅ Вопрос сохранён!');
@@ -4022,7 +4636,9 @@ function adminSaveQuestion() {
 function adminDeleteQuestion(qid) {
   if (!confirm('Удалить этот вопрос?')) return;
   if (!db) return;
-  db.ref(`questions/${qid}`).remove()
+  const writes = [db.ref(`${getCourseCollectionPath('questions')}/${qid}`).remove()];
+  if (isLegacyCompatCourse()) writes.push(db.ref(`questions/${qid}`).remove());
+  Promise.all(writes)
     .then(() => showToast('🗑️ Вопрос удалён'))
     .catch(() => showToast('❌ Ошибка'));
 }
