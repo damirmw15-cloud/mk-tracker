@@ -4307,7 +4307,7 @@ function setAuthScreenMode(mode = 'login') {
   const successForm = document.getElementById('authFormResetSuccess');
   const loginTab = document.getElementById('authTabLogin');
   const regTab = document.getElementById('authTabReg');
-  if (tabs) tabs.style.display = mode === 'login' ? '' : 'none';
+  if (tabs) tabs.style.display = !ENABLE_PUBLIC_REGISTRATION ? 'none' : (mode === 'login' ? '' : 'none');
   if (loginForm) loginForm.style.display = mode === 'login' ? '' : 'none';
   if (regForm) regForm.style.display = mode === 'register' ? '' : 'none';
   if (resetForm) resetForm.style.display = mode === 'reset-valid' ? '' : 'none';
@@ -4337,8 +4337,10 @@ function switchAuthTab(tab) {
 }
 
 function applyPublicRegistrationVisibility() {
+  const tabs = document.querySelector('.auth-tabs');
   const regTab = document.getElementById('authTabReg');
   const regForm = document.getElementById('authFormReg');
+  if (tabs) tabs.style.display = ENABLE_PUBLIC_REGISTRATION ? '' : 'none';
   if (regTab) regTab.style.display = ENABLE_PUBLIC_REGISTRATION ? '' : 'none';
   if (regForm && !ENABLE_PUBLIC_REGISTRATION) regForm.style.display = 'none';
   switchAuthTab('login');
