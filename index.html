@@ -1920,6 +1920,49 @@ body {
       <button class="auth-btn-main" id="registerBtn" onclick="authRegister()">Создать аккаунт →</button>
     </div>
 
+    <!-- RESET PASSWORD FORM -->
+    <div id="authFormResetPassword" style="display:none">
+      <div class="auth-field">
+        <label>Email</label>
+        <input class="auth-input" type="email" id="resetEmail" placeholder="example@mail.ru" autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label>Новый пароль</label>
+        <input class="auth-input" type="password" id="resetNewPassword" placeholder="Минимум 6 символов" autocomplete="new-password"
+          onkeydown="if(event.key==='Enter')authConfirmPasswordReset()">
+      </div>
+      <button class="auth-btn-main" id="resetConfirmBtn" onclick="authConfirmPasswordReset()">Установить новый пароль →</button>
+      <div class="auth-forgot">
+        <button onclick="returnToLoginFromReset()">← Вернуться ко входу</button>
+      </div>
+    </div>
+
+    <!-- RESET LINK EXPIRED -->
+    <div id="authFormResetExpired" style="display:none">
+      <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:6px">Ссылка устарела или уже использована</div>
+      <div class="auth-hint" style="margin-bottom:14px">
+        Запроси новую ссылку для установки пароля. Мы отправим её через стандартный Firebase flow.
+      </div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input class="auth-input" type="email" id="resetExpiredEmail" placeholder="example@mail.ru" autocomplete="email"
+          onkeydown="if(event.key==='Enter')resendPasswordResetFromExpired()">
+      </div>
+      <button class="auth-btn-main" id="resetExpiredBtn" onclick="resendPasswordResetFromExpired()">Отправить новую ссылку</button>
+      <div class="auth-forgot">
+        <button onclick="returnToLoginFromReset()">← Вернуться ко входу</button>
+      </div>
+    </div>
+
+    <!-- RESET SUCCESS -->
+    <div id="authFormResetSuccess" style="display:none">
+      <div style="font-size:14px;font-weight:900;color:var(--text);margin-bottom:6px">Пароль обновлён</div>
+      <div class="auth-hint" style="margin-bottom:14px">
+        Теперь можно войти в приложение с новым паролем.
+      </div>
+      <button class="auth-btn-main" type="button" onclick="returnToLoginFromReset()">Перейти ко входу</button>
+    </div>
+
     <div class="auth-error" id="authError"></div>
     <div class="auth-hint">Прогресс сохраняется на всех устройствах<br>и в любом мессенджере 🌍</div>
   </div>
@@ -4246,16 +4289,114 @@ let adminUserImportRows = [];
 let adminUserImportReport = [];
 let adminSelectedUser = null;
 let adminUserImportFileName = '';
+const ENABLE_PUBLIC_REGISTRATION = false;
+let authScreenMode = 'login';
+let pendingResetCode = '';
+let pendingResetEmail = '';
 
 // ═══════════════════════════════════════════════════
 //  AUTH SCREEN
 // ═══════════════════════════════════════════════════
+function setAuthScreenMode(mode = 'login') {
+  authScreenMode = mode;
+  const tabs = document.querySelector('.auth-tabs');
+  const loginForm = document.getElementById('authFormLogin');
+  const regForm = document.getElementById('authFormReg');
+  const resetForm = document.getElementById('authFormResetPassword');
+  const expiredForm = document.getElementById('authFormResetExpired');
+  const successForm = document.getElementById('authFormResetSuccess');
+  const loginTab = document.getElementById('authTabLogin');
+  const regTab = document.getElementById('authTabReg');
+  if (tabs) tabs.style.display = mode === 'login' ? '' : 'none';
+  if (loginForm) loginForm.style.display = mode === 'login' ? '' : 'none';
+  if (regForm) regForm.style.display = mode === 'register' ? '' : 'none';
+  if (resetForm) resetForm.style.display = mode === 'reset-valid' ? '' : 'none';
+  if (expiredForm) expiredForm.style.display = mode === 'reset-expired' ? '' : 'none';
+  if (successForm) successForm.style.display = mode === 'reset-success' ? '' : 'none';
+  if (loginTab) loginTab.classList.toggle('active', mode === 'login');
+  if (regTab) regTab.classList.toggle('active', ENABLE_PUBLIC_REGISTRATION && mode === 'register');
+  setAuthError('');
+}
+
 function switchAuthTab(tab) {
-  document.getElementById('authFormLogin').style.display = tab === 'login' ? '' : 'none';
-  document.getElementById('authFormReg').style.display  = tab === 'register' ? '' : 'none';
-  document.getElementById('authTabLogin').classList.toggle('active', tab === 'login');
-  document.getElementById('authTabReg').classList.toggle('active', tab === 'register');
+  const resolvedTab = ENABLE_PUBLIC_REGISTRATION && tab === 'register' ? 'register' : 'login';
+  if (resolvedTab !== 'login') {
+    setAuthScreenMode(resolvedTab);
+    return;
+  }
+  setAuthScreenMode('login');
+  const loginForm = document.getElementById('authFormLogin');
+  const regForm = document.getElementById('authFormReg');
+  const loginTab = document.getElementById('authTabLogin');
+  const regTab = document.getElementById('authTabReg');
+  if (loginForm) loginForm.style.display = resolvedTab === 'login' ? '' : 'none';
+  if (regForm) regForm.style.display  = ENABLE_PUBLIC_REGISTRATION && resolvedTab === 'register' ? '' : 'none';
+  if (loginTab) loginTab.classList.toggle('active', resolvedTab === 'login');
+  if (regTab) regTab.classList.toggle('active', ENABLE_PUBLIC_REGISTRATION && resolvedTab === 'register');
   document.getElementById('authError').textContent = '';
+}
+
+function applyPublicRegistrationVisibility() {
+  const regTab = document.getElementById('authTabReg');
+  const regForm = document.getElementById('authFormReg');
+  if (regTab) regTab.style.display = ENABLE_PUBLIC_REGISTRATION ? '' : 'none';
+  if (regForm && !ENABLE_PUBLIC_REGISTRATION) regForm.style.display = 'none';
+  switchAuthTab('login');
+}
+
+function getPasswordResetEmailCandidate() {
+  return (
+    pendingResetEmail ||
+    document.getElementById('resetExpiredEmail')?.value.trim() ||
+    document.getElementById('resetEmail')?.value.trim() ||
+    document.getElementById('loginEmail')?.value.trim() ||
+    ''
+  );
+}
+
+function returnToLoginFromReset() {
+  pendingResetCode = '';
+  const params = new URLSearchParams(window.location.search);
+  params.delete('mode');
+  params.delete('oobCode');
+  params.delete('apiKey');
+  params.delete('lang');
+  const nextQuery = params.toString();
+  window.history.replaceState({}, '', `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}`);
+  switchAuthTab('login');
+  if (pendingResetEmail) {
+    const loginEmail = document.getElementById('loginEmail');
+    if (loginEmail) loginEmail.value = pendingResetEmail;
+  }
+}
+
+async function handlePasswordResetLink() {
+  const params = new URLSearchParams(window.location.search);
+  const mode = params.get('mode');
+  const oobCode = params.get('oobCode');
+  if (mode !== 'resetPassword' || !oobCode || !auth) {
+    applyPublicRegistrationVisibility();
+    return;
+  }
+  pendingResetCode = oobCode;
+  try {
+    const email = await auth.verifyPasswordResetCode(oobCode);
+    pendingResetEmail = email || '';
+    const resetEmail = document.getElementById('resetEmail');
+    const expiredEmail = document.getElementById('resetExpiredEmail');
+    if (resetEmail) resetEmail.value = pendingResetEmail;
+    if (expiredEmail) expiredEmail.value = pendingResetEmail;
+    setAuthScreenMode('reset-valid');
+  } catch (error) {
+    pendingResetCode = '';
+    pendingResetEmail = '';
+    const resetEmail = document.getElementById('resetEmail');
+    const expiredEmail = document.getElementById('resetExpiredEmail');
+    if (resetEmail) resetEmail.value = '';
+    if (expiredEmail) expiredEmail.value = document.getElementById('loginEmail')?.value.trim() || '';
+    setAuthScreenMode('reset-expired');
+    setAuthError('Ссылка устарела или уже использована. Запроси новую ссылку ниже.');
+  }
 }
 
 function setAuthError(msg) {
@@ -4264,8 +4405,15 @@ function setAuthError(msg) {
 
 function setAuthLoading(id, loading) {
   const btn = document.getElementById(id);
+  if (!btn) return;
   btn.disabled = loading;
-  btn.textContent = loading ? 'Подождите...' : (id === 'loginBtn' ? 'Войти →' : 'Создать аккаунт →');
+  const labels = {
+    loginBtn: 'Войти →',
+    registerBtn: 'Создать аккаунт →',
+    resetConfirmBtn: 'Установить новый пароль →',
+    resetExpiredBtn: 'Отправить новую ссылку',
+  };
+  btn.textContent = loading ? 'Подождите...' : (labels[id] || btn.textContent);
 }
 
 function authLogin() {
@@ -4281,7 +4429,7 @@ function authLogin() {
       setAuthLoading('loginBtn', false);
       console.error('Auth error:', e.code, e.message);
       const msgs = {
-        'auth/user-not-found': 'Аккаунт не найден. Зарегистрируйся!',
+        'auth/user-not-found': 'Аккаунт не найден. Проверь email или восстанови доступ через администратора.',
         'auth/wrong-password': 'Неверный пароль',
         'auth/invalid-email': 'Неверный формат email',
         'auth/too-many-requests': 'Слишком много попыток. Подожди немного',
@@ -4294,6 +4442,11 @@ function authLogin() {
 }
 
 function authRegister() {
+  if (!ENABLE_PUBLIC_REGISTRATION) {
+    switchAuthTab('login');
+    setAuthError('Регистрация временно закрыта. Используй вход или сброс пароля.');
+    return;
+  }
   const name  = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim();
   const pass  = document.getElementById('regPassword').value;
@@ -4319,6 +4472,55 @@ function authResetPassword() {
   auth.sendPasswordResetEmail(email)
     .then(() => setAuthError('✅ Письмо отправлено! Проверь почту'))
     .catch(() => setAuthError('Ошибка. Проверь правильность email'));
+}
+
+async function authConfirmPasswordReset() {
+  const newPassword = document.getElementById('resetNewPassword')?.value || '';
+  if (!pendingResetCode) {
+    setAuthScreenMode('reset-expired');
+    setAuthError('Ссылка устарела. Запроси новую ссылку.');
+    return;
+  }
+  if (newPassword.length < 6) {
+    setAuthError('Пароль минимум 6 символов');
+    return;
+  }
+  setAuthLoading('resetConfirmBtn', true);
+  try {
+    await auth.confirmPasswordReset(pendingResetCode, newPassword);
+    pendingResetCode = '';
+    setAuthScreenMode('reset-success');
+  } catch (error) {
+    const code = String(error?.code || error?.message || '');
+    if (code.includes('expired-action-code') || code.includes('invalid-action-code')) {
+      setAuthScreenMode('reset-expired');
+      setAuthError('Ссылка устарела или уже использована. Запроси новую ссылку.');
+    } else if (code.includes('weak-password')) {
+      setAuthError('Пароль слишком простой');
+    } else {
+      setAuthError('Не удалось обновить пароль. Попробуй снова.');
+    }
+  } finally {
+    setAuthLoading('resetConfirmBtn', false);
+  }
+}
+
+async function resendPasswordResetFromExpired() {
+  const email = getPasswordResetEmailCandidate();
+  if (!email) {
+    setAuthError('Введи email, чтобы отправить новую ссылку');
+    return;
+  }
+  setAuthLoading('resetExpiredBtn', true);
+  try {
+    await auth.sendPasswordResetEmail(email);
+    pendingResetEmail = email;
+    setAuthError('✅ Новая ссылка отправлена. Проверь почту.');
+  } catch (error) {
+    setAuthError('Не удалось отправить письмо. Проверь email и попробуй снова.');
+  } finally {
+    setAuthLoading('resetExpiredBtn', false);
+  }
 }
 
 function authLogout() {
@@ -4366,6 +4568,7 @@ function closeAccountMenu() {
 
 function showAuthScreen() {
   document.getElementById('authScreen').style.display = 'flex';
+  handlePasswordResetLink();
 }
 
 function hideAuthScreen() {
@@ -5776,6 +5979,7 @@ renderAll = function() {
 
 // Auth-based init: Firebase handles rendering after login
 // loadState is called inside onUserLoggedIn after auth
+applyPublicRegistrationVisibility();
 checkAdmin();
 initFirebase();
 // Fallback: if Firebase not configured, load from localStorage directly
