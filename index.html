@@ -2733,13 +2733,13 @@ body {
   <!-- Theme filter (hidden by default) -->
   <div id="quizThemeFilter" style="display:none;margin-bottom:12px">
     <div class="quiz-filter-row">
-      <button class="quiz-filter-btn active" onclick="setQuizFilter('theme','all')">Все</button>
-      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','sociology')">👥 Социология</button>
-      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','politics')">🏛️ Политология</button>
-      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','economics')">💰 Экономика</button>
-      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','law')">⚖️ Право</button>
-      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','philosophy')">🧠 Философия</button>
-      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','culturology')">🎨 Культурология</button>
+      <button class="quiz-filter-btn active" onclick="setQuizFilter('theme','all', event)">Все</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','sociology', event)">👥 Социология</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','politics', event)">🏛️ Политология</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','economics', event)">💰 Экономика</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','law', event)">⚖️ Право</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','philosophy', event)">🧠 Философия</button>
+      <button class="quiz-filter-btn" onclick="setQuizFilter('theme','culturology', event)">🎨 Культурология</button>
     </div>
   </div>
 
@@ -3623,6 +3623,7 @@ async function switchCourse(courseId, options = {}) {
   quizResults = {};
   currentQuestion = null;
   quizAnswered = false;
+  quizThemeFilter = 'all';
   quizOlympiadFilter = 'all';
 
   renderCourseControls();
@@ -4905,14 +4906,16 @@ function renderCalendarEvents(filterDate) {
     const mon = months[d.getMonth()];
     const meta = getEventTypeMeta(ev.type);
     const typeClass = normalizeEventType(ev.type);
+    const safeTitle = escapeHtml(ev.title || '');
+    const safeDesc = escapeHtml(ev.desc || '');
     return `<div class="event-card ${typeClass}">
       <div class="event-date-badge">
         <div class="event-date-day">${day}</div>
         <div class="event-date-mon">${mon}</div>
       </div>
       <div class="event-body">
-        <div class="event-title">${ev.title}</div>
-        ${ev.desc ? `<div class="event-desc">${ev.desc}</div>` : ''}
+        <div class="event-title">${safeTitle}</div>
+        ${ev.desc ? `<div class="event-desc">${safeDesc}</div>` : ''}
       </div>
       <div class="event-type-badge ${typeClass}">${meta.icon} ${meta.label}</div>
     </div>`;
@@ -5908,8 +5911,9 @@ function renderAdminEvents() {
   }
   el.innerHTML = evs.sort((a,b)=>a[1].date.localeCompare(b[1].date)).map(([id,ev]) => {
     const meta = getEventTypeMeta(ev.type);
+    const safeTitle = escapeHtml(ev.title || '');
     return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:10px;background:white;border-radius:10px;border:1.5px solid var(--border)">
-      <span style="font-size:11px;font-weight:700;color:var(--text);flex:1">${ev.date} — ${ev.title} <span style="color:${meta.color}">${meta.icon} ${meta.label}</span></span>
+      <span style="font-size:11px;font-weight:700;color:var(--text);flex:1">${ev.date} — ${safeTitle} <span style="color:${meta.color}">${meta.icon} ${meta.label}</span></span>
       <button class="del-btn" onclick="adminDeleteEvent('${id}')">🗑️</button>
     </div>`;
   }).join('');
@@ -6042,8 +6046,8 @@ function saveQuizResult(qid, correct) {
   Promise.all(writes).catch(err => console.warn('saveQuizResult error', err));
   // Give XP for correct answer
   if (correct) {
-    state.totalXP = (state.totalXP || 0);
     const xpGain = 5;
+    state.totalXP = (state.totalXP || 0) + xpGain;
     showXPPopup(xpGain, document.getElementById('quizStartBtn'));
     state.done = state.done || {};
     saveState();
@@ -6083,8 +6087,9 @@ function setQuizMode(mode) {
 function setQuizFilter(type, val, evt) {
   if (type === 'theme') quizThemeFilter = val;
   if (type === 'olympiad') quizOlympiadFilter = val;
-  document.querySelectorAll(`#quiz${type.charAt(0).toUpperCase()+type.slice(1)}Filter .quiz-filter-btn`).forEach(b => b.classList.remove('active'));
-  const target = evt?.target || window.event?.target || globalThis.event?.target;
+  const selector = `#quiz${type.charAt(0).toUpperCase()+type.slice(1)}Filter .quiz-filter-btn`;
+  document.querySelectorAll(selector).forEach(b => b.classList.remove('active'));
+  const target = evt?.currentTarget || evt?.target || window.event?.target || globalThis.event?.target;
   if (target) target.classList.add('active');
 }
 
@@ -6158,22 +6163,24 @@ function quizNext() {
 function renderQuestion(q) {
   const area = document.getElementById('quizQuestionArea');
   const themeIcons = { sociology:'👥', politics:'🏛️', economics:'💰', law:'⚖️', philosophy:'🧠', culturology:'🎨' };
+  const safeSubtopic = escapeHtml(q.subtopic || '');
+  const safeQuestion = escapeHtml(q.question || '');
 
   let optionsHTML = '';
   if (q.type === 'single' || q.type === 'multi') {
     const opts = (q.options || []);
     optionsHTML = `<div class="quiz-options">${opts.map((opt, i) =>
-      `<button class="quiz-option" data-idx="${i}" onclick="quizSelect(this, '${q.type}')">${opt}</button>`
+      `<button class="quiz-option" data-idx="${i}" onclick="quizSelect(this, '${q.type}')">${escapeHtml(opt)}</button>`
     ).join('')}</div>`;
   } else if (q.type === 'match') {
     const pairs = q.pairs || [];
     const shuffledDefs = [...pairs.map(p=>p.definition)].sort(()=>Math.random()-0.5);
     optionsHTML = `<div class="quiz-match-pairs">${pairs.map((p, i) =>
       `<div class="quiz-match-row">
-        <div class="quiz-match-term">${p.term}</div>
+        <div class="quiz-match-term">${escapeHtml(p.term || '')}</div>
         <select class="quiz-match-select" data-idx="${i}">
           <option value="">— выбери —</option>
-          ${shuffledDefs.map(d => `<option value="${d}">${d}</option>`).join('')}
+          ${shuffledDefs.map(d => `<option value="${escapeHtml(d || '')}">${escapeHtml(d || '')}</option>`).join('')}
         </select>
       </div>`
     ).join('')}</div>`;
@@ -6184,9 +6191,9 @@ function renderQuestion(q) {
       <div class="quiz-meta">
         <span class="quiz-badge">${themeIcons[q.theme]||''} ${CATEGORIES[q.theme]?.name||q.theme}</span>
         <span class="quiz-badge olympiad">${getTestCategoryLabel(q.olympiad, q.courseId || selectedCourseId)} ${q.year||''}</span>
-        ${q.subtopic ? `<span class="quiz-badge theme">${q.subtopic}</span>` : ''}
+        ${q.subtopic ? `<span class="quiz-badge theme">${safeSubtopic}</span>` : ''}
       </div>
-      <div class="quiz-question-text">${q.question}</div>
+      <div class="quiz-question-text">${safeQuestion}</div>
       ${optionsHTML}
       <div class="quiz-feedback" id="quizFeedback">
         <div class="quiz-feedback-title" id="quizFeedbackTitle"></div>
