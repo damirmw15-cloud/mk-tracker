@@ -6487,6 +6487,7 @@ let quizQuestions = []; // loaded from Firebase
 let quizResults = {};   // userId results from Firebase
 let currentQuestion = null;
 let quizAnswered = false;
+let quizRecentIds = []; // history of recently shown question ids to avoid back-to-back repeats
 let addQType = 'single';
 let quizSession = { correct: 0, total: 0 }; // session stats
 
@@ -6555,6 +6556,7 @@ function setQuizMode(mode) {
   document.getElementById('quizStartBtn').textContent = 'Начать тест →';
   document.getElementById('quizQuestionArea').innerHTML = `<div class="empty-state"><div class="e-icon">🧪</div><div>Нажми кнопку ниже чтобы начать!</div></div>`;
   quizAnswered = false;
+  quizRecentIds = [];
 }
 
 function setQuizFilter(type, val, evt) {
@@ -6619,14 +6621,26 @@ function quizNext() {
     showToast('⚠️ Нет вопросов для этого режима');
     return;
   }
-  // Prioritize questions with fewer attempts or wrong answers
-  const scored = pool.map(q => {
+
+  // Exclude recently shown questions to prevent back-to-back repeats
+  const RECENT_WINDOW = Math.min(3, Math.floor(pool.length / 2));
+  const recentSlice = quizRecentIds.slice(-RECENT_WINDOW);
+  const candidates = pool.filter(q => !recentSlice.includes(q.id));
+  const finalPool = candidates.length ? candidates : pool;
+
+  // Score questions: cap wrong-answer bonus so one question can't dominate forever
+  const scored = finalPool.map(q => {
     const r = quizResults[q.id] || { attempts: 0, wrong: 0 };
-    const score = (r.wrong || 0) * 3 - (r.attempts || 0) + Math.random() * 5;
+    const wrongBonus = Math.min(r.wrong || 0, 4) * 2; // capped at 4 wrong answers
+    const score = wrongBonus - (r.attempts || 0) * 0.5 + Math.random() * 8;
     return { q, score };
   });
   scored.sort((a, b) => b.score - a.score);
+
   currentQuestion = scored[0].q;
+  quizRecentIds.push(currentQuestion.id);
+  if (quizRecentIds.length > 10) quizRecentIds.shift();
+
   quizAnswered = false;
   renderQuestion(currentQuestion);
   document.getElementById('quizStartBtn').textContent = 'Следующий вопрос →';
@@ -6742,7 +6756,13 @@ function quizCheckSingle() {
   const idx = parseInt(selected.dataset.idx, 10);
   const opts = currentQuestion.options || [];
   const correctIndexes = parseCorrectOptionIndexes(currentQuestion.correct, opts);
-  const correctIndex = correctIndexes.length ? correctIndexes[0] : -1;
+  if (!correctIndexes.length) {
+    console.warn('[Quiz] Вопрос с неразборным полем correct, пропускаем:', currentQuestion.id, currentQuestion.correct);
+    showFeedback(true, '⚠️ В этом вопросе некорректно задан правильный ответ — он пропущен автоматически.');
+    quizAnswered = true;
+    return;
+  }
+  const correctIndex = correctIndexes[0];
   const isCorrect = idx === correctIndex;
 
   document.querySelectorAll('.quiz-option').forEach((b, i) => {
@@ -6771,6 +6791,12 @@ function quizCheckMulti() {
     .sort((a, b) => a - b);
 
   const correctIndexes = parseCorrectOptionIndexes(currentQuestion.correct, opts);
+  if (!correctIndexes.length) {
+    console.warn('[Quiz] Вопрос с неразборным полем correct, пропускаем:', currentQuestion.id, currentQuestion.correct);
+    showFeedback(true, '⚠️ В этом вопросе некорректно задан правильный ответ — он пропущен автоматически.');
+    quizAnswered = true;
+    return;
+  }
 
   const isCorrect = selectedIndexes.length === correctIndexes.length &&
     selectedIndexes.every((v, i) => v === correctIndexes[i]);
