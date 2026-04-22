@@ -3537,8 +3537,8 @@ function renderCourseControls() {
   const adminNoteValue = document.getElementById('adminCourseNoteValue');
   if (label) label.textContent = getCurrentCourseLabel();
   if (btn) btn.classList.toggle('visible', !!currentUser && availableCourses.length > 1);
-  if (adminNoteValue) adminNoteValue.textContent = `Курс: ${getCourseById(selectedCourseId).name} ▾`;
-  if (adminNote) adminNote.setAttribute('aria-label', `Курс: ${getCourseById(selectedCourseId).name}`);
+  if (adminNoteValue) adminNoteValue.textContent = `Курс: ${getCourseById(selectedCourseId)?.name || selectedCourseId} ▾`;
+  if (adminNote) adminNote.setAttribute('aria-label', `Курс: ${getCourseById(selectedCourseId)?.name || selectedCourseId}`);
   renderQuizOlympiadFilters();
   renderAdminQuestionCategoryFilter();
   renderQuestionCategorySelect('addQOlympiad');
@@ -5014,6 +5014,10 @@ function initFirebase() {
           } else {
             renderCourseControls();
           }
+        }).catch(err => {
+          console.warn('[Courses] Не удалось загрузить настройки пользователя:', err);
+          availableCourses = [getCourseById(DEFAULT_COURSE_ID)];
+          renderCourseControls();
         });
       }
     });
@@ -6872,6 +6876,7 @@ async function getAiExplanation(q, isCorrect) {
       })
     });
 
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     let text = data?.text || '';
 
