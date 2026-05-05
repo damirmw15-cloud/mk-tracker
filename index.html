@@ -571,6 +571,21 @@ body {
 }
 .nav-tab:active { opacity: 0.7; }
 
+/* ─── NAPARNIK ─── */
+.naparnik-list { display: flex; flex-direction: column; gap: 10px; }
+.naparnik-card {
+  background: var(--card);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(26,41,64,0.06);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.naparnik-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(26,41,64,0.10); }
+.naparnik-card-title { font-weight: 800; font-size: 15px; color: var(--text); margin-bottom: 4px; }
+.naparnik-card-meta { font-size: 12px; color: var(--text3); margin-bottom: 6px; }
+.naparnik-card-status { font-size: 12px; }
+
 /* ─── MAIN ─── */
 .main { padding: 16px; max-width: 500px; margin: 0 auto; }
 .tab-content { display: none; }
@@ -2035,6 +2050,7 @@ body {
     <button class="nav-tab" onclick="switchTab('progress')">📊 Итоги</button>
     <button class="nav-tab" id="adminTabBtn" style="display:none" onclick="switchTab('admin')">👑 Админ</button>
     <button class="nav-tab" onclick="switchTab('quiz')">🧪 Тесты</button>
+    <button class="nav-tab" onclick="switchTab('naparnik')">📝 Напарник</button>
   </div>
 </div>
 
@@ -2905,6 +2921,20 @@ body {
     Начать тест →
   </button>
 
+</div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+      TAB: NAPARNIK (MeinKurs Assignments)
+     ═══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-naparnik">
+  <div id="naparnikContainer">
+    <div class="empty-state">
+      <div class="e-icon">📝</div>
+      <div>Загрузка заданий...</div>
+    </div>
+  </div>
 </div>
 
 </div><!-- /main -->
@@ -4651,12 +4681,13 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
   document.getElementById(`tab-${tab}`).classList.add('active');
-  const tabs = ['home','tasks','calendar','progress','admin','quiz'];
+  const tabs = ['home','tasks','calendar','progress','admin','quiz','naparnik'];
   const idx = tabs.indexOf(tab);
   document.querySelectorAll('.nav-tab')[idx]?.classList.add('active');
   if (tab === 'calendar') renderCalendar();
   if (tab === 'admin') { renderAdminWorkspaceMode(); renderAdminCourseManager(); renderAdminUsersModule(); renderAdminEvents(); adminLoadStudents(); adminLoadQuizStats(); renderAdminQuestionList(); renderTaskEditorWeekOptions(); renderTaskEditorList(); }
   if (tab === 'quiz') { renderQuizStats(); if (quizMode === 'weak') renderWeakThemes(); }
+  if (tab === 'naparnik') renderNaparnik();
   if (tab !== 'tasks') renderAll();
 }
 
@@ -4696,6 +4727,29 @@ const FIREBASE_CONFIGS = {
 };
 
 const FIREBASE_CONFIG = FIREBASE_CONFIGS[ENV];
+
+// ═══════════════════════════════════════════════════
+//  NAPARNIK (MeinKurs) API
+// ═══════════════════════════════════════════════════
+const NAPARNIK_API = ENV === 'prod' ? 'https://check.meinkurs.ru/api' : null;
+
+async function naparnikFetch(path, options = {}) {
+  if (!NAPARNIK_API) throw new Error('Напарник недоступен в dev-режиме');
+  if (!currentUser) throw new Error('Not authenticated');
+  const token = await currentUser.getIdToken();
+  const res = await fetch(`${NAPARNIK_API}${path}`, {
+    ...options,
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      ...options.headers,
+    },
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(txt || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
 
 // ═══════════════════════════════════════════════════
 //  ADMIN CONFIG
@@ -5845,6 +5899,10 @@ async function adminSaveCourse() {
   await db.ref(`${COURSE_META_PATH}/${courseId}`).set(payload);
   courseCatalog[courseId] = normalizeCourse(courseId, payload);
   availableCourses = getAvailableCoursesForUser({});
+  // Sync to MeinKurs Naparnik (only in prod)
+  if (ENV === 'prod' && payload.subjectId) {
+    syncCourseToNaparnik(courseId).catch(console.error);
+  }
   showToast(adminCourseEditingId ? '✅ Курс обновлён' : '✅ Курс создан');
   if (!adminCourseEditingId) {
     await switchCourse(courseId);
@@ -7321,6 +7379,360 @@ function adminDeleteQuestion(qid) {
   Promise.all(writes)
     .then(() => showToast('🗑️ Вопрос удалён'))
     .catch(() => showToast('❌ Ошибка'));
+}
+// ═══════════════════════════════════════════════════
+//  NAPARNIK (MeinKurs Integration)
+// ═══════════════════════════════════════════════════
+
+const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+const isTelegramWebView = !!window.Telegram?.WebApp;
+
+function renderNaparnik() {
+  const container = document.getElementById('naparnikContainer');
+  if (!container) return;
+  if (isAdmin) {
+    renderNaparnikAdmin(container);
+  } else {
+    renderNaparnikStudent(container);
+  }
+}
+
+async function renderNaparnikStudent(container) {
+  if (!selectedCourseId) {
+    container.innerHTML = '<div class="empty-state"><div class="e-icon">📝</div><div>Сначала выберите курс</div></div>';
+    return;
+  }
+  container.innerHTML = '<div class="empty-state"><div class="e-icon">⏳</div><div>Загрузка заданий...</div></div>';
+  try {
+    const assignments = await naparnikFetch(`/assignments/?external_course_id=${encodeURIComponent(selectedCourseId)}`);
+    if (!assignments || assignments.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="e-icon">📝</div><div>Пока нет заданий для этого курса</div></div>';
+      return;
+    }
+    let html = '<div class="naparnik-list">';
+    for (const a of assignments) {
+      let statusHtml = '';
+      try {
+        const mySub = await naparnikFetch(`/submissions/my/${a.id}`);
+        if (mySub) {
+          statusHtml = `<span style="color:var(--success);font-weight:700">🟢 Оценено: ${mySub.grade || '—'}/10</span>`;
+        } else {
+          statusHtml = `<span style="color:#E74C3C;font-weight:700">🔴 Не сдано</span>`;
+        }
+      } catch (e) {
+        statusHtml = `<span style="color:#E74C3C;font-weight:700">🔴 Не сдано</span>`;
+      }
+      html += `
+        <div class="naparnik-card" onclick="renderNaparnikAssignmentDetail(${a.id})">
+          <div class="naparnik-card-title">${escapeHtml(a.title)}</div>
+          <div class="naparnik-card-meta">${escapeHtml(a.subject || 'Общество')}</div>
+          <div class="naparnik-card-status">${statusHtml}</div>
+        </div>`;
+    }
+    html += '</div>';
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><div class="e-icon">⚠️</div><div>${escapeHtml(err.message)}</div></div>`;
+  }
+}
+
+async function renderNaparnikAdmin(container) {
+  if (!selectedCourseId) {
+    container.innerHTML = '<div class="empty-state"><div class="e-icon">📝</div><div>Сначала выберите курс</div></div>';
+    return;
+  }
+  container.innerHTML = '<div class="empty-state"><div class="e-icon">⏳</div><div>Загрузка заданий...</div></div>';
+  try {
+    const assignments = await naparnikFetch(`/assignments/?external_course_id=${encodeURIComponent(selectedCourseId)}`);
+    let html = '<div style="margin-bottom:12px"><button class="admin-btn blue" onclick="renderNaparnikCreateForm()">+ Создать задание</button></div>';
+    if (!assignments || assignments.length === 0) {
+      html += '<div class="empty-state"><div class="e-icon">📝</div><div>Пока нет заданий</div></div>';
+    } else {
+      html += '<div class="naparnik-list">';
+      for (const a of assignments) {
+        html += `
+          <div class="naparnik-card">
+            <div class="naparnik-card-title">${escapeHtml(a.title)}</div>
+            <div class="naparnik-card-meta">${escapeHtml(a.subject || 'Общество')} • Сдач: ${a.submissions_count || 0}</div>
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <button class="admin-btn" onclick="renderNaparnikSubmissions(${a.id})">📥 Сдачи</button>
+              <button class="admin-btn red" onclick="deleteNaparnikAssignment(${a.id})">🗑️</button>
+            </div>
+          </div>`;
+      }
+      html += '</div>';
+    }
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><div class="e-icon">⚠️</div><div>${escapeHtml(err.message)}</div></div>`;
+  }
+}
+
+async function renderNaparnikAssignmentDetail(assignmentId) {
+  const container = document.getElementById('naparnikContainer');
+  container.innerHTML = '<div class="empty-state"><div class="e-icon">⏳</div><div>Загрузка...</div></div>';
+  try {
+    const a = await naparnikFetch(`/assignments/${assignmentId}`);
+    let mySub = null;
+    try {
+      mySub = await naparnikFetch(`/submissions/my/${assignmentId}`);
+    } catch (e) { mySub = null; }
+
+    let fileUploadHtml = '';
+    if (!mySub) {
+      const acceptTypes = '.pdf,.docx,.doc,.txt';
+      if (isMobileDevice || isTelegramWebView) {
+        fileUploadHtml = `
+          <div style="margin:12px 0">
+            <input type="file" id="naparnikFileInput" accept="${acceptTypes}" style="display:none" onchange="handleNaparnikFileSelect(this, ${assignmentId})">
+            <button class="quiz-btn primary" onclick="document.getElementById('naparnikFileInput').click()">📎 Прикрепить файл</button>
+            <div id="naparnikFileName" style="margin-top:6px;font-size:13px;color:var(--text3)"></div>
+          </div>`;
+      } else {
+        fileUploadHtml = `
+          <div id="naparnikDropZone" style="border:2px dashed var(--c1);border-radius:12px;padding:24px;text-align:center;margin:12px 0;cursor:pointer;background:var(--bg)"
+               ondragover="event.preventDefault();this.style.background='#E1F5FE';"
+               ondragleave="this.style.background='var(--bg)';"
+               ondrop="handleNaparnikDrop(event, ${assignmentId})">
+            <div style="font-size:28px;margin-bottom:6px">📁</div>
+            <div style="font-weight:700;color:var(--text)">Перетащите файл сюда</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:4px">или <span style="color:var(--c1);text-decoration:underline">выберите файл</span></div>
+            <input type="file" id="naparnikFileInput" accept="${acceptTypes}" style="display:none" onchange="handleNaparnikFileSelect(this, ${assignmentId})">
+          </div>
+          <div id="naparnikFileName" style="margin-bottom:8px;font-size:13px;color:var(--text3)"></div>
+          <button class="quiz-btn primary" id="naparnikSubmitBtn" style="display:none;width:100%" onclick="submitNaparnikWork(${assignmentId})">📤 Отправить работу</button>`;
+      }
+    }
+
+    let resultHtml = '';
+    if (mySub) {
+      resultHtml = `
+        <div style="background:#F0FFF4;border-radius:12px;padding:14px;margin-top:12px;border:1px solid #34C77B33">
+          <div style="font-weight:700;color:var(--success);margin-bottom:6px">🎉 Работа проверена!</div>
+          <div style="font-size:20px;font-weight:800;color:var(--success)">Оценка: ${mySub.grade || '—'}/10</div>
+          <div style="margin-top:8px;font-size:13px;color:var(--text)">${formatMarkdown(mySub.ai_response || '')}</div>
+        </div>`;
+    }
+
+    container.innerHTML = `
+      <div style="margin-bottom:12px">
+        <button class="admin-btn" onclick="renderNaparnik()">← Назад</button>
+      </div>
+      <div class="section-title">${escapeHtml(a.title)}</div>
+      <div style="font-size:13px;color:var(--text3);margin-bottom:12px">${escapeHtml(a.subject || 'Общество')}</div>
+      <div style="background:var(--card);border-radius:12px;padding:14px;margin-bottom:12px">
+        <div style="font-weight:700;margin-bottom:6px">📋 Описание</div>
+        <div style="font-size:13px;color:var(--text);white-space:pre-wrap">${escapeHtml(a.description || 'Нет описания')}</div>
+      </div>
+      <div style="background:var(--card);border-radius:12px;padding:14px;margin-bottom:12px">
+        <div style="font-weight:700;margin-bottom:6px">🔑 Критерии проверки</div>
+        <div style="font-size:13px;color:var(--text);white-space:pre-wrap">${escapeHtml(a.criteria_text || 'Нет критериев')}</div>
+      </div>
+      ${fileUploadHtml}
+      ${resultHtml}
+    `;
+
+    // Bind click on drop zone for desktop
+    if (!(isMobileDevice || isTelegramWebView) && !mySub) {
+      setTimeout(() => {
+        const dz = document.getElementById('naparnikDropZone');
+        if (dz) dz.addEventListener('click', () => document.getElementById('naparnikFileInput').click());
+      }, 0);
+    }
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><div class="e-icon">⚠️</div><div>${escapeHtml(err.message)}</div></div>`;
+  }
+}
+
+let naparnikSelectedFile = null;
+
+function handleNaparnikFileSelect(input, assignmentId) {
+  const file = input.files[0];
+  if (!file) return;
+  naparnikSelectedFile = file;
+  const nameEl = document.getElementById('naparnikFileName');
+  if (nameEl) nameEl.textContent = `Выбран: ${file.name}`;
+  const btn = document.getElementById('naparnikSubmitBtn');
+  if (btn) btn.style.display = '';
+}
+
+function handleNaparnikDrop(e, assignmentId) {
+  e.preventDefault();
+  e.stopPropagation();
+  const dz = document.getElementById('naparnikDropZone');
+  if (dz) dz.style.background = 'var(--bg)';
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    naparnikSelectedFile = files[0];
+    const nameEl = document.getElementById('naparnikFileName');
+    if (nameEl) nameEl.textContent = `Выбран: ${files[0].name}`;
+    const btn = document.getElementById('naparnikSubmitBtn');
+    if (btn) btn.style.display = '';
+  }
+}
+
+async function submitNaparnikWork(assignmentId) {
+  if (!naparnikSelectedFile) {
+    showToast('⚠️ Выберите файл', 'error');
+    return;
+  }
+  const btn = document.getElementById('naparnikSubmitBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Отправка...'; }
+  try {
+    const token = await currentUser.getIdToken();
+    const formData = new FormData();
+    formData.append('assignment_id', assignmentId);
+    formData.append('student_file', naparnikSelectedFile);
+    const res = await fetch(`${NAPARNIK_API}/submissions/`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData,
+    });
+    if (!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    showToast('✅ Работа отправлена!');
+    naparnikSelectedFile = null;
+    renderNaparnikAssignmentDetail(assignmentId);
+  } catch (err) {
+    showToast('❌ ' + err.message, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '📤 Отправить работу'; }
+  }
+}
+
+function renderNaparnikCreateForm() {
+  const container = document.getElementById('naparnikContainer');
+  const subjects = Object.entries(subjectCatalog || {}).map(([id, s]) => ({ id, name: typeof s === 'string' ? s : (s?.name || id) }));
+  const subjectOptions = subjects.map(s => `<option value="${escapeHtml(s.id)}">${escapeHtml(s.name)}</option>`).join('');
+  container.innerHTML = `
+    <div style="margin-bottom:12px">
+      <button class="admin-btn" onclick="renderNaparnik()">← Назад</button>
+    </div>
+    <div class="section-title">+ Создать задание</div>
+    <div style="background:var(--card);border-radius:12px;padding:14px">
+      <div style="margin-bottom:10px">
+        <label style="font-weight:700;font-size:13px">Название</label>
+        <input type="text" id="napCreateTitle" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:4px" placeholder="Например, Контрольная работа №1">
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-weight:700;font-size:13px">Предмет</label>
+        <select id="napCreateSubject" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:4px">
+          ${subjectOptions || '<option value="">Нет предметов</option>'}
+        </select>
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-weight:700;font-size:13px">Описание задания</label>
+        <textarea id="napCreateDesc" rows="3" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:4px;resize:vertical" placeholder="Опишите задание..."></textarea>
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-weight:700;font-size:13px">Критерии проверки</label>
+        <textarea id="napCreateCriteria" rows="5" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);margin-top:4px;resize:vertical" placeholder="1. Правильность определений — 3 балла&#10;2. Примеры из текста — 4 балла&#10;3. Структура ответа — 3 балла"></textarea>
+      </div>
+      <button class="admin-btn blue" style="width:100%" onclick="createNaparnikAssignment()">💾 Создать задание</button>
+    </div>
+  `;
+}
+
+async function createNaparnikAssignment() {
+  const title = document.getElementById('napCreateTitle').value.trim();
+  const subjectId = document.getElementById('napCreateSubject').value;
+  const description = document.getElementById('napCreateDesc').value.trim();
+  const criteriaText = document.getElementById('napCreateCriteria').value.trim();
+  if (!title) { showToast('⚠️ Укажите название', 'error'); return; }
+  if (!subjectId) { showToast('⚠️ Выберите предмет', 'error'); return; }
+  if (!criteriaText) { showToast('⚠️ Укажите критерии', 'error'); return; }
+
+  const token = await currentUser.getIdToken();
+  const formData = new FormData();
+  formData.append('title', title);
+  formData.append('subject_id', subjectId);
+  formData.append('description', description);
+  formData.append('criteria_text', criteriaText);
+
+  try {
+    const res = await fetch(`${NAPARNIK_API}/assignments/`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData,
+    });
+    if (!res.ok) throw new Error(await res.text());
+    showToast('✅ Задание создано!');
+    renderNaparnik();
+  } catch (err) {
+    showToast('❌ ' + err.message, 'error');
+  }
+}
+
+async function renderNaparnikSubmissions(assignmentId) {
+  const container = document.getElementById('naparnikContainer');
+  container.innerHTML = '<div class="empty-state"><div class="e-icon">⏳</div><div>Загрузка сдач...</div></div>';
+  try {
+    const subs = await naparnikFetch(`/submissions/assignment/${assignmentId}`);
+    const a = await naparnikFetch(`/assignments/${assignmentId}`);
+    let html = `
+      <div style="margin-bottom:12px">
+        <button class="admin-btn" onclick="renderNaparnik()">← Назад</button>
+      </div>
+      <div class="section-title">📥 Сдачи: ${escapeHtml(a.title)}</div>`;
+    if (!subs || subs.length === 0) {
+      html += '<div class="empty-state"><div class="e-icon">📭</div><div>Пока нет сдач</div></div>';
+    } else {
+      html += '<div class="naparnik-list">';
+      for (const s of subs) {
+        html += `
+          <div class="naparnik-card">
+            <div style="font-weight:700">${escapeHtml(s.student_name || s.student_login || 'Ученик')}</div>
+            <div style="font-size:13px;color:var(--text3)">Оценка: <b>${s.grade || '—'}/10</b></div>
+            <div style="margin-top:6px;font-size:12px;background:#f8f9fa;border-radius:8px;padding:8px">${formatMarkdown(s.ai_response || 'Нет анализа')}</div>
+          </div>`;
+      }
+      html += '</div>';
+    }
+    container.innerHTML = html;
+  } catch (err) {
+    container.innerHTML = `<div class="empty-state"><div class="e-icon">⚠️</div><div>${escapeHtml(err.message)}</div></div>`;
+  }
+}
+
+async function deleteNaparnikAssignment(assignmentId) {
+  if (!confirm('Удалить задание? Все сдачи тоже удалятся.')) return;
+  try {
+    await naparnikFetch(`/assignments/${assignmentId}`, { method: 'DELETE' });
+    showToast('🗑️ Задание удалено');
+    renderNaparnik();
+  } catch (err) {
+    showToast('❌ ' + err.message, 'error');
+  }
+}
+
+async function syncCourseToNaparnik(courseId) {
+  if (!NAPARNIK_API) return;
+  try {
+    const course = getCourseById(courseId);
+    if (!course || !course.subjectId) return;
+    const subject = getSubjectById(course.subjectId);
+    await naparnikFetch('/firebase/courses/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: courseId,
+        name: course.name,
+        subject_id: course.subjectId,
+        subject_name: subject?.name || course.subjectId,
+        description: course.description || '',
+      }),
+    });
+    console.log('[Naparnik] Course synced:', courseId);
+  } catch (err) {
+    console.error('[Naparnik] Sync failed:', err);
+  }
+}
+
+function formatMarkdown(md) {
+  if (!md) return '';
+  return escapeHtml(md)
+    .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+    .replace(/## (.+)/g, '<div style="font-weight:700;margin-top:8px">$1</div>')
+    .replace(/\n/g, '<br>');
 }
 </script>
 </body>
